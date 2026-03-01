@@ -14,8 +14,9 @@ const HomePage = () => (
     <p style={{ lineHeight: 1.6, margin: 0 }}>
       This app exposes both OG runtime modes: `/og/[lang]` uses `better-og/next`
       (Node runtime) and `/og-edge/[lang]` uses `better-og/next/edge` (Edge
-      runtime). The proxy rewrites both paths to add an `aspect_ratio` query
-      string based on the caller&apos;s user agent.
+      runtime). Both Next adapters default to the built-in `next/og` provider,
+      and the proxy rewrites both paths to add an `aspect_ratio` query string
+      based on the caller&apos;s user agent.
     </p>
     <p style={{ lineHeight: 1.6, margin: 0 }}>
       Try loading <code>/og/en</code>, <code>/og-edge/en</code>,{" "}

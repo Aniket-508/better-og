@@ -1,27 +1,57 @@
-import { ImageResponse } from "@takumi-rs/image-response";
-import type { ImageResponseOptions } from "@takumi-rs/image-response";
-import { getFontsForRequest, getOgContext } from "better-og";
-import type { OgAdapterOptions, OgContext } from "better-og";
-import type { ReactNode } from "react";
+import type { ImageResponseOptions as TakumiImageResponseOptions } from "@takumi-rs/image-response";
+import type { OgAdapterOptions } from "better-og";
+import { ImageResponse as NextImageResponse } from "next/og";
+import type { ReactElement, ReactNode } from "react";
 
 import {
   applyStableCacheHeaders,
+  normalizeFontsForNextImageResponse,
+  resolveOgRequestState,
   resolveLocaleFromParams,
   withOgRewrite,
 } from "./utils";
 import type { OgRewriteOptions, OgRouteHandlerContext } from "./utils";
 
-type NextImageResponseOptions = Omit<
-  ImageResponseOptions,
+type NextProviderImageResponseOptions = Omit<
+  NonNullable<ConstructorParameters<typeof NextImageResponse>[1]>,
+  "fonts" | "height" | "width"
+>;
+type TakumiProviderImageResponseOptions = Omit<
+  TakumiImageResponseOptions,
   "fonts" | "format" | "height" | "loadDefaultFonts" | "renderer" | "width"
 >;
 
-export interface NextOgHandlerOptions extends OgAdapterOptions {
-  component: ReactNode;
+interface TakumiImageResponseModule {
+  ImageResponse: new (
+    element: ReactNode,
+    options?: TakumiImageResponseOptions
+  ) => Response;
 }
 
+export interface NextOgHandlerOptions
+  extends
+    OgAdapterOptions,
+    NextProviderImageResponseOptions,
+    TakumiProviderImageResponseOptions {
+  component: ReactNode;
+  provider?: "next" | "takumi";
+}
+
+let takumiImageResponseModule: Promise<TakumiImageResponseModule> | undefined;
+
+const loadTakumiImageResponseModule = (): Promise<TakumiImageResponseModule> =>
+  import("@takumi-rs/image-response") as Promise<TakumiImageResponseModule>;
+
+const getTakumiImageResponseModule = (): Promise<TakumiImageResponseModule> => {
+  if (!takumiImageResponseModule) {
+    takumiImageResponseModule = loadTakumiImageResponseModule();
+  }
+
+  return takumiImageResponseModule;
+};
+
 export const createOgRouteHandler =
-  (options: NextOgHandlerOptions & NextImageResponseOptions) =>
+  (options: NextOgHandlerOptions) =>
   async (
     request: Request,
     context?: OgRouteHandlerContext
@@ -35,33 +65,46 @@ export const createOgRouteHandler =
       getOgContext: getOgContextOverride,
       loadDefaultFonts,
       localeFromRequest,
+      provider = "next",
       ...imageResponseOptions
     } = options;
     const params = context?.params ? await context.params : undefined;
     const locale =
       localeFromRequest?.(request) ?? resolveLocaleFromParams(params);
-    const ogContext: OgContext = getOgContextOverride
-      ? await getOgContextOverride(request)
-      : getOgContext(request);
-    const fonts = await getFontsForRequest(
-      { locale, request },
-      {
-        fallbackFonts,
-        fonts: configuredFonts,
-        getFontsForLocale,
-      }
-    );
-
-    const response = new ImageResponse(component, {
-      ...imageResponseOptions,
-      fonts,
-      format: format ?? "webp",
-      height: ogContext.height,
-      loadDefaultFonts: loadDefaultFonts ?? true,
-      width: ogContext.width,
+    const { fonts, ogContext } = await resolveOgRequestState({
+      configuredFonts,
+      fallbackFonts,
+      getFontsForLocale,
+      getOgContextOverride,
+      locale,
+      request,
     });
 
-    return applyStableCacheHeaders(response);
+    if (provider === "takumi") {
+      const { ImageResponse } = await getTakumiImageResponseModule();
+
+      return applyStableCacheHeaders(
+        new ImageResponse(component, {
+          ...imageResponseOptions,
+          fonts,
+          format: format ?? "webp",
+          height: ogContext.height,
+          loadDefaultFonts: loadDefaultFonts ?? true,
+          width: ogContext.width,
+        })
+      );
+    }
+
+    const nextFonts = normalizeFontsForNextImageResponse(fonts);
+
+    return applyStableCacheHeaders(
+      new NextImageResponse(component as ReactElement, {
+        ...imageResponseOptions,
+        ...(nextFonts ? { fonts: nextFonts } : {}),
+        height: ogContext.height,
+        width: ogContext.width,
+      })
+    );
   };
 
 export { withOgRewrite };

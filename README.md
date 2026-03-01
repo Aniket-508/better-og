@@ -1,7 +1,7 @@
 # better-og
 
 `better-og` is a single npm package for generating Open Graph images with
-Takumi.
+shared aspect-ratio and font helpers, plus Next and Takumi-backed adapters.
 
 It exposes one core entry point plus adapter subpaths:
 
@@ -9,6 +9,7 @@ It exposes one core entry point plus adapter subpaths:
 - `better-og/next`
 - `better-og/next/edge`
 - `better-og/edge`
+- `better-og/workers`
 
 ## Install
 
@@ -20,13 +21,19 @@ Core helpers only:
 pnpm add better-og
 ```
 
-Next.js (Node runtime):
+Next.js (default `next/og` provider):
+
+```sh
+pnpm add better-og next react
+```
+
+Next.js with Takumi provider:
 
 ```sh
 pnpm add better-og @takumi-rs/image-response next react
 ```
 
-Next.js (Edge runtime):
+Next.js Edge with the low-level Takumi adapter:
 
 ```sh
 pnpm add better-og @takumi-rs/image-response @takumi-rs/wasm next react
@@ -103,11 +110,13 @@ export const revalidate = false;
 export const GET = createOgRouteHandler({
   component: <div>Hello from Node</div>,
   fallbackFonts: true,
+  // provider defaults to "next"
   ...rest,
 });
 ```
 
-For the Node runtime entry, Takumi's Node backend should be externalized:
+When you use `better-og/next`, externalize Takumi's Node backend so the
+optional `provider: "takumi"` path stays compatible with Next's build:
 
 ```ts
 import type { NextConfig } from "next";
@@ -130,6 +139,7 @@ export const revalidate = false;
 export const GET = createOgRouteHandler({
   component: <div>Hello from Edge</div>,
   fallbackFonts: true,
+  // provider defaults to "next"
   ...rest,
 });
 ```
@@ -145,8 +155,25 @@ export const revalidate = false;
 export const GET = createOgHandler({
   component: <div>Hello from Edge</div>,
   fallbackFonts: true,
+  module: wasmModule,
   ...rest,
 });
+```
+
+Workers convenience wrapper:
+
+```tsx
+import { createOgHandler } from "better-og/workers";
+
+const handler = createOgHandler({
+  component: <div>Hello from Workers</div>,
+  fallbackFonts: true,
+  ...rest,
+});
+
+export default {
+  fetch: handler,
+};
 ```
 
 ## Generic WASM Runtimes
@@ -161,20 +188,35 @@ const handler = createOgHandler({
 });
 ```
 
-`better-og/next`, `better-og/next/edge`, and `better-og/edge` all forward the
-remaining Takumi `ImageResponse` options directly, so you can pass things like
-`headers`, `status`, `statusText`, `jsx`, `quality`, `signal` (Node), and
-`persistentImages` without a separate nested object.
+`better-og/next`, `better-og/next/edge`, `better-og/edge`, and
+`better-og/workers` all forward the remaining `ImageResponse` options directly.
 
-`better-og/next/edge` is the Next.js-specific Edge adapter and defaults to
-Takumi's `@takumi-rs/wasm/next` module. `better-og/edge` remains the low-level
-WASM adapter and requires an explicit `module`. Pass the runtime-specific Takumi
-module input your environment expects.
+`better-og/next` defaults to `provider: "next"`, which uses Next.js
+`ImageResponse` from `next/og`. It also supports `provider: "takumi"` for the
+Node runtime.
 
-If you already manage a Takumi renderer yourself, you can pass `renderer`
-instead and bypass the internal initialization path. When `fonts`,
-`getFontsForLocale`, or `fallbackFonts` resolve fonts for a request, `better-og`
-loads those fonts into the provided renderer before rendering.
+`better-og/next/edge` currently runs only with the default `provider: "next"`.
+The `provider: "takumi"` branch is intentionally disabled there until the
+current Vercel duplicate-WASM deployment issue is fixed upstream.
+
+`better-og/workers` defaults to Takumi's `@takumi-rs/wasm/takumi_wasm_bg.wasm`
+module. `better-og/edge` remains the low-level Takumi adapter and requires an
+explicit `module` so you can pass the runtime-specific Takumi module input your
+environment expects.
+
+If you want Takumi on Next Edge today, use the low-level adapter directly:
+
+```tsx
+import nextWasmModule from "@takumi-rs/wasm/next";
+import { createOgHandler } from "better-og/edge";
+
+export const runtime = "edge";
+
+export const GET = createOgHandler({
+  component: <div>Hello from Takumi on Next Edge</div>,
+  module: nextWasmModule,
+});
+```
 
 ## Takumi References
 

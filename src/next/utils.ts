@@ -1,4 +1,5 @@
-import { getOgContext } from "better-og";
+import { getFontsForRequest, getOgContext } from "better-og";
+import type { Font, GetFontsForLocale, OgContext } from "better-og";
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
@@ -10,8 +11,27 @@ export interface OgRewriteOptions {
   pathnamePrefix?: string;
 }
 
+interface ResolveOgRequestStateOptions {
+  configuredFonts?: Font[];
+  fallbackFonts?: boolean;
+  getFontsForLocale?: GetFontsForLocale;
+  getOgContextOverride?: (request: Request) => OgContext | Promise<OgContext>;
+  locale?: string;
+  request: Request;
+}
+
+interface NextImageResponseFont {
+  data: ArrayBuffer;
+  name: string;
+  style?: "normal" | "italic";
+  weight?: 100 | 200 | 300 | 400 | 500 | 600 | 700 | 800 | 900;
+}
+
 const STABLE_CACHE_CONTROL =
   "public, immutable, no-transform, max-age=31536000";
+const NEXT_IMAGE_RESPONSE_FONT_WEIGHTS = new Set<
+  NextImageResponseFont["weight"]
+>([100, 200, 300, 400, 500, 600, 700, 800, 900]);
 
 const matchesPathPrefix = (
   pathname: string,
@@ -57,6 +77,54 @@ export const resolveLocaleFromParams = (
   }
 
   return Object.values(params).find(Boolean);
+};
+
+export const normalizeFontsForNextImageResponse = (
+  fonts: Font[]
+): NextImageResponseFont[] | undefined => {
+  if (fonts.length === 0) {
+    return undefined;
+  }
+
+  return fonts.map((font) => ({
+    data:
+      font.data instanceof Uint8Array
+        ? new Uint8Array(font.data).buffer
+        : font.data,
+    name: font.name ?? "sans serif",
+    style: font.style === "italic" ? "italic" : "normal",
+    weight: NEXT_IMAGE_RESPONSE_FONT_WEIGHTS.has(
+      font.weight as NextImageResponseFont["weight"]
+    )
+      ? (font.weight as NextImageResponseFont["weight"])
+      : undefined,
+  }));
+};
+
+export const resolveOgRequestState = async ({
+  configuredFonts,
+  fallbackFonts,
+  getFontsForLocale,
+  getOgContextOverride,
+  locale,
+  request,
+}: ResolveOgRequestStateOptions): Promise<{
+  fonts: Font[];
+  ogContext: OgContext;
+}> => {
+  const ogContext = getOgContextOverride
+    ? await getOgContextOverride(request)
+    : getOgContext(request);
+  const fonts = await getFontsForRequest(
+    { locale, request },
+    {
+      fallbackFonts,
+      fonts: configuredFonts,
+      getFontsForLocale,
+    }
+  );
+
+  return { fonts, ogContext };
 };
 
 export const withOgRewrite = (

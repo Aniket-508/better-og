@@ -45,7 +45,7 @@ const handler = createOgRouteHandler({
             lineHeight: 1.05,
           }}
         >
-          Next Edge runtime with Takumi WASM
+          Next Edge runtime with next/og
         </div>
       </div>
       <div
@@ -55,8 +55,7 @@ const handler = createOgRouteHandler({
           opacity: 0.92,
         }}
       >
-        This route uses better-og/next/edge and passes Takumi&apos;s Next WASM
-        module automatically.
+        This route uses better-og/next/edge with the Next provider by default.
       </div>
     </div>
   ),

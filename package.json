@@ -29,6 +29,11 @@
       "types": "./dist/edge/index.d.ts",
       "import": "./dist/edge/index.js",
       "default": "./dist/edge/index.js"
+    },
+    "./workers": {
+      "types": "./dist/workers/index.d.ts",
+      "import": "./dist/workers/index.js",
+      "default": "./dist/workers/index.js"
     }
   },
   "scripts": {
