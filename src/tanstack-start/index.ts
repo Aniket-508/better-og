@@ -1,0 +1,79 @@
+import type { ImageResponseOptions } from "@takumi-rs/image-response";
+import {
+  applyStableCacheHeaders,
+  createCachedModuleLoader,
+  resolveLocaleFromParams,
+  resolveOgRequestState,
+} from "better-og";
+import type { OgAdapterOptions } from "better-og";
+import type { ReactNode } from "react";
+
+type TanStackStartImageResponseOptions = Omit<
+  ImageResponseOptions,
+  "fonts" | "format" | "height" | "loadDefaultFonts" | "renderer" | "width"
+>;
+
+interface TanStackImageResponseModule {
+  ImageResponse: new (
+    element: ReactNode,
+    options?: ImageResponseOptions
+  ) => Response;
+}
+
+export interface TanStackStartRouteHandlerContext {
+  params?: Promise<Record<string, string>> | Record<string, string>;
+  request: Request;
+}
+
+export interface TanStackStartOgHandlerOptions
+  extends OgAdapterOptions, TanStackStartImageResponseOptions {
+  component: ReactNode;
+}
+const getImageResponseModule = createCachedModuleLoader(
+  () =>
+    import("@takumi-rs/image-response") as Promise<TanStackImageResponseModule>
+);
+
+export const createOgRouteHandler =
+  (options: TanStackStartOgHandlerOptions) =>
+  async ({
+    params: paramsInput,
+    request,
+  }: TanStackStartRouteHandlerContext): Promise<Response> => {
+    const {
+      component,
+      fallbackFontLocales,
+      fonts: configuredFonts,
+      format,
+      getFallbackFontsForLocale,
+      getFontsForLocale,
+      getOgContext: getOgContextOverride,
+      loadDefaultFonts,
+      localeFromRequest,
+      ...imageResponseOptions
+    } = options;
+    const params = paramsInput ? await paramsInput : undefined;
+    const locale =
+      localeFromRequest?.(request) ?? resolveLocaleFromParams(params);
+    const { fonts, ogContext } = await resolveOgRequestState({
+      configuredFonts,
+      fallbackFontLocales,
+      getFallbackFontsForLocale,
+      getFontsForLocale,
+      getOgContextOverride,
+      locale,
+      request,
+    });
+    const { ImageResponse } = await getImageResponseModule();
+
+    return applyStableCacheHeaders(
+      new ImageResponse(component, {
+        ...imageResponseOptions,
+        fonts,
+        format: format ?? "webp",
+        height: ogContext.height,
+        loadDefaultFonts: loadDefaultFonts ?? true,
+        width: ogContext.width,
+      })
+    );
+  };

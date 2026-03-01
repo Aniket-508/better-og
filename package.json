@@ -34,6 +34,11 @@
       "types": "./dist/workers/index.d.ts",
       "import": "./dist/workers/index.js",
       "default": "./dist/workers/index.js"
+    },
+    "./tanstack-start": {
+      "types": "./dist/tanstack-start/index.d.ts",
+      "import": "./dist/tanstack-start/index.js",
+      "default": "./dist/tanstack-start/index.js"
     }
   },
   "scripts": {

@@ -1,10 +1,5 @@
-import { getFontsForRequest, getOgContext, loadGoogleFonts } from "better-og";
-import type {
-  Font,
-  GetFontsForLocale,
-  LoadGoogleFontsOptions,
-  OgContext,
-} from "better-og";
+import { getOgContext, loadGoogleFonts } from "better-og";
+import type { Font, LoadGoogleFontsOptions } from "better-og";
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
@@ -24,16 +19,6 @@ export interface LoadGoogleFontForImageResponseOptions extends Pick<
   weights?: number[];
 }
 
-interface ResolveOgRequestStateOptions {
-  configuredFonts?: Font[];
-  fallbackFontLocales?: string[];
-  getFallbackFontsForLocale?: GetFontsForLocale;
-  getFontsForLocale?: GetFontsForLocale;
-  getOgContextOverride?: (request: Request) => OgContext | Promise<OgContext>;
-  locale?: string;
-  request: Request;
-}
-
 export interface NextImageResponseFont {
   data: ArrayBuffer;
   name: string;
@@ -41,8 +26,6 @@ export interface NextImageResponseFont {
   weight?: 100 | 200 | 300 | 400 | 500 | 600 | 700 | 800 | 900;
 }
 
-const STABLE_CACHE_CONTROL =
-  "public, immutable, no-transform, max-age=31536000";
 const NEXT_IMAGE_RESPONSE_FONT_WEIGHTS = new Set<
   NextImageResponseFont["weight"]
 >([100, 200, 300, 400, 500, 600, 700, 800, 900]);
@@ -81,38 +64,6 @@ const normalizeGoogleFontWeights = (
   ];
 };
 
-export const applyStableCacheHeaders = (response: Response): Response => {
-  const headers = new Headers(response.headers);
-
-  if (!headers.has("Cache-Control")) {
-    headers.set("Cache-Control", STABLE_CACHE_CONTROL);
-  }
-
-  return new Response(response.body, {
-    headers,
-    status: response.status,
-    statusText: response.statusText,
-  });
-};
-
-export const resolveLocaleFromParams = (
-  params: Record<string, string> | undefined
-): string | undefined => {
-  if (!params) {
-    return undefined;
-  }
-
-  if (params.lang) {
-    return params.lang;
-  }
-
-  if (params.locale) {
-    return params.locale;
-  }
-
-  return Object.values(params).find(Boolean);
-};
-
 export const normalizeFontsForNextImageResponse = (
   fonts: Font[]
 ): NextImageResponseFont[] | undefined => {
@@ -144,34 +95,6 @@ export const loadGoogleFontForImageResponse = async (
   });
 
   return normalizeFontsForNextImageResponse(fonts) ?? [];
-};
-
-export const resolveOgRequestState = async ({
-  configuredFonts,
-  fallbackFontLocales,
-  getFallbackFontsForLocale,
-  getFontsForLocale,
-  getOgContextOverride,
-  locale,
-  request,
-}: ResolveOgRequestStateOptions): Promise<{
-  fonts: Font[];
-  ogContext: OgContext;
-}> => {
-  const ogContext = getOgContextOverride
-    ? await getOgContextOverride(request)
-    : getOgContext(request);
-  const fonts = await getFontsForRequest(
-    { locale, request },
-    {
-      fallbackFontLocales,
-      fonts: configuredFonts,
-      getFallbackFontsForLocale,
-      getFontsForLocale,
-    }
-  );
-
-  return { fonts, ogContext };
 };
 
 export const withOgRewrite = (

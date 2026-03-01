@@ -60,6 +60,16 @@ export interface OgAdapterOptions extends GetFontsForRequestOptions {
   loadDefaultFonts?: boolean;
 }
 
+interface ResolveOgRequestStateOptions {
+  configuredFonts?: Font[];
+  fallbackFontLocales?: string[];
+  getFallbackFontsForLocale?: GetFontsForLocale;
+  getFontsForLocale?: GetFontsForLocale;
+  getOgContextOverride?: (request: Request) => OgContext | Promise<OgContext>;
+  locale?: string;
+  request: Request;
+}
+
 interface FontConfig {
   family: string;
   weight: number;
@@ -98,6 +108,8 @@ export const INSTAGRAM: AspectRatioPreset = {
 const DEFAULT_PLATFORM = "generic";
 const GOOGLE_FONTS_USER_AGENT =
   "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)";
+const STABLE_CACHE_CONTROL =
+  "public, immutable, no-transform, max-age=31536000";
 
 const fontConfigByLocale: Record<string, FontConfig> = {
   ar: {
@@ -220,6 +232,52 @@ const resolvePresetForPlatform = (platform: string): AspectRatioPreset => {
 };
 
 const isDefined = <T>(value: T | undefined): value is T => value !== undefined;
+
+export const createCachedModuleLoader = <T>(
+  loadModule: () => Promise<T>
+): (() => Promise<T>) => {
+  let modulePromise: Promise<T> | undefined;
+
+  return () => {
+    if (!modulePromise) {
+      modulePromise = loadModule();
+    }
+
+    return modulePromise;
+  };
+};
+
+export const applyStableCacheHeaders = (response: Response): Response => {
+  const headers = new Headers(response.headers);
+
+  if (!headers.has("Cache-Control")) {
+    headers.set("Cache-Control", STABLE_CACHE_CONTROL);
+  }
+
+  return new Response(response.body, {
+    headers,
+    status: response.status,
+    statusText: response.statusText,
+  });
+};
+
+export const resolveLocaleFromParams = (
+  params: Record<string, string> | undefined
+): string | undefined => {
+  if (!params) {
+    return undefined;
+  }
+
+  if (params.lang) {
+    return params.lang;
+  }
+
+  if (params.locale) {
+    return params.locale;
+  }
+
+  return Object.values(params).find(Boolean);
+};
 
 const detectPlatformFromUserAgent = (userAgent: string): string => {
   const normalizedUserAgent = userAgent.toLowerCase();
@@ -574,6 +632,34 @@ export const getFontsForRequest = async (
   );
 
   return [...resolvedBaseFonts, ...resolvedFallbackFonts.flat()];
+};
+
+export const resolveOgRequestState = async ({
+  configuredFonts,
+  fallbackFontLocales,
+  getFallbackFontsForLocale,
+  getFontsForLocale,
+  getOgContextOverride,
+  locale,
+  request,
+}: ResolveOgRequestStateOptions): Promise<{
+  fonts: Font[];
+  ogContext: OgContext;
+}> => {
+  const ogContext = getOgContextOverride
+    ? await getOgContextOverride(request)
+    : getOgContext(request);
+  const fonts = await getFontsForRequest(
+    { locale, request },
+    {
+      fallbackFontLocales,
+      fonts: configuredFonts,
+      getFallbackFontsForLocale,
+      getFontsForLocale,
+    }
+  );
+
+  return { fonts, ogContext };
 };
 
 export const resolveFontSetup = async ({

@@ -1,14 +1,17 @@
 import type { ImageResponseOptions as TakumiImageResponseOptions } from "@takumi-rs/image-response";
+import {
+  applyStableCacheHeaders,
+  createCachedModuleLoader,
+  resolveLocaleFromParams,
+  resolveOgRequestState,
+} from "better-og";
 import type { OgAdapterOptions } from "better-og";
 import { ImageResponse as NextImageResponse } from "next/og";
 import type { ReactElement, ReactNode } from "react";
 
 import {
-  applyStableCacheHeaders,
   loadGoogleFontForImageResponse,
   normalizeFontsForNextImageResponse,
-  resolveOgRequestState,
-  resolveLocaleFromParams,
   withOgRewrite,
 } from "./utils";
 import type { OgRewriteOptions, OgRouteHandlerContext } from "./utils";
@@ -37,19 +40,10 @@ export interface NextOgHandlerOptions
   component: ReactNode;
   provider?: "next" | "takumi";
 }
-
-let takumiImageResponseModule: Promise<TakumiImageResponseModule> | undefined;
-
-const loadTakumiImageResponseModule = (): Promise<TakumiImageResponseModule> =>
-  import("@takumi-rs/image-response") as Promise<TakumiImageResponseModule>;
-
-const getTakumiImageResponseModule = (): Promise<TakumiImageResponseModule> => {
-  if (!takumiImageResponseModule) {
-    takumiImageResponseModule = loadTakumiImageResponseModule();
-  }
-
-  return takumiImageResponseModule;
-};
+const getTakumiImageResponseModule = createCachedModuleLoader(
+  () =>
+    import("@takumi-rs/image-response") as Promise<TakumiImageResponseModule>
+);
 
 export const createOgRouteHandler =
   (options: NextOgHandlerOptions) =>

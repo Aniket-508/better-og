@@ -1,14 +1,14 @@
 import type { ImageResponseOptions as TakumiWasmImageResponseOptions } from "@takumi-rs/image-response/wasm";
+import {
+  applyStableCacheHeaders,
+  resolveLocaleFromParams,
+  resolveOgRequestState,
+} from "better-og";
 import type { OgAdapterOptions } from "better-og";
 import { ImageResponse as NextImageResponse } from "next/og";
 import type { ReactElement, ReactNode } from "react";
 
-import {
-  applyStableCacheHeaders,
-  normalizeFontsForNextImageResponse,
-  resolveOgRequestState,
-  resolveLocaleFromParams,
-} from "./utils";
+import { normalizeFontsForNextImageResponse } from "./utils";
 import type { OgRouteHandlerContext } from "./utils";
 
 type NextProviderImageResponseOptions = Omit<

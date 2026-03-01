@@ -9,6 +9,7 @@ It exposes one core entry point plus adapter subpaths:
 - `better-og/next`
 - `better-og/next/edge`
 - `better-og/edge`
+- `better-og/tanstack-start`
 - `better-og/workers`
 
 ## Install
@@ -31,6 +32,12 @@ Next.js with Takumi provider:
 
 ```sh
 pnpm add better-og @takumi-rs/image-response next react
+```
+
+TanStack Start:
+
+```sh
+pnpm add better-og @takumi-rs/image-response react
 ```
 
 Next.js Edge with the low-level Takumi adapter:
@@ -222,6 +229,19 @@ export default {
 };
 ```
 
+TanStack Start (Takumi / Node runtime):
+
+```tsx
+import { createOgRouteHandler } from "better-og/tanstack-start";
+
+export const GET = createOgRouteHandler({
+  component: <div>Hello from TanStack Start</div>,
+  fallbackFontLocales: ["ja"],
+});
+```
+
+Use that in a TanStack Start route handler that receives `{ request, params }`.
+
 ## Generic WASM Runtimes
 
 ```tsx
@@ -234,8 +254,9 @@ const handler = createOgHandler({
 });
 ```
 
-`better-og/next`, `better-og/next/edge`, `better-og/edge`, and
-`better-og/workers` all forward the remaining `ImageResponse` options directly.
+`better-og/next`, `better-og/next/edge`, `better-og/edge`,
+`better-og/tanstack-start`, and `better-og/workers` all forward the remaining
+`ImageResponse` options directly.
 
 `better-og/next` defaults to `provider: "next"`, which uses Next.js
 `ImageResponse` from `next/og`. It also supports `provider: "takumi"` for the
@@ -264,10 +285,7 @@ export const GET = createOgHandler({
 });
 ```
 
-## Takumi References
+## Credits
 
-These are the official Takumi pages this package aligns with:
-
+- [next/og docs](https://nextjs.org/docs/app/api-reference/functions/image-response)
 - [Takumi docs](https://takumi.kane.tw/docs/)
-- [Takumi: From Next.js ImageResponse](https://takumi.kane.tw/docs/migration/image-response/)
-- [Takumi: Cloudflare Workers](https://takumi.kane.tw/docs/integrations/cloudflare-workers)

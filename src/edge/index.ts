@@ -1,6 +1,10 @@
 import type { ImageResponseOptions } from "@takumi-rs/image-response/wasm";
-import { getFontsForRequest, getOgContext } from "better-og";
-import type { OgAdapterOptions, OgContext } from "better-og";
+import {
+  applyStableCacheHeaders,
+  createCachedModuleLoader,
+  resolveOgRequestState,
+} from "better-og";
+import type { OgAdapterOptions } from "better-og";
 import type { ReactNode } from "react";
 
 type EdgeWasmImageResponseOptions = Extract<
@@ -26,36 +30,10 @@ export interface EdgeOgHandlerOptions
   component: ReactNode;
   module: EdgeWasmModule;
 }
-
-let edgeImageResponseModule: Promise<EdgeImageResponseModule> | undefined;
-
-const STABLE_CACHE_CONTROL =
-  "public, immutable, no-transform, max-age=31536000";
-
-const loadEdgeImageResponseModule = (): Promise<EdgeImageResponseModule> =>
-  import("@takumi-rs/image-response/wasm") as Promise<EdgeImageResponseModule>;
-
-const getEdgeImageResponseModule = (): Promise<EdgeImageResponseModule> => {
-  if (!edgeImageResponseModule) {
-    edgeImageResponseModule = loadEdgeImageResponseModule();
-  }
-
-  return edgeImageResponseModule;
-};
-
-const applyStableCacheHeaders = (response: Response): Response => {
-  const headers = new Headers(response.headers);
-
-  if (!headers.has("Cache-Control")) {
-    headers.set("Cache-Control", STABLE_CACHE_CONTROL);
-  }
-
-  return new Response(response.body, {
-    headers,
-    status: response.status,
-    statusText: response.statusText,
-  });
-};
+const getEdgeImageResponseModule = createCachedModuleLoader(
+  () =>
+    import("@takumi-rs/image-response/wasm") as Promise<EdgeImageResponseModule>
+);
 
 export const createOgHandler =
   (options: EdgeOgHandlerOptions) =>
@@ -80,18 +58,15 @@ export const createOgHandler =
     }
 
     const locale = localeFromRequest?.(request);
-    const ogContext: OgContext = getOgContextOverride
-      ? await getOgContextOverride(request)
-      : getOgContext(request);
-    const fonts = await getFontsForRequest(
-      { locale, request },
-      {
-        fallbackFontLocales,
-        fonts: configuredFonts,
-        getFallbackFontsForLocale,
-        getFontsForLocale,
-      }
-    );
+    const { fonts, ogContext } = await resolveOgRequestState({
+      configuredFonts,
+      fallbackFontLocales,
+      getFallbackFontsForLocale,
+      getFontsForLocale,
+      getOgContextOverride,
+      locale,
+      request,
+    });
     const { ImageResponse } = await getEdgeImageResponseModule();
     const response = new ImageResponse(component, {
       ...imageResponseOptions,
