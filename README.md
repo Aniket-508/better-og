@@ -125,16 +125,9 @@ import { createOgHandler } from "better-og/edge";
 export const runtime = "edge";
 export const revalidate = false;
 
-const loadNextWasmModule = async () => {
-  const nextModule = await import("@takumi-rs/wasm/next");
-
-  return nextModule.default;
-};
-
 export const GET = createOgHandler({
   component: <div>Hello from Edge</div>,
   fallbackFonts: true,
-  module: loadNextWasmModule,
 });
 ```
 
@@ -150,10 +143,9 @@ const handler = createOgHandler({
 });
 ```
 
-`better-og/edge` is the single WASM adapter. You provide Takumi's runtime-
-specific `module` input yourself. For Next.js Edge routes, pass
-`@takumi-rs/wasm/next`. For other runtimes, pass the module shape that Takumi
-documents for that environment.
+`better-og/edge` is the single WASM adapter. By default it initializes Takumi's
+published WASM package internally. If your runtime needs an explicit override,
+you can still pass `module` with the runtime-specific input Takumi expects.
 
 ## Takumi References
 

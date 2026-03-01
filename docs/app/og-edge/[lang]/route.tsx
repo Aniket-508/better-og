@@ -15,12 +15,6 @@ const getLocaleFromRequest = (request: Request): string | undefined => {
   return locale || undefined;
 };
 
-const loadNextWasmModule = async () => {
-  const nextModule = await import("@takumi-rs/wasm/next");
-
-  return nextModule.default;
-};
-
 const handler = createOgHandler({
   component: (
     <div
@@ -80,7 +74,6 @@ const handler = createOgHandler({
   ),
   fallbackFonts: true,
   localeFromRequest: getLocaleFromRequest,
-  module: loadNextWasmModule,
 });
 
 export const GET = handler;
