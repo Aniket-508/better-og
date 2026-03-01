@@ -63,9 +63,10 @@ export const createOgHandler =
   async (request: Request): Promise<Response> => {
     const {
       component,
-      fallbackFonts,
+      fallbackFontLocales,
       fonts: configuredFonts,
       format,
+      getFallbackFontsForLocale,
       getFontsForLocale,
       getOgContext: getOgContextOverride,
       localeFromRequest,
@@ -87,8 +88,9 @@ export const createOgHandler =
     const fonts = await getFontsForRequest(
       { locale, request },
       {
-        fallbackFonts,
+        fallbackFontLocales,
         fonts: configuredFonts,
+        getFallbackFontsForLocale,
         getFontsForLocale,
       }
     );

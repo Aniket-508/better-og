@@ -29,12 +29,37 @@ export interface LoadGoogleFontsOptions {
   style?: string;
 }
 
+interface BuildFontFamilyStackOptions {
+  baseFamily?: string;
+  fallbackFamilies?: string[];
+  fallbackFontLocales?: string[];
+}
+
+export interface ResolveFontSetupOptions extends GetFontsForRequestOptions {
+  baseFamily?: string;
+  baseFonts?: Font[];
+  fallbackFamilies?: string[];
+  locale?: string;
+  request?: Request;
+}
+
+export interface ResolvedFontSetup {
+  families: ResolvedFontSetupFamilies;
+  fontFamily?: string;
+  fonts: Font[];
+}
+
+export interface ResolvedFontSetupFamilies {
+  base?: string;
+  locales: Record<string, string>;
+}
+
 export type GetFontsForLocale = (locale: string) => Font[] | Promise<Font[]>;
 
 export interface GetFontsForRequestOptions {
   fonts?: Font[];
   getFontsForLocale?: GetFontsForLocale;
-  fallbackFonts?: boolean;
+  getFallbackFontsForLocale?: GetFontsForLocale;
   fallbackFontLocales?: string[];
 }
 
@@ -396,21 +421,125 @@ const loadFallbackFontsForLocale = (locale: string): Promise<Font[]> => {
   );
 };
 
+const loadResolvedFallbackFontsForLocale = async (
+  locale: string,
+  getFallbackFontsForLocale: GetFontsForLocale | undefined,
+  allowBuiltInFallback: boolean
+): Promise<Font[]> => {
+  if (getFallbackFontsForLocale) {
+    const configuredFonts = await getFallbackFontsForLocale(locale);
+
+    if (configuredFonts.length > 0) {
+      return configuredFonts;
+    }
+  }
+
+  if (!allowBuiltInFallback) {
+    return [];
+  }
+
+  return loadFallbackFontsForLocale(locale);
+};
+
 const resolveRequestedFallbackLocales = (
-  locale: string | undefined,
   fallbackFontLocales: string[] | undefined
 ): string[] => {
   let requestedFallbackLocales: string[] = [];
 
   if (fallbackFontLocales && fallbackFontLocales.length > 0) {
     requestedFallbackLocales = fallbackFontLocales;
-  } else if (locale) {
-    requestedFallbackLocales = [locale];
   }
 
   return [
     ...new Set(requestedFallbackLocales.map(normalizeLocale).filter(isDefined)),
   ];
+};
+
+const resolveBuiltInFallbackFamilies = (
+  fallbackFontLocales: string[] | undefined
+): string[] =>
+  resolveRequestedFallbackLocales(fallbackFontLocales)
+    .map((locale) => fontConfigByLocale[locale]?.family)
+    .filter(isDefined);
+
+const resolveFirstNamedFontFamily = (fonts: Font[]): string | undefined => {
+  for (const font of fonts) {
+    const fontFamily = font.name?.trim();
+
+    if (fontFamily) {
+      return fontFamily;
+    }
+  }
+
+  return undefined;
+};
+
+const resolveFallbackFamilyForLocale = async (
+  locale: string,
+  getFallbackFontsForLocale: GetFontsForLocale | undefined
+): Promise<string | undefined> => {
+  if (getFallbackFontsForLocale) {
+    const configuredFonts = await getFallbackFontsForLocale(locale);
+    const configuredFamily = resolveFirstNamedFontFamily(configuredFonts);
+
+    if (configuredFamily) {
+      return configuredFamily;
+    }
+
+    if (configuredFonts.length > 0) {
+      return undefined;
+    }
+  }
+
+  return fontConfigByLocale[locale]?.family;
+};
+
+const resolveFallbackFamiliesByLocale = async (
+  fallbackFontLocales: string[] | undefined,
+  getFallbackFontsForLocale: GetFontsForLocale | undefined
+): Promise<Record<string, string>> => {
+  const resolvedFallbackLocales =
+    resolveRequestedFallbackLocales(fallbackFontLocales);
+  const localeFamilies: Record<string, string> = {};
+
+  for (const fallbackLocale of resolvedFallbackLocales) {
+    const fallbackFamily = await resolveFallbackFamilyForLocale(
+      fallbackLocale,
+      getFallbackFontsForLocale
+    );
+
+    if (fallbackFamily) {
+      localeFamilies[fallbackLocale] = fallbackFamily;
+    }
+  }
+
+  return localeFamilies;
+};
+
+const resolveLoadedFontFamilies = (fonts: Font[]): string[] =>
+  [...new Set(fonts.map((font) => font.name?.trim()).filter(isDefined))].filter(
+    Boolean
+  );
+
+const buildFontFamilyStack = ({
+  baseFamily,
+  fallbackFamilies,
+  fallbackFontLocales,
+}: BuildFontFamilyStackOptions): string | undefined => {
+  const families = [
+    ...(baseFamily ? [baseFamily] : []),
+    ...resolveBuiltInFallbackFamilies(fallbackFontLocales),
+    ...(fallbackFamilies ?? []),
+  ];
+  const uniqueFamilies = [
+    ...new Set(families.map((family) => family.trim())),
+  ].filter(Boolean);
+
+  if (uniqueFamilies.length === 0) {
+    return undefined;
+  }
+
+  return uniqueFamilies.join(", ");
 };
 
 export const clearFontCache = (): void => {
@@ -463,25 +592,80 @@ export const getFontsForRequest = async (
     locale && options.getFontsForLocale
       ? await options.getFontsForLocale(locale)
       : (options.fonts ?? []);
-
-  if (!options.fallbackFonts) {
-    return [...baseFonts];
-  }
+  const resolvedBaseFonts =
+    baseFonts.length > 0
+      ? [...baseFonts]
+      : await loadFallbackFontsForLocale("en");
+  const usesDefaultEnglishBase = baseFonts.length === 0;
 
   const fallbackLocales = resolveRequestedFallbackLocales(
-    locale,
     options.fallbackFontLocales
   );
 
   if (fallbackLocales.length === 0) {
-    return [...baseFonts];
+    return resolvedBaseFonts;
   }
 
-  const fallbackFonts = await Promise.all(
+  const resolvedFallbackFonts = await Promise.all(
     fallbackLocales.map((fallbackLocale) =>
-      loadFallbackFontsForLocale(fallbackLocale)
+      loadResolvedFallbackFontsForLocale(
+        fallbackLocale,
+        options.getFallbackFontsForLocale,
+        !(usesDefaultEnglishBase && fallbackLocale === "en")
+      )
     )
   );
 
-  return [...baseFonts, ...fallbackFonts.flat()];
+  return [...resolvedBaseFonts, ...resolvedFallbackFonts.flat()];
+};
+
+export const resolveFontSetup = async ({
+  baseFamily,
+  baseFonts,
+  fallbackFamilies,
+  fallbackFontLocales,
+  getFallbackFontsForLocale,
+  getFontsForLocale,
+  locale,
+  request,
+}: ResolveFontSetupOptions): Promise<ResolvedFontSetup> => {
+  const fonts = await getFontsForRequest(
+    { locale, request },
+    {
+      fallbackFontLocales,
+      fonts: baseFonts,
+      getFallbackFontsForLocale,
+      getFontsForLocale,
+    }
+  );
+  const localeFamilies = await resolveFallbackFamiliesByLocale(
+    fallbackFontLocales,
+    getFallbackFontsForLocale
+  );
+  const normalizedBaseFamily = baseFamily?.trim() || undefined;
+  const loadedFontFamilies = resolveLoadedFontFamilies(fonts);
+  const resolvedBaseFamily =
+    normalizedBaseFamily ?? loadedFontFamilies.find(Boolean);
+  const resolvedLocaleFamilies = Object.values(localeFamilies);
+  const resolvedFallbackFamilies = [
+    ...resolvedLocaleFamilies,
+    ...loadedFontFamilies.filter(
+      (family) =>
+        family !== resolvedBaseFamily &&
+        !resolvedLocaleFamilies.includes(family)
+    ),
+    ...(fallbackFamilies ?? []),
+  ];
+
+  return {
+    families: {
+      base: resolvedBaseFamily,
+      locales: localeFamilies,
+    },
+    fontFamily: buildFontFamilyStack({
+      baseFamily: resolvedBaseFamily,
+      fallbackFamilies: resolvedFallbackFamilies,
+    }),
+    fonts,
+  };
 };

@@ -1,3 +1,4 @@
+import { resolveFontSetup } from "better-og";
 import {
   createOgRouteHandler,
   loadGoogleFontForImageResponse,
@@ -5,6 +6,16 @@ import {
 
 export const runtime = "nodejs";
 export const revalidate = false;
+
+const fallbackFontLocales = ["ja", "ar"];
+const fontSetup = await resolveFontSetup({
+  baseFamily: "Geist",
+  baseFonts: await loadGoogleFontForImageResponse({
+    family: "Geist",
+    weights: [400, 700],
+  }),
+  fallbackFontLocales,
+});
 
 const handler = createOgRouteHandler({
   component: (
@@ -16,7 +27,7 @@ const handler = createOgRouteHandler({
         color: "white",
         display: "flex",
         flexDirection: "column",
-        fontFamily: "Geist",
+        fontFamily: fontSetup.families.base ?? fontSetup.fontFamily,
         gap: 24,
         height: "100%",
         justifyContent: "space-between",
@@ -55,20 +66,16 @@ const handler = createOgRouteHandler({
       <div
         style={{
           display: "flex",
+          fontFamily: fontSetup.families.locales.ja ?? fontSetup.families.base,
           fontSize: 32,
           opacity: 0.92,
         }}
       >
-        Locale-aware fallback fonts are enabled for this route.
+        のコストを 溜め込むのはやめよう
       </div>
     </div>
   ),
-  fallbackFontLocales: ["ja", "ar"],
-  fallbackFonts: true,
-  fonts: await loadGoogleFontForImageResponse({
-    family: "Geist",
-    weights: [400, 700],
-  }),
+  fonts: fontSetup.fonts,
 });
 
 export const GET = handler;

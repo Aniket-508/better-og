@@ -1,8 +1,19 @@
+import { resolveFontSetup } from "better-og";
 import { loadGoogleFontForImageResponse } from "better-og/next";
 import { createOgRouteHandler } from "better-og/next/edge";
 
 export const runtime = "edge";
 export const revalidate = false;
+
+const fallbackFontLocales = ["ja", "ar"];
+const fontSetup = await resolveFontSetup({
+  baseFamily: "Geist",
+  baseFonts: await loadGoogleFontForImageResponse({
+    family: "Geist",
+    weights: [400, 700],
+  }),
+  fallbackFontLocales,
+});
 
 const handler = createOgRouteHandler({
   component: (
@@ -14,7 +25,7 @@ const handler = createOgRouteHandler({
         color: "white",
         display: "flex",
         flexDirection: "column",
-        fontFamily: "Geist",
+        fontFamily: fontSetup.fontFamily,
         gap: 24,
         height: "100%",
         justifyContent: "space-between",
@@ -53,20 +64,16 @@ const handler = createOgRouteHandler({
       <div
         style={{
           display: "flex",
+          fontFamily: fontSetup.families.locales.ja ?? fontSetup.families.base,
           fontSize: 32,
           opacity: 0.92,
         }}
       >
-        This route uses better-og/next/edge with the Next provider by default.
+        のコストを 溜め込むのはやめよう
       </div>
     </div>
   ),
-  fallbackFontLocales: ["ja", "ar"],
-  fallbackFonts: true,
-  fonts: await loadGoogleFontForImageResponse({
-    family: "Geist",
-    weights: [400, 700],
-  }),
+  fonts: fontSetup.fonts,
 });
 
 export const GET = handler;

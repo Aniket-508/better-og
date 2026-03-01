@@ -26,7 +26,8 @@ export interface LoadGoogleFontForImageResponseOptions extends Pick<
 
 interface ResolveOgRequestStateOptions {
   configuredFonts?: Font[];
-  fallbackFonts?: boolean;
+  fallbackFontLocales?: string[];
+  getFallbackFontsForLocale?: GetFontsForLocale;
   getFontsForLocale?: GetFontsForLocale;
   getOgContextOverride?: (request: Request) => OgContext | Promise<OgContext>;
   locale?: string;
@@ -147,7 +148,8 @@ export const loadGoogleFontForImageResponse = async (
 
 export const resolveOgRequestState = async ({
   configuredFonts,
-  fallbackFonts,
+  fallbackFontLocales,
+  getFallbackFontsForLocale,
   getFontsForLocale,
   getOgContextOverride,
   locale,
@@ -162,8 +164,9 @@ export const resolveOgRequestState = async ({
   const fonts = await getFontsForRequest(
     { locale, request },
     {
-      fallbackFonts,
+      fallbackFontLocales,
       fonts: configuredFonts,
+      getFallbackFontsForLocale,
       getFontsForLocale,
     }
   );

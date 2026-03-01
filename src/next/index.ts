@@ -59,8 +59,9 @@ export const createOgRouteHandler =
   ): Promise<Response> => {
     const {
       component,
-      fallbackFonts,
+      fallbackFontLocales,
       fonts: configuredFonts,
+      getFallbackFontsForLocale,
       format,
       getFontsForLocale,
       getOgContext: getOgContextOverride,
@@ -74,7 +75,8 @@ export const createOgRouteHandler =
       localeFromRequest?.(request) ?? resolveLocaleFromParams(params);
     const { fonts, ogContext } = await resolveOgRequestState({
       configuredFonts,
-      fallbackFonts,
+      fallbackFontLocales,
+      getFallbackFontsForLocale,
       getFontsForLocale,
       getOgContextOverride,
       locale,

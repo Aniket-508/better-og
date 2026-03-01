@@ -52,6 +52,7 @@ The root entry exports the runtime-agnostic helpers:
 - `STANDARD`, `SQUARE`, `PORTRAIT`, `INSTAGRAM`
 - `getOgContext(request)`
 - `getFontsForRequest(context, options)`
+- `resolveFontSetup(options)`
 - `clearFontCache()`
 - `Font`, `OgContext`, and `OgAdapterOptions`
 
@@ -83,11 +84,17 @@ Presets:
 
 1. `getFontsForLocale(locale)` if you provide one
 2. Otherwise `fonts`
-3. Built-in fallback fonts when `fallbackFonts: true`
+3. If neither returns anything, built-in English `Noto Sans`
 
-If you want to preload only specific locale fallbacks, pass
-`fallbackFontLocales: ["ja", "ar"]`. When omitted, `better-og` falls back to
-the request locale only.
+If you pass `fallbackFontLocales: ["ja", "ar"]`, those locale fallbacks are
+appended on top of the base fonts. When `fallbackFontLocales` is omitted or an
+empty array, only your provided fonts are used, or the default English
+fallback if you did not provide any.
+
+If you want to source fallback locale fonts from your own repo or storage,
+provide `getFallbackFontsForLocale(locale)`. That hook is checked first for
+each requested fallback locale, and the built-in Noto mapping is only used when
+your hook returns no fonts for that locale.
 
 Built-in locale fallbacks:
 
@@ -101,23 +108,64 @@ Built-in locale fallbacks:
 Fallback fonts are fetched from Google Fonts CSS, resolved to font files, and
 cached in memory by locale.
 
+If you want one helper that returns both the loaded `fonts` and the matching
+`fontFamily` stack, use `resolveFontSetup()`. It also returns locale-specific
+family names in `fontSetup.families.locales`, so single-language routes can use
+the exact family for that locale on the text node they render.
+
 ## Next.js
 
 Node runtime:
 
 ```tsx
-import { createOgRouteHandler } from "better-og/next";
+import { resolveFontSetup } from "better-og";
+import {
+  createOgRouteHandler,
+  loadGoogleFontForImageResponse,
+} from "better-og/next";
 
 export const runtime = "nodejs";
 export const revalidate = false;
 
+const fontSetup = await resolveFontSetup({
+  baseFamily: "Geist",
+  baseFonts: await loadGoogleFontForImageResponse({
+    family: "Geist",
+    weights: [400, 700],
+  }),
+  fallbackFontLocales: ["ja"],
+});
+
 export const GET = createOgRouteHandler({
-  component: <div>Hello from Node</div>,
-  fallbackFonts: true,
+  component: (
+    <div
+      style={{ fontFamily: fontSetup.families.base ?? fontSetup.fontFamily }}
+    >
+      <span
+        style={{
+          fontFamily:
+            fontSetup.families.locales.ja ??
+            fontSetup.families.base ??
+            fontSetup.fontFamily,
+        }}
+      >
+        のコストを 溜め込むのはやめよう
+      </span>
+    </div>
+  ),
+  fonts: fontSetup.fonts,
   // provider defaults to "next"
   ...rest,
 });
 ```
+
+If you want repo-local fallback fonts in that flow, pass
+`getFallbackFontsForLocale(locale)` into `resolveFontSetup()`.
+
+If you need complex-script shaping or advanced OpenType substitution support
+(for example Arabic), set `provider: "takumi"` on the Node adapter. The
+default `next/og` provider can fail on some fonts that rely on unsupported GSUB
+lookups.
 
 When you use `better-og/next`, externalize Takumi's Node backend so the
 optional `provider: "takumi"` path stays compatible with Next's build:
@@ -142,7 +190,7 @@ export const revalidate = false;
 
 export const GET = createOgRouteHandler({
   component: <div>Hello from Edge</div>,
-  fallbackFonts: true,
+  fallbackFontLocales: ["ja", "ar"],
   // provider defaults to "next"
   ...rest,
 });
@@ -158,7 +206,7 @@ export const revalidate = false;
 
 export const GET = createOgHandler({
   component: <div>Hello from Edge</div>,
-  fallbackFonts: true,
+  fallbackFontLocales: ["ja", "ar"],
   module: wasmModule,
   ...rest,
 });
@@ -171,7 +219,7 @@ import { createOgHandler } from "better-og/workers";
 
 const handler = createOgHandler({
   component: <div>Hello from Workers</div>,
-  fallbackFonts: true,
+  fallbackFontLocales: ["ja", "ar"],
   ...rest,
 });
 
@@ -187,7 +235,7 @@ import { createOgHandler } from "better-og/edge";
 
 const handler = createOgHandler({
   component: <div>Hello</div>,
-  fallbackFonts: true,
+  fallbackFontLocales: ["ja", "ar"],
   module: wasmModule,
 });
 ```

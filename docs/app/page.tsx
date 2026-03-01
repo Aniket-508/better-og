@@ -13,15 +13,16 @@ const HomePage = () => (
     <h1 style={{ margin: 0 }}>better-og docs</h1>
     <p style={{ lineHeight: 1.6, margin: 0 }}>
       This app exposes both OG runtime modes: `/og/[lang]` uses `better-og/next`
-      (Node runtime) and `/og-edge/[lang]` uses `better-og/next/edge` (Edge
-      runtime). Both Next adapters default to the built-in `next/og` provider,
-      and the proxy rewrites both paths to add an `aspect_ratio` query string
-      based on the caller&apos;s user agent.
+      (Node runtime) with the Takumi provider so complex-script fallbacks such
+      as Arabic shape correctly, and `/og-edge/[lang]` uses
+      `better-og/next/edge` (Edge runtime) with the built-in `next/og` provider.
+      The proxy rewrites both paths to add an `aspect_ratio` query string based
+      on the caller&apos;s user agent.
     </p>
     <p style={{ lineHeight: 1.6, margin: 0 }}>
       Try loading <code>/og/en</code>, <code>/og-edge/en</code>,{" "}
-      <code>/og/ja</code>, or <code>/og-edge/ar</code> directly to compare the
-      Node and Edge handlers.
+      <code>/og/ja</code>, or <code>/og/ar</code> directly to compare the Node
+      and Edge handlers.
     </p>
     <Image
       alt="Sample OG card"
