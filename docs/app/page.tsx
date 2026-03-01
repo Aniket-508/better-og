@@ -12,10 +12,10 @@ const HomePage = () => (
   >
     <h1 style={{ margin: 0 }}>better-og docs</h1>
     <p style={{ lineHeight: 1.6, margin: 0 }}>
-      This app exposes both Next adapter modes: `/og/[lang]` uses
-      `better-og/next` (Node runtime) and `/og-edge/[lang]` uses
-      `better-og/next/edge` (Edge runtime). The proxy rewrites both paths to add
-      an `aspect_ratio` query string based on the caller&apos;s user agent.
+      This app exposes both OG runtime modes: `/og/[lang]` uses `better-og/next`
+      (Node runtime) and `/og-edge/[lang]` uses `better-og/edge` with
+      `@takumi-rs/wasm/next` passed explicitly. The proxy rewrites both paths to
+      add an `aspect_ratio` query string based on the caller&apos;s user agent.
     </p>
     <p style={{ lineHeight: 1.6, margin: 0 }}>
       Try loading <code>/og/en</code>, <code>/og-edge/en</code>,{" "}

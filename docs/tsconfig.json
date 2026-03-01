@@ -15,13 +15,7 @@
     "strictNullChecks": true,
     "tsBuildInfoFile": "./tsconfig.tsbuildinfo"
   },
-  "include": [
-    "next-env.d.ts",
-    "app/**/*.ts",
-    "app/**/*.tsx",
-    "proxy.ts",
-    ".next/types/**/*.ts"
-  ],
+  "include": ["next-env.d.ts", "app/**/*.ts", "app/**/*.tsx", "proxy.ts"],
   "exclude": ["node_modules"],
   "references": [{ "path": "../tsconfig.lib.json" }]
 }

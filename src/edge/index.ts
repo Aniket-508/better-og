@@ -3,7 +3,11 @@ import { getFontsForRequest, getOgContext } from "better-og";
 import type { OgAdapterOptions, OgContext } from "better-og";
 import type { ReactNode } from "react";
 
-type EdgeModule = Extract<ImageResponseOptions, { module: unknown }>["module"];
+type ResolvedEdgeModule = Extract<
+  ImageResponseOptions,
+  { module: unknown }
+>["module"];
+type EdgeModule = ResolvedEdgeModule | (() => ResolvedEdgeModule);
 type EdgeFonts = Extract<ImageResponseOptions, { module: unknown }>["fonts"];
 interface EdgeImageResponseModule {
   ImageResponse: new (
@@ -47,6 +51,9 @@ const getEdgeImageResponseModule = (): Promise<EdgeImageResponseModule> => {
   return edgeImageResponseModule;
 };
 
+const resolveEdgeModule = (module: EdgeModule): ResolvedEdgeModule =>
+  typeof module === "function" ? module() : module;
+
 export const createOgHandler =
   (options: EdgeOgHandlerOptions) =>
   async (request: Request): Promise<Response> => {
@@ -61,7 +68,7 @@ export const createOgHandler =
       fonts: fonts as EdgeFonts,
       format: options.format ?? "webp",
       height: ogContext.height,
-      module: options.module,
+      module: resolveEdgeModule(options.module),
       width: ogContext.width,
     });
 

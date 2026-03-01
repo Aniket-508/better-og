@@ -20,11 +20,6 @@
       "import": "./dist/next/index.js",
       "default": "./dist/next/index.js"
     },
-    "./next/edge": {
-      "types": "./dist/next/edge.d.ts",
-      "import": "./dist/next/edge.js",
-      "default": "./dist/next/edge.js"
-    },
     "./edge": {
       "types": "./dist/edge/index.d.ts",
       "import": "./dist/edge/index.js",

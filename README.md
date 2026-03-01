@@ -7,7 +7,6 @@ It exposes one core entry point plus adapter subpaths:
 
 - `better-og`
 - `better-og/next`
-- `better-og/next/edge`
 - `better-og/edge`
 
 ## Install
@@ -121,19 +120,23 @@ export default nextConfig;
 Edge runtime:
 
 ```tsx
-import { createOgRouteHandler } from "better-og/next/edge";
+import { createOgHandler } from "better-og/edge";
 
 export const runtime = "edge";
 export const revalidate = false;
 
-export const GET = createOgRouteHandler({
+const loadNextWasmModule = async () => {
+  const nextModule = await import("@takumi-rs/wasm/next");
+
+  return nextModule.default;
+};
+
+export const GET = createOgHandler({
   component: <div>Hello from Edge</div>,
   fallbackFonts: true,
+  module: loadNextWasmModule,
 });
 ```
-
-`better-og/next/edge` auto-wires Takumi's documented Next.js WASM module entry,
-so you do not pass a `module` option yourself.
 
 ## Generic WASM Runtimes
 
@@ -147,12 +150,10 @@ const handler = createOgHandler({
 });
 ```
 
-For `better-og/edge`, `module` is the runtime-specific WASM module value that
-Takumi expects in that environment. `better-og` does not guess it because Takumi
-uses different WASM entry/loading patterns for different runtimes.
-
-Use `better-og/next/edge` for Next.js. For other runtimes, determine the right
-WASM module input from the official Takumi docs for that runtime.
+`better-og/edge` is the single WASM adapter. You provide Takumi's runtime-
+specific `module` input yourself. For Next.js Edge routes, pass
+`@takumi-rs/wasm/next`. For other runtimes, pass the module shape that Takumi
+documents for that environment.
 
 ## Takumi References
 

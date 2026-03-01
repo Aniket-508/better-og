@@ -1,10 +1,27 @@
-import { createOgRouteHandler } from "better-og/next/edge";
+import { createOgHandler } from "better-og/edge";
 
 export const dynamic = "force-dynamic";
 export const runtime = "edge";
 export const revalidate = false;
 
-const handler = createOgRouteHandler({
+const getLocaleFromRequest = (request: Request): string | undefined => {
+  const { pathname } = new URL(request.url);
+  const [, routeName, locale] = pathname.split("/");
+
+  if (routeName !== "og-edge") {
+    return undefined;
+  }
+
+  return locale || undefined;
+};
+
+const loadNextWasmModule = async () => {
+  const nextModule = await import("@takumi-rs/wasm/next");
+
+  return nextModule.default;
+};
+
+const handler = createOgHandler({
   component: (
     <div
       style={{
@@ -56,11 +73,14 @@ const handler = createOgRouteHandler({
           opacity: 0.92,
         }}
       >
-        This route uses better-og/next/edge and auto-wires the WASM module.
+        This route uses better-og/edge and passes the Next WASM module
+        explicitly.
       </div>
     </div>
   ),
   fallbackFonts: true,
+  localeFromRequest: getLocaleFromRequest,
+  module: loadNextWasmModule,
 });
 
 export const GET = handler;
