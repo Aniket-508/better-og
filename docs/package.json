@@ -1,0 +1,19 @@
+{
+  "name": "better-og-docs",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start"
+  },
+  "dependencies": {
+    "@takumi-rs/image-response": ">=0",
+    "@takumi-rs/wasm": ">=0",
+    "better-og": "workspace:*",
+    "next": ">=14",
+    "react": ">=18",
+    "react-dom": ">=18"
+  }
+}

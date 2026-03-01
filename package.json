@@ -1,0 +1,79 @@
+{
+  "name": "better-og",
+  "version": "0.1.0",
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "type": "module",
+  "sideEffects": false,
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
+    },
+    "./next": {
+      "types": "./dist/next/index.d.ts",
+      "import": "./dist/next/index.js",
+      "default": "./dist/next/index.js"
+    },
+    "./next/edge": {
+      "types": "./dist/next/edge.d.ts",
+      "import": "./dist/next/edge.js",
+      "default": "./dist/next/edge.js"
+    },
+    "./edge": {
+      "types": "./dist/edge/index.d.ts",
+      "import": "./dist/edge/index.js",
+      "default": "./dist/edge/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc -b tsconfig.lib.json",
+    "clean": "rm -rf dist tsconfig.lib.tsbuildinfo docs/.next docs/tsconfig.tsbuildinfo",
+    "prepack": "pnpm build",
+    "typecheck": "tsc -b tsconfig.json --pretty",
+    "check": "ultracite check",
+    "fix": "ultracite fix",
+    "prepare": "lefthook install"
+  },
+  "devDependencies": {
+    "@takumi-rs/image-response": ">=0",
+    "@takumi-rs/wasm": ">=0",
+    "@types/node": ">=20",
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3",
+    "lefthook": "^2.1.1",
+    "next": ">=14",
+    "oxfmt": "^0.35.0",
+    "oxlint": "^1.50.0",
+    "react": ">=18",
+    "react-dom": ">=18",
+    "typescript": ">=5.5",
+    "ultracite": "7.2.4"
+  },
+  "peerDependencies": {
+    "@takumi-rs/image-response": ">=0",
+    "@takumi-rs/wasm": ">=0",
+    "next": ">=14",
+    "react": ">=18"
+  },
+  "peerDependenciesMeta": {
+    "@takumi-rs/image-response": {
+      "optional": true
+    },
+    "@takumi-rs/wasm": {
+      "optional": true
+    },
+    "next": {
+      "optional": true
+    },
+    "react": {
+      "optional": true
+    }
+  },
+  "packageManager": "pnpm@10.29.1"
+}
