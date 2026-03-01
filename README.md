@@ -7,6 +7,7 @@ It exposes one core entry point plus adapter subpaths:
 
 - `better-og`
 - `better-og/next`
+- `better-og/next/edge`
 - `better-og/edge`
 
 ## Install
@@ -118,7 +119,22 @@ const nextConfig: NextConfig = {
 export default nextConfig;
 ```
 
-Edge runtime:
+Next.js Edge runtime:
+
+```tsx
+import { createOgRouteHandler } from "better-og/next/edge";
+
+export const runtime = "edge";
+export const revalidate = false;
+
+export const GET = createOgRouteHandler({
+  component: <div>Hello from Edge</div>,
+  fallbackFonts: true,
+  ...rest,
+});
+```
+
+Low-level generic WASM runtime:
 
 ```tsx
 import { createOgHandler } from "better-og/edge";
@@ -145,14 +161,15 @@ const handler = createOgHandler({
 });
 ```
 
-`better-og/next` and `better-og/edge` both forward the remaining Takumi
-`ImageResponse` options directly, so you can pass things like `headers`,
-`status`, `statusText`, `jsx`, `quality`, `signal` (Node), and
+`better-og/next`, `better-og/next/edge`, and `better-og/edge` all forward the
+remaining Takumi `ImageResponse` options directly, so you can pass things like
+`headers`, `status`, `statusText`, `jsx`, `quality`, `signal` (Node), and
 `persistentImages` without a separate nested object.
 
-`better-og/edge` is the single WASM adapter. If your runtime needs an explicit
-Takumi module input, you can pass `module` with the runtime-specific value
-Takumi expects.
+`better-og/next/edge` is the Next.js-specific Edge adapter and defaults to
+Takumi's `@takumi-rs/wasm/next` module. `better-og/edge` remains the low-level
+WASM adapter and requires an explicit `module`. Pass the runtime-specific Takumi
+module input your environment expects.
 
 If you already manage a Takumi renderer yourself, you can pass `renderer`
 instead and bypass the internal initialization path. When `fonts`,

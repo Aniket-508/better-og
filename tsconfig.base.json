@@ -18,6 +18,7 @@
     "paths": {
       "better-og": ["src/index.ts"],
       "better-og/edge": ["src/edge/index.ts"],
+      "better-og/next/edge": ["src/next/edge.ts"],
       "better-og/next": ["src/next/index.ts"]
     }
   }

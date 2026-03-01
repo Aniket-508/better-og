@@ -8,8 +8,8 @@ import {
   applyStableCacheHeaders,
   resolveLocaleFromParams,
   withOgRewrite,
-} from "./shared";
-import type { OgRewriteOptions, OgRouteHandlerContext } from "./shared";
+} from "./utils";
+import type { OgRewriteOptions, OgRouteHandlerContext } from "./utils";
 
 type NextImageResponseOptions = Omit<
   ImageResponseOptions,

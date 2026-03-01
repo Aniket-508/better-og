@@ -1,20 +1,9 @@
-import { createOgHandler } from "better-og/edge";
+import { createOgRouteHandler } from "better-og/next/edge";
 
 export const runtime = "edge";
 export const revalidate = false;
 
-const getLocaleFromRequest = (request: Request): string | undefined => {
-  const { pathname } = new URL(request.url);
-  const [, routeName, locale] = pathname.split("/");
-
-  if (routeName !== "og-edge") {
-    return undefined;
-  }
-
-  return locale || undefined;
-};
-
-const handler = createOgHandler({
+const handler = createOgRouteHandler({
   component: (
     <div
       style={{
@@ -66,13 +55,12 @@ const handler = createOgHandler({
           opacity: 0.92,
         }}
       >
-        This route uses better-og/edge with Takumi pre-initialized inside the
-        adapter.
+        This route uses better-og/next/edge and passes Takumi&apos;s Next WASM
+        module automatically.
       </div>
     </div>
   ),
   fallbackFonts: true,
-  localeFromRequest: getLocaleFromRequest,
 });
 
 export const GET = handler;

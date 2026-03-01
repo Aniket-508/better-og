@@ -25,7 +25,7 @@ pnpm --filter ./docs build
 - `/og/[lang]`
   - Node runtime route using `better-og/next`
 - `/og-edge/[lang]`
-  - Edge runtime route using `better-og/edge`
+  - Edge runtime route using `better-og/next/edge`
 
 The app also uses `proxy.ts` to rewrite OG requests and append
 `?aspect_ratio=` based on the caller's user agent.
