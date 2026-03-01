@@ -9,12 +9,11 @@ export const revalidate = false;
 
 const fallbackFontLocales = ["ja", "ar"];
 const fontSetup = await resolveFontSetup({
-  baseFamily: "Geist",
-  baseFonts: await loadGoogleFontForImageResponse({
+  fallbackFontLocales,
+  fonts: await loadGoogleFontForImageResponse({
     family: "Geist",
     weights: [400, 700],
   }),
-  fallbackFontLocales,
 });
 
 const handler = createOgRouteHandler({
@@ -27,7 +26,7 @@ const handler = createOgRouteHandler({
         color: "white",
         display: "flex",
         flexDirection: "column",
-        fontFamily: fontSetup.families.base ?? fontSetup.fontFamily,
+        fontFamily: fontSetup.families.base,
         gap: 24,
         height: "100%",
         justifyContent: "space-between",

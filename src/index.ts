@@ -29,23 +29,13 @@ export interface LoadGoogleFontsOptions {
   style?: string;
 }
 
-interface BuildFontFamilyStackOptions {
-  baseFamily?: string;
-  fallbackFamilies?: string[];
-  fallbackFontLocales?: string[];
-}
-
 export interface ResolveFontSetupOptions extends GetFontsForRequestOptions {
-  baseFamily?: string;
-  baseFonts?: Font[];
-  fallbackFamilies?: string[];
   locale?: string;
   request?: Request;
 }
 
 export interface ResolvedFontSetup {
   families: ResolvedFontSetupFamilies;
-  fontFamily?: string;
   fonts: Font[];
 }
 
@@ -455,13 +445,6 @@ const resolveRequestedFallbackLocales = (
   ];
 };
 
-const resolveBuiltInFallbackFamilies = (
-  fallbackFontLocales: string[] | undefined
-): string[] =>
-  resolveRequestedFallbackLocales(fallbackFontLocales)
-    .map((locale) => fontConfigByLocale[locale]?.family)
-    .filter(isDefined);
-
 const resolveFirstNamedFontFamily = (fonts: Font[]): string | undefined => {
   for (const font of fonts) {
     const fontFamily = font.name?.trim();
@@ -514,32 +497,6 @@ const resolveFallbackFamiliesByLocale = async (
   }
 
   return localeFamilies;
-};
-
-const resolveLoadedFontFamilies = (fonts: Font[]): string[] =>
-  [...new Set(fonts.map((font) => font.name?.trim()).filter(isDefined))].filter(
-    Boolean
-  );
-
-const buildFontFamilyStack = ({
-  baseFamily,
-  fallbackFamilies,
-  fallbackFontLocales,
-}: BuildFontFamilyStackOptions): string | undefined => {
-  const families = [
-    ...(baseFamily ? [baseFamily] : []),
-    ...resolveBuiltInFallbackFamilies(fallbackFontLocales),
-    ...(fallbackFamilies ?? []),
-  ];
-  const uniqueFamilies = [
-    ...new Set(families.map((family) => family.trim())),
-  ].filter(Boolean);
-
-  if (uniqueFamilies.length === 0) {
-    return undefined;
-  }
-
-  return uniqueFamilies.join(", ");
 };
 
 export const clearFontCache = (): void => {
@@ -620,9 +577,7 @@ export const getFontsForRequest = async (
 };
 
 export const resolveFontSetup = async ({
-  baseFamily,
-  baseFonts,
-  fallbackFamilies,
+  fonts: configuredFonts,
   fallbackFontLocales,
   getFallbackFontsForLocale,
   getFontsForLocale,
@@ -633,7 +588,7 @@ export const resolveFontSetup = async ({
     { locale, request },
     {
       fallbackFontLocales,
-      fonts: baseFonts,
+      fonts: configuredFonts,
       getFallbackFontsForLocale,
       getFontsForLocale,
     }
@@ -642,30 +597,12 @@ export const resolveFontSetup = async ({
     fallbackFontLocales,
     getFallbackFontsForLocale
   );
-  const normalizedBaseFamily = baseFamily?.trim() || undefined;
-  const loadedFontFamilies = resolveLoadedFontFamilies(fonts);
-  const resolvedBaseFamily =
-    normalizedBaseFamily ?? loadedFontFamilies.find(Boolean);
-  const resolvedLocaleFamilies = Object.values(localeFamilies);
-  const resolvedFallbackFamilies = [
-    ...resolvedLocaleFamilies,
-    ...loadedFontFamilies.filter(
-      (family) =>
-        family !== resolvedBaseFamily &&
-        !resolvedLocaleFamilies.includes(family)
-    ),
-    ...(fallbackFamilies ?? []),
-  ];
 
   return {
     families: {
-      base: resolvedBaseFamily,
+      base: resolveFirstNamedFontFamily(fonts),
       locales: localeFamilies,
     },
-    fontFamily: buildFontFamilyStack({
-      baseFamily: resolvedBaseFamily,
-      fallbackFamilies: resolvedFallbackFamilies,
-    }),
     fonts,
   };
 };

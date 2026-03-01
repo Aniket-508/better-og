@@ -25,7 +25,6 @@ export interface EdgeOgHandlerOptions
   extends OgAdapterOptions, EdgeImageResponseOptions {
   component: ReactNode;
   module: EdgeWasmModule;
-  provider?: "takumi";
 }
 
 let edgeImageResponseModule: Promise<EdgeImageResponseModule> | undefined;
@@ -71,7 +70,6 @@ export const createOgHandler =
       getOgContext: getOgContextOverride,
       localeFromRequest,
       module,
-      provider: _provider,
       ...imageResponseOptions
     } = options;
 

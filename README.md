@@ -108,10 +108,10 @@ Built-in locale fallbacks:
 Fallback fonts are fetched from Google Fonts CSS, resolved to font files, and
 cached in memory by locale.
 
-If you want one helper that returns both the loaded `fonts` and the matching
-`fontFamily` stack, use `resolveFontSetup()`. It also returns locale-specific
-family names in `fontSetup.families.locales`, so single-language routes can use
-the exact family for that locale on the text node they render.
+If you want one helper that returns both the loaded `fonts` and the resolved
+family names, use `resolveFontSetup()`. It returns `fontSetup.families.base`
+for the default family and `fontSetup.families.locales` for locale-specific
+families.
 
 ## Next.js
 
@@ -128,8 +128,7 @@ export const runtime = "nodejs";
 export const revalidate = false;
 
 const fontSetup = await resolveFontSetup({
-  baseFamily: "Geist",
-  baseFonts: await loadGoogleFontForImageResponse({
+  fonts: await loadGoogleFontForImageResponse({
     family: "Geist",
     weights: [400, 700],
   }),
@@ -138,15 +137,10 @@ const fontSetup = await resolveFontSetup({
 
 export const GET = createOgRouteHandler({
   component: (
-    <div
-      style={{ fontFamily: fontSetup.families.base ?? fontSetup.fontFamily }}
-    >
+    <div style={{ fontFamily: fontSetup.families.base }}>
       <span
         style={{
-          fontFamily:
-            fontSetup.families.locales.ja ??
-            fontSetup.families.base ??
-            fontSetup.fontFamily,
+          fontFamily: fontSetup.families.locales.ja ?? fontSetup.families.base,
         }}
       >
         のコストを 溜め込むのはやめよう
