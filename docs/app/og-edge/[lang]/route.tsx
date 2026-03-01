@@ -1,3 +1,4 @@
+import { loadGoogleFontForImageResponse } from "better-og/next";
 import { createOgRouteHandler } from "better-og/next/edge";
 
 export const runtime = "edge";
@@ -13,6 +14,7 @@ const handler = createOgRouteHandler({
         color: "white",
         display: "flex",
         flexDirection: "column",
+        fontFamily: "Geist",
         gap: 24,
         height: "100%",
         justifyContent: "space-between",
@@ -59,7 +61,12 @@ const handler = createOgRouteHandler({
       </div>
     </div>
   ),
+  fallbackFontLocales: ["ja", "ar"],
   fallbackFonts: true,
+  fonts: await loadGoogleFontForImageResponse({
+    family: "Geist",
+    weights: [400, 700],
+  }),
 });
 
 export const GET = handler;

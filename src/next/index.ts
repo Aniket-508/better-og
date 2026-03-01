@@ -5,6 +5,7 @@ import type { ReactElement, ReactNode } from "react";
 
 import {
   applyStableCacheHeaders,
+  loadGoogleFontForImageResponse,
   normalizeFontsForNextImageResponse,
   resolveOgRequestState,
   resolveLocaleFromParams,
@@ -107,5 +108,10 @@ export const createOgRouteHandler =
     );
   };
 
-export { withOgRewrite };
-export type { OgRewriteOptions, OgRouteHandlerContext };
+export { loadGoogleFontForImageResponse, withOgRewrite };
+export type {
+  LoadGoogleFontForImageResponseOptions,
+  NextImageResponseFont,
+  OgRewriteOptions,
+  OgRouteHandlerContext,
+} from "./utils";

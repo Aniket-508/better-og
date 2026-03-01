@@ -1,5 +1,10 @@
-import { getFontsForRequest, getOgContext } from "better-og";
-import type { Font, GetFontsForLocale, OgContext } from "better-og";
+import { getFontsForRequest, getOgContext, loadGoogleFonts } from "better-og";
+import type {
+  Font,
+  GetFontsForLocale,
+  LoadGoogleFontsOptions,
+  OgContext,
+} from "better-og";
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
@@ -11,6 +16,14 @@ export interface OgRewriteOptions {
   pathnamePrefix?: string;
 }
 
+export interface LoadGoogleFontForImageResponseOptions extends Pick<
+  LoadGoogleFontsOptions,
+  "style"
+> {
+  family: string;
+  weights?: number[];
+}
+
 interface ResolveOgRequestStateOptions {
   configuredFonts?: Font[];
   fallbackFonts?: boolean;
@@ -20,7 +33,7 @@ interface ResolveOgRequestStateOptions {
   request: Request;
 }
 
-interface NextImageResponseFont {
+export interface NextImageResponseFont {
   data: ArrayBuffer;
   name: string;
   style?: "normal" | "italic";
@@ -45,6 +58,26 @@ const matchesPathPrefix = (
   return (
     pathname === normalizedPrefix || pathname.startsWith(`${normalizedPrefix}/`)
   );
+};
+
+const normalizeGoogleFontWeights = (
+  weights: number[] | undefined
+): NonNullable<NextImageResponseFont["weight"]>[] => {
+  const normalizedWeights = (weights ?? [400]).filter((weight) =>
+    NEXT_IMAGE_RESPONSE_FONT_WEIGHTS.has(
+      weight as NonNullable<NextImageResponseFont["weight"]>
+    )
+  );
+
+  if (normalizedWeights.length === 0) {
+    return [400];
+  }
+
+  return [
+    ...new Set(
+      normalizedWeights as NonNullable<NextImageResponseFont["weight"]>[]
+    ),
+  ];
 };
 
 export const applyStableCacheHeaders = (response: Response): Response => {
@@ -99,6 +132,17 @@ export const normalizeFontsForNextImageResponse = (
       ? (font.weight as NextImageResponseFont["weight"])
       : undefined,
   }));
+};
+
+export const loadGoogleFontForImageResponse = async (
+  options: LoadGoogleFontForImageResponseOptions
+): Promise<NextImageResponseFont[]> => {
+  const fonts = await loadGoogleFonts({
+    ...options,
+    weights: normalizeGoogleFontWeights(options.weights),
+  });
+
+  return normalizeFontsForNextImageResponse(fonts) ?? [];
 };
 
 export const resolveOgRequestState = async ({

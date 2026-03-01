@@ -85,6 +85,10 @@ Presets:
 2. Otherwise `fonts`
 3. Built-in fallback fonts when `fallbackFonts: true`
 
+If you want to preload only specific locale fallbacks, pass
+`fallbackFontLocales: ["ja", "ar"]`. When omitted, `better-og` falls back to
+the request locale only.
+
 Built-in locale fallbacks:
 
 - `en`, `ru`, `uk` -> `Noto Sans`

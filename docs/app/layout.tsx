@@ -1,15 +1,14 @@
+import { Geist } from "next/font/google";
 import type { ReactNode } from "react";
 
+const geist = Geist({
+  subsets: ["latin"],
+  variable: "--font-geist",
+});
+
 const RootLayout = (props: { children: ReactNode }) => (
-  <html lang="en">
-    <body
-      style={{
-        fontFamily: "system-ui, sans-serif",
-        margin: 0,
-      }}
-    >
-      {props.children}
-    </body>
+  <html lang="en" className={geist.className}>
+    <body>{props.children}</body>
   </html>
 );
 

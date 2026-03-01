@@ -23,12 +23,19 @@ export interface GetFontsForRequestContext {
   request?: Request;
 }
 
+export interface LoadGoogleFontsOptions {
+  family: string;
+  weights?: number[];
+  style?: string;
+}
+
 export type GetFontsForLocale = (locale: string) => Font[] | Promise<Font[]>;
 
 export interface GetFontsForRequestOptions {
   fonts?: Font[];
   getFontsForLocale?: GetFontsForLocale;
   fallbackFonts?: boolean;
+  fallbackFontLocales?: string[];
 }
 
 export interface OgAdapterOptions extends GetFontsForRequestOptions {
@@ -135,7 +142,7 @@ const aspectRatioAliases: Record<string, AspectRatioPreset> = {
   standard: STANDARD,
 };
 
-const fontCache = new Map<string, Promise<Font[]>>();
+const googleFontCache = new Map<string, Promise<Font[]>>();
 const platformMatchers: PlatformMatcher[] = [
   {
     match: (userAgent) => userAgent.includes("twitterbot"),
@@ -295,9 +302,7 @@ const resolveFontConfigForLocale = (
   return { config, locale: normalizedLocale };
 };
 
-const createFallbackFontPromise = async (
-  config: FontConfig
-): Promise<Font[]> => {
+const createGoogleFontPromise = async (config: FontConfig): Promise<Font[]> => {
   try {
     const css = await fetchFontCss(config);
     const fontUrls = parseFontUrlsFromCss(css);
@@ -316,41 +321,100 @@ const createFallbackFontPromise = async (
   }
 };
 
-const getPendingFallbackFonts = (resolvedConfig: {
-  locale: string;
-  config: FontConfig;
-}): Promise<Font[]> => {
-  const cachedFonts = fontCache.get(resolvedConfig.locale);
+const getGoogleFontCacheKey = (key: string, config: FontConfig): string =>
+  `${key}:${config.family}:${config.weight}:${config.style}`;
+
+const getPendingGoogleFonts = (
+  cacheKey: string,
+  config: FontConfig
+): Promise<Font[]> => {
+  const normalizedCacheKey = getGoogleFontCacheKey(cacheKey, config);
+  const cachedFonts = googleFontCache.get(normalizedCacheKey);
 
   if (cachedFonts) {
     return cachedFonts;
   }
 
-  const pendingFonts = createFallbackFontPromise(resolvedConfig.config);
+  const pendingFonts = createGoogleFontPromise(config);
 
-  fontCache.set(resolvedConfig.locale, pendingFonts);
+  googleFontCache.set(normalizedCacheKey, pendingFonts);
 
   return pendingFonts;
 };
 
-const loadFallbackFontsForLocale = async (locale: string): Promise<Font[]> => {
-  const resolvedConfig = resolveFontConfigForLocale(locale);
-
-  if (!resolvedConfig) {
-    return [];
-  }
-
-  const fonts = await getPendingFallbackFonts(resolvedConfig);
+const loadGoogleFontsWithConfig = async (
+  cacheKey: string,
+  config: FontConfig
+): Promise<Font[]> => {
+  const fonts = await getPendingGoogleFonts(cacheKey, config);
 
   if (fonts.length === 0) {
-    fontCache.delete(resolvedConfig.locale);
+    googleFontCache.delete(getGoogleFontCacheKey(cacheKey, config));
   }
 
   return fonts;
 };
 
+const normalizeRequestedFontWeights = (
+  weights: number[] | undefined
+): number[] => {
+  if (!weights || weights.length === 0) {
+    return [400];
+  }
+
+  return [...new Set(weights)];
+};
+
+export const loadGoogleFonts = async ({
+  family,
+  style = "normal",
+  weights,
+}: LoadGoogleFontsOptions): Promise<Font[]> => {
+  const loadedFonts = await Promise.all(
+    normalizeRequestedFontWeights(weights).map((weight) =>
+      loadGoogleFontsWithConfig(`family:${family}`, {
+        family,
+        style,
+        weight,
+      })
+    )
+  );
+
+  return loadedFonts.flat();
+};
+
+const loadFallbackFontsForLocale = (locale: string): Promise<Font[]> => {
+  const resolvedConfig = resolveFontConfigForLocale(locale);
+
+  if (!resolvedConfig) {
+    return Promise.resolve([]);
+  }
+
+  return loadGoogleFontsWithConfig(
+    `locale:${resolvedConfig.locale}`,
+    resolvedConfig.config
+  );
+};
+
+const resolveRequestedFallbackLocales = (
+  locale: string | undefined,
+  fallbackFontLocales: string[] | undefined
+): string[] => {
+  let requestedFallbackLocales: string[] = [];
+
+  if (fallbackFontLocales && fallbackFontLocales.length > 0) {
+    requestedFallbackLocales = fallbackFontLocales;
+  } else if (locale) {
+    requestedFallbackLocales = [locale];
+  }
+
+  return [
+    ...new Set(requestedFallbackLocales.map(normalizeLocale).filter(isDefined)),
+  ];
+};
+
 export const clearFontCache = (): void => {
-  fontCache.clear();
+  googleFontCache.clear();
 };
 
 export const getOgContext = (request: Request): OgContext => {
@@ -400,11 +464,24 @@ export const getFontsForRequest = async (
       ? await options.getFontsForLocale(locale)
       : (options.fonts ?? []);
 
-  if (!locale || !options.fallbackFonts) {
+  if (!options.fallbackFonts) {
     return [...baseFonts];
   }
 
-  const fallbackFonts = await loadFallbackFontsForLocale(locale);
+  const fallbackLocales = resolveRequestedFallbackLocales(
+    locale,
+    options.fallbackFontLocales
+  );
 
-  return [...baseFonts, ...fallbackFonts];
+  if (fallbackLocales.length === 0) {
+    return [...baseFonts];
+  }
+
+  const fallbackFonts = await Promise.all(
+    fallbackLocales.map((fallbackLocale) =>
+      loadFallbackFontsForLocale(fallbackLocale)
+    )
+  );
+
+  return [...baseFonts, ...fallbackFonts.flat()];
 };
