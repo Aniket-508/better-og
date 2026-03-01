@@ -1,4 +1,3 @@
-import { ImageResponse } from "@takumi-rs/image-response/wasm";
 import type { ImageResponseOptions } from "@takumi-rs/image-response/wasm";
 import { getFontsForRequest, getOgContext } from "better-og";
 import type { OgAdapterOptions, OgContext } from "better-og";
@@ -17,8 +16,15 @@ export interface NextEdgeOgHandlerOptions extends OgAdapterOptions {
 
 type EdgeModule = Extract<ImageResponseOptions, { module: unknown }>["module"];
 type EdgeFonts = Extract<ImageResponseOptions, { module: unknown }>["fonts"];
+interface EdgeImageResponseModule {
+  ImageResponse: new (
+    element: ReactNode,
+    options: ImageResponseOptions
+  ) => Response;
+}
 
 let nextWasmModule: Promise<EdgeModule> | undefined;
+let edgeImageResponseModule: Promise<EdgeImageResponseModule> | undefined;
 
 const loadNextWasmModule = async (): Promise<EdgeModule> => {
   const nextModule = await import("@takumi-rs/wasm/next");
@@ -34,6 +40,17 @@ const getNextWasmModule = (): Promise<EdgeModule> => {
   return nextWasmModule;
 };
 
+const loadEdgeImageResponseModule = (): Promise<EdgeImageResponseModule> =>
+  import("@takumi-rs/image-response/wasm") as Promise<EdgeImageResponseModule>;
+
+const getEdgeImageResponseModule = (): Promise<EdgeImageResponseModule> => {
+  if (!edgeImageResponseModule) {
+    edgeImageResponseModule = loadEdgeImageResponseModule();
+  }
+
+  return edgeImageResponseModule;
+};
+
 export const createOgRouteHandler =
   (options: NextEdgeOgHandlerOptions) =>
   async (
@@ -47,6 +64,7 @@ export const createOgRouteHandler =
       ? await options.getOgContext(request)
       : getOgContext(request);
     const fonts = await getFontsForRequest({ locale, request }, options);
+    const { ImageResponse } = await getEdgeImageResponseModule();
 
     const response = new ImageResponse(options.component, {
       fonts: fonts as EdgeFonts,

@@ -1,4 +1,3 @@
-import { ImageResponse } from "@takumi-rs/image-response/wasm";
 import type { ImageResponseOptions } from "@takumi-rs/image-response/wasm";
 import { getFontsForRequest, getOgContext } from "better-og";
 import type { OgAdapterOptions, OgContext } from "better-og";
@@ -6,11 +5,19 @@ import type { ReactNode } from "react";
 
 type EdgeModule = Extract<ImageResponseOptions, { module: unknown }>["module"];
 type EdgeFonts = Extract<ImageResponseOptions, { module: unknown }>["fonts"];
+interface EdgeImageResponseModule {
+  ImageResponse: new (
+    element: ReactNode,
+    options: ImageResponseOptions
+  ) => Response;
+}
 
 export interface EdgeOgHandlerOptions extends OgAdapterOptions {
   component: ReactNode;
   module: EdgeModule;
 }
+
+let edgeImageResponseModule: Promise<EdgeImageResponseModule> | undefined;
 
 const STABLE_CACHE_CONTROL =
   "public, immutable, no-transform, max-age=31536000";
@@ -29,6 +36,17 @@ const applyStableCacheHeaders = (response: Response): Response => {
   });
 };
 
+const loadEdgeImageResponseModule = (): Promise<EdgeImageResponseModule> =>
+  import("@takumi-rs/image-response/wasm") as Promise<EdgeImageResponseModule>;
+
+const getEdgeImageResponseModule = (): Promise<EdgeImageResponseModule> => {
+  if (!edgeImageResponseModule) {
+    edgeImageResponseModule = loadEdgeImageResponseModule();
+  }
+
+  return edgeImageResponseModule;
+};
+
 export const createOgHandler =
   (options: EdgeOgHandlerOptions) =>
   async (request: Request): Promise<Response> => {
@@ -37,6 +55,7 @@ export const createOgHandler =
       ? await options.getOgContext(request)
       : getOgContext(request);
     const fonts = await getFontsForRequest({ locale, request }, options);
+    const { ImageResponse } = await getEdgeImageResponseModule();
 
     const response = new ImageResponse(options.component, {
       fonts: fonts as EdgeFonts,
