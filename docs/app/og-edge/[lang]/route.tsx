@@ -1,6 +1,5 @@
 import { createOgHandler } from "better-og/edge";
 
-export const dynamic = "force-dynamic";
 export const runtime = "edge";
 export const revalidate = false;
 
@@ -67,8 +66,8 @@ const handler = createOgHandler({
           opacity: 0.92,
         }}
       >
-        This route uses better-og/edge and passes the Next WASM module
-        explicitly.
+        This route uses better-og/edge with Takumi pre-initialized inside the
+        adapter.
       </div>
     </div>
   ),

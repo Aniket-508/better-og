@@ -1,6 +1,7 @@
 import type { ImageResponseOptions } from "@takumi-rs/image-response/wasm";
 import type {
   Font as TakumiFont,
+  ImageSource as TakumiImageSource,
   InitInput,
   Renderer as TakumiRenderer,
 } from "@takumi-rs/wasm/no-bundler";
@@ -8,10 +9,23 @@ import { getFontsForRequest, getOgContext } from "better-og";
 import type { OgAdapterOptions, OgContext } from "better-og";
 import type { ReactNode } from "react";
 
+type EdgeImageResponseOptions = Omit<
+  ImageResponseOptions,
+  | "fonts"
+  | "format"
+  | "height"
+  | "module"
+  | "persistentImages"
+  | "renderer"
+  | "width"
+>;
 type ResolvedEdgeModule = Extract<
   ImageResponseOptions,
   { module: unknown }
 >["module"];
+type EdgeRenderer =
+  | TakumiRenderer
+  | (() => TakumiRenderer | Promise<TakumiRenderer>);
 type EdgeModule =
   | ResolvedEdgeModule
   | (() => ResolvedEdgeModule)
@@ -31,12 +45,13 @@ interface EdgeWasmBindingsModule {
       | InitInput
       | Promise<InitInput>
   ) => Promise<unknown>;
-  Renderer: new (options?: { fonts?: TakumiFont[] }) => TakumiRenderer;
 }
 
 export interface EdgeOgHandlerOptions extends OgAdapterOptions {
   component: ReactNode;
   module?: EdgeModule;
+  persistentImages?: TakumiImageSource[];
+  renderer?: EdgeRenderer;
 }
 
 let edgeImageResponseModule: Promise<EdgeImageResponseModule> | undefined;
@@ -87,35 +102,92 @@ const resolveEdgeModule = (
 ): ResolvedEdgeModule | InitInput | Promise<InitInput> =>
   typeof module === "function" ? module() : module;
 
+const ensureEdgeWasmInitialized = async (
+  module: EdgeModule | undefined
+): Promise<void> => {
+  const wasmBindings = await getEdgeWasmBindingsModule();
+
+  edgeWasmReady ??= module
+    ? wasmBindings.default({
+        module_or_path: resolveEdgeModule(module),
+      })
+    : wasmBindings.default();
+
+  await edgeWasmReady;
+};
+
+const resolveEdgeRenderer = async (
+  renderer: EdgeRenderer,
+  fonts: TakumiFont[],
+  persistentImages: TakumiImageSource[]
+): Promise<TakumiRenderer> => {
+  const resolvedRenderer =
+    typeof renderer === "function" ? await renderer() : renderer;
+
+  for (const font of fonts) {
+    resolvedRenderer.loadFont(font);
+  }
+
+  for (const image of persistentImages) {
+    resolvedRenderer.putPersistentImage(image);
+  }
+
+  return resolvedRenderer;
+};
+
 export const createOgHandler =
-  (options: EdgeOgHandlerOptions) =>
+  (options: EdgeOgHandlerOptions & EdgeImageResponseOptions) =>
   async (request: Request): Promise<Response> => {
-    const locale = options.localeFromRequest?.(request);
-    const ogContext: OgContext = options.getOgContext
-      ? await options.getOgContext(request)
+    const {
+      component,
+      fallbackFonts,
+      fonts: configuredFonts,
+      format,
+      getFontsForLocale,
+      getOgContext: getOgContextOverride,
+      localeFromRequest,
+      module,
+      persistentImages = [],
+      renderer: configuredRenderer,
+      ...imageResponseOptions
+    } = options;
+    const locale = localeFromRequest?.(request);
+    const ogContext: OgContext = getOgContextOverride
+      ? await getOgContextOverride(request)
       : getOgContext(request);
-    const fonts = await getFontsForRequest({ locale, request }, options);
-    const wasmBindings = await getEdgeWasmBindingsModule();
-
-    edgeWasmReady ??= options.module
-      ? wasmBindings.default({
-          module_or_path: resolveEdgeModule(options.module),
-        })
-      : wasmBindings.default();
-
-    await edgeWasmReady;
-
-    const renderer = new wasmBindings.Renderer({
-      fonts: fonts as TakumiFont[],
-    });
+    const fonts = await getFontsForRequest(
+      { locale, request },
+      {
+        fallbackFonts,
+        fonts: configuredFonts,
+        getFontsForLocale,
+      }
+    );
     const { ImageResponse } = await getEdgeImageResponseModule();
+    const response = configuredRenderer
+      ? new ImageResponse(component, {
+          ...imageResponseOptions,
+          format: format ?? "webp",
+          height: ogContext.height,
+          renderer: await resolveEdgeRenderer(
+            configuredRenderer,
+            fonts as TakumiFont[],
+            persistentImages
+          ),
+          width: ogContext.width,
+        })
+      : await (async () => {
+          await ensureEdgeWasmInitialized(module);
 
-    const response = new ImageResponse(options.component, {
-      format: options.format ?? "webp",
-      height: ogContext.height,
-      renderer,
-      width: ogContext.width,
-    });
+          return new ImageResponse(component, {
+            ...imageResponseOptions,
+            fonts: fonts as TakumiFont[],
+            format: format ?? "webp",
+            height: ogContext.height,
+            persistentImages,
+            width: ogContext.width,
+          } as ImageResponseOptions);
+        })();
 
     return applyStableCacheHeaders(response);
   };

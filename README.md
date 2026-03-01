@@ -102,6 +102,7 @@ export const revalidate = false;
 export const GET = createOgRouteHandler({
   component: <div>Hello from Node</div>,
   fallbackFonts: true,
+  ...rest,
 });
 ```
 
@@ -128,6 +129,7 @@ export const revalidate = false;
 export const GET = createOgHandler({
   component: <div>Hello from Edge</div>,
   fallbackFonts: true,
+  ...rest,
 });
 ```
 
@@ -143,9 +145,19 @@ const handler = createOgHandler({
 });
 ```
 
-`better-og/edge` is the single WASM adapter. By default it initializes Takumi's
-published WASM package internally. If your runtime needs an explicit override,
-you can still pass `module` with the runtime-specific input Takumi expects.
+`better-og/next` and `better-og/edge` both forward the remaining Takumi
+`ImageResponse` options directly, so you can pass things like `headers`,
+`status`, `statusText`, `jsx`, `quality`, `signal` (Node), and
+`persistentImages` without a separate nested object.
+
+`better-og/edge` is the single WASM adapter. If your runtime needs an explicit
+Takumi module input, you can pass `module` with the runtime-specific value
+Takumi expects.
+
+If you already manage a Takumi renderer yourself, you can pass `renderer`
+instead and bypass the internal initialization path. When `fonts`,
+`getFontsForLocale`, or `fallbackFonts` resolve fonts for a request, `better-og`
+loads those fonts into the provided renderer before rendering.
 
 ## Takumi References
 
