@@ -61,7 +61,7 @@ The root entry exports the runtime-agnostic helpers:
 - `getFontsForRequest(context, options)`
 - `resolveFontSetup(options)`
 - `clearFontCache()`
-- `Font`, `OgContext`, and `OgAdapterOptions`
+- `Font`, `OgContext`, `OgSafeArea`, and `OgAdapterOptions`
 
 ## Aspect Ratios
 
@@ -69,6 +69,10 @@ The root entry exports the runtime-agnostic helpers:
 
 1. If `?aspect_ratio=` is present and matches a known preset, use it.
 2. Otherwise inspect the request `User-Agent`.
+
+It also returns `safeArea`, which is currently only non-zero for Twitter/X.
+For Twitter requests, `safeArea.bottom` reserves extra bottom space so you can
+keep critical content away from the lower edge of the card.
 
 Default mapping:
 
@@ -143,8 +147,13 @@ const fontSetup = await resolveFontSetup({
 });
 
 export const GET = createOgRouteHandler({
-  component: (
-    <div style={{ fontFamily: fontSetup.families.base }}>
+  component: (ogContext) => (
+    <div
+      style={{
+        fontFamily: fontSetup.families.base,
+        paddingBottom: 32 + ogContext.safeArea.bottom,
+      }}
+    >
       <span
         style={{
           fontFamily: fontSetup.families.locales.ja ?? fontSetup.families.base,
@@ -159,6 +168,9 @@ export const GET = createOgRouteHandler({
   ...rest,
 });
 ```
+
+`component` can be either a static React node or a function that receives the
+resolved `OgContext`, which lets you apply platform-specific safe areas.
 
 If you want repo-local fallback fonts in that flow, pass
 `getFallbackFontsForLocale(locale)` into `resolveFontSetup()`.

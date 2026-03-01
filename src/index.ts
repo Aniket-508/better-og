@@ -16,6 +16,14 @@ export interface OgContext {
   width: number;
   height: number;
   platform: string;
+  safeArea: OgSafeArea;
+}
+
+export interface OgSafeArea {
+  top: number;
+  right: number;
+  bottom: number;
+  left: number;
 }
 
 export interface GetFontsForRequestContext {
@@ -110,6 +118,12 @@ const GOOGLE_FONTS_USER_AGENT =
   "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)";
 const STABLE_CACHE_CONTROL =
   "public, immutable, no-transform, max-age=31536000";
+const DEFAULT_SAFE_AREA: OgSafeArea = {
+  bottom: 0,
+  left: 0,
+  right: 0,
+  top: 0,
+};
 
 const fontConfigByLocale: Record<string, FontConfig> = {
   ar: {
@@ -278,6 +292,31 @@ export const resolveLocaleFromParams = (
 
   return Object.values(params).find(Boolean);
 };
+
+export const resolveSafeAreaForPlatform = (platform: string): OgSafeArea => {
+  if (platform !== "twitter") {
+    return DEFAULT_SAFE_AREA;
+  }
+
+  return {
+    bottom: 44,
+    left: 0,
+    right: 0,
+    top: 0,
+  };
+};
+
+const createOgContext = (
+  aspectRatio: string,
+  platform: string,
+  dimensions: Pick<AspectRatioPreset, "height" | "width">
+): OgContext => ({
+  aspectRatio,
+  height: dimensions.height,
+  platform,
+  safeArea: resolveSafeAreaForPlatform(platform),
+  width: dimensions.width,
+});
 
 const detectPlatformFromUserAgent = (userAgent: string): string => {
   const normalizedUserAgent = userAgent.toLowerCase();
@@ -563,39 +602,41 @@ export const clearFontCache = (): void => {
 
 export const getOgContext = (request: Request): OgContext => {
   const requestUrl = new URL(request.url);
+  const platform = detectPlatformFromUserAgent(
+    request.headers.get("user-agent") ?? ""
+  );
   const explicitAspectRatio = resolveAspectRatioPreset(
     requestUrl.searchParams.get("aspect_ratio")
   );
 
   if (explicitAspectRatio) {
-    return {
-      aspectRatio: explicitAspectRatio.label,
-      height: explicitAspectRatio.height,
-      platform: DEFAULT_PLATFORM,
-      width: explicitAspectRatio.width,
-    };
+    return createOgContext(
+      explicitAspectRatio.label,
+      platform,
+      explicitAspectRatio
+    );
   }
 
   if (requestUrl.searchParams.has("aspect_ratio")) {
-    return {
-      aspectRatio: STANDARD.label,
-      height: STANDARD.height,
-      platform: DEFAULT_PLATFORM,
-      width: STANDARD.width,
-    };
+    return createOgContext(STANDARD.label, platform, STANDARD);
   }
 
-  const platform = detectPlatformFromUserAgent(
-    request.headers.get("user-agent") ?? ""
-  );
   const preset = resolvePresetForPlatform(platform);
 
-  return {
-    aspectRatio: preset.label,
-    height: preset.height,
-    platform,
-    width: preset.width,
-  };
+  return createOgContext(preset.label, platform, preset);
+};
+
+export type OgComponentFactory<TNode> = (context: OgContext) => TNode;
+
+export const resolveOgComponent = <TNode>(
+  component: TNode | OgComponentFactory<TNode>,
+  context: OgContext
+): TNode => {
+  if (typeof component === "function") {
+    return (component as OgComponentFactory<TNode>)(context);
+  }
+
+  return component;
 };
 
 export const getFontsForRequest = async (

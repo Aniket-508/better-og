@@ -2,9 +2,10 @@ import type { ImageResponseOptions } from "@takumi-rs/image-response/wasm";
 import {
   applyStableCacheHeaders,
   createCachedModuleLoader,
+  resolveOgComponent,
   resolveOgRequestState,
 } from "better-og";
-import type { OgAdapterOptions } from "better-og";
+import type { OgAdapterOptions, OgComponentFactory } from "better-og";
 import type { ReactNode } from "react";
 
 type EdgeWasmImageResponseOptions = Extract<
@@ -27,7 +28,7 @@ interface EdgeImageResponseModule {
 
 export interface EdgeOgHandlerOptions
   extends OgAdapterOptions, EdgeImageResponseOptions {
-  component: ReactNode;
+  component: ReactNode | OgComponentFactory<ReactNode>;
   module: EdgeWasmModule;
 }
 const getEdgeImageResponseModule = createCachedModuleLoader(
@@ -67,8 +68,9 @@ export const createOgHandler =
       locale,
       request,
     });
+    const resolvedComponent = resolveOgComponent(component, ogContext);
     const { ImageResponse } = await getEdgeImageResponseModule();
-    const response = new ImageResponse(component, {
+    const response = new ImageResponse(resolvedComponent, {
       ...imageResponseOptions,
       fonts: fonts as EdgeWasmImageResponseOptions["fonts"],
       format: format ?? "webp",

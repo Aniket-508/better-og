@@ -2,10 +2,11 @@ import type { ImageResponseOptions } from "@takumi-rs/image-response";
 import {
   applyStableCacheHeaders,
   createCachedModuleLoader,
+  resolveOgComponent,
   resolveLocaleFromParams,
   resolveOgRequestState,
 } from "better-og";
-import type { OgAdapterOptions } from "better-og";
+import type { OgAdapterOptions, OgComponentFactory } from "better-og";
 import type { ReactNode } from "react";
 
 type TanStackStartImageResponseOptions = Omit<
@@ -27,7 +28,7 @@ export interface TanStackStartRouteHandlerContext {
 
 export interface TanStackStartOgHandlerOptions
   extends OgAdapterOptions, TanStackStartImageResponseOptions {
-  component: ReactNode;
+  component: ReactNode | OgComponentFactory<ReactNode>;
 }
 const getImageResponseModule = createCachedModuleLoader(
   () =>
@@ -64,10 +65,11 @@ export const createOgRouteHandler =
       locale,
       request,
     });
+    const resolvedComponent = resolveOgComponent(component, ogContext);
     const { ImageResponse } = await getImageResponseModule();
 
     return applyStableCacheHeaders(
-      new ImageResponse(component, {
+      new ImageResponse(resolvedComponent, {
         ...imageResponseOptions,
         fonts,
         format: format ?? "webp",

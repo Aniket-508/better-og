@@ -1,10 +1,11 @@
 import type { ImageResponseOptions as TakumiWasmImageResponseOptions } from "@takumi-rs/image-response/wasm";
 import {
   applyStableCacheHeaders,
+  resolveOgComponent,
   resolveLocaleFromParams,
   resolveOgRequestState,
 } from "better-og";
-import type { OgAdapterOptions } from "better-og";
+import type { OgAdapterOptions, OgComponentFactory } from "better-og";
 import { ImageResponse as NextImageResponse } from "next/og";
 import type { ReactElement, ReactNode } from "react";
 
@@ -25,7 +26,7 @@ export interface NextEdgeOgHandlerOptions
     OgAdapterOptions,
     NextProviderImageResponseOptions,
     TakumiProviderImageResponseOptions {
-  component: ReactNode;
+  component: ReactNode | OgComponentFactory<ReactNode>;
   provider?: "next" | "takumi";
 }
 
@@ -68,10 +69,11 @@ export const createOgRouteHandler =
       locale,
       request,
     });
+    const resolvedComponent = resolveOgComponent(component, ogContext);
     const nextFonts = normalizeFontsForNextImageResponse(fonts);
 
     return applyStableCacheHeaders(
-      new NextImageResponse(component as ReactElement, {
+      new NextImageResponse(resolvedComponent as ReactElement, {
         ...imageResponseOptions,
         ...(nextFonts ? { fonts: nextFonts } : {}),
         height: ogContext.height,
