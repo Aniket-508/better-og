@@ -1,6 +1,25 @@
 {
   "name": "better-og",
   "version": "0.1.0",
+  "description": "Open Graph image generation with Takumi, plus adapters for Next.js, TanStack Start, and Workers runtimes.",
+  "keywords": [
+    "image-response",
+    "nextjs",
+    "og",
+    "open-graph",
+    "takumi",
+    "tanstack-start",
+    "workers"
+  ],
+  "homepage": "https://github.com/Aniket-508/better-og#readme",
+  "bugs": {
+    "url": "https://github.com/Aniket-508/better-og/issues"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Aniket-508/better-og.git"
+  },
   "files": [
     "dist",
     "README.md"
@@ -51,25 +70,25 @@
     "prepare": "lefthook install"
   },
   "devDependencies": {
-    "@takumi-rs/image-response": ">=0",
-    "@takumi-rs/wasm": ">=0",
-    "@types/node": ">=20",
+    "@takumi-rs/image-response": "^0.69.5",
+    "@takumi-rs/wasm": "^0.69.5",
+    "@types/node": "^22.0.0",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
     "lefthook": "^2.1.1",
-    "next": ">=14",
+    "next": "^16.1.6",
     "oxfmt": "^0.35.0",
     "oxlint": "^1.50.0",
-    "react": ">=18",
-    "react-dom": ">=18",
-    "typescript": ">=5.5",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "typescript": "^5.9.0",
     "ultracite": "7.2.4"
   },
   "peerDependencies": {
-    "@takumi-rs/image-response": ">=0",
-    "@takumi-rs/wasm": ">=0",
-    "next": ">=14",
-    "react": ">=18"
+    "@takumi-rs/image-response": "^0.69.5",
+    "@takumi-rs/wasm": "^0.69.5",
+    "next": "^16.1.6",
+    "react": "^19.2.0"
   },
   "peerDependenciesMeta": {
     "@takumi-rs/image-response": {
@@ -84,6 +103,10 @@
     "react": {
       "optional": true
     }
+  },
+  "engines": {
+    "node": ">=22.20.0",
+    "pnpm": ">=10.29.1"
   },
   "packageManager": "pnpm@10.29.1"
 }
