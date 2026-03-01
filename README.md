@@ -6,21 +6,13 @@ Takumi.
 It exposes one core entry point plus adapter subpaths:
 
 - `better-og`
-  - Runtime-agnostic helpers only
 - `better-og/next`
-  - Next.js App Router adapter for Node runtime routes
 - `better-og/next/edge`
-  - Next.js App Router adapter for Edge runtime routes
 - `better-og/edge`
-  - Generic Fetch-style edge adapter for non-Next runtimes
-
-The repo also contains a single local Next.js docs app in `docs`, but there is
-only one publishable package.
 
 ## Install
 
-The root `better-og` entry point stays lean by treating Takumi and framework
-bindings as optional peer dependencies. Install only the pieces you use.
+Install only the pieces you use.
 
 Core helpers only:
 
@@ -28,45 +20,55 @@ Core helpers only:
 pnpm add better-og
 ```
 
-Next.js Node runtime routes:
+Next.js (Node runtime):
 
 ```sh
 pnpm add better-og @takumi-rs/image-response next react
 ```
 
-Next.js Edge runtime routes:
+Next.js (Edge runtime):
 
 ```sh
 pnpm add better-og @takumi-rs/image-response @takumi-rs/wasm next react
 ```
 
-Generic edge/fetch runtime:
+Non-Next WASM runtime:
 
 ```sh
 pnpm add better-og @takumi-rs/image-response @takumi-rs/wasm react
 ```
 
+## Exports
+
+The root entry exports the runtime-agnostic helpers:
+
+- `STANDARD`, `SQUARE`, `PORTRAIT`, `INSTAGRAM`
+- `getOgContext(request)`
+- `getFontsForRequest(context, options)`
+- `clearFontCache()`
+- `Font`, `OgContext`, and `OgAdapterOptions`
+
 ## Aspect Ratios
-
-The core entry point exposes four presets:
-
-- `STANDARD`: `1200x630` (`1.91:1`)
-- `SQUARE`: `1200x1200` (`1:1`)
-- `PORTRAIT`: `630x1200` (`1:1.91`)
-- `INSTAGRAM`: `1200x1500` (`4:5`)
 
 `getOgContext(request)` resolves dimensions like this:
 
-1. If `?aspect_ratio=` is present and matches a known alias, use it.
+1. If `?aspect_ratio=` is present and matches a known preset, use it.
 2. Otherwise inspect the request `User-Agent`.
 
-Default platform mapping:
+Default mapping:
 
 - Twitter -> `STANDARD`
 - Telegram / Slack -> `SQUARE`
 - iMessage -> `PORTRAIT`
 - Instagram -> `INSTAGRAM`
-- Anything else -> `STANDARD`
+- Everything else -> `STANDARD`
+
+Presets:
+
+- `STANDARD`: `1200x630` (`1.91:1`)
+- `SQUARE`: `1200x1200`
+- `PORTRAIT`: `630x1200` (`1:1.91`)
+- `INSTAGRAM`: `1200x1500` (`4:5`)
 
 ## Font Fallbacks
 
@@ -85,24 +87,10 @@ Built-in locale fallbacks:
 - `ar` -> `Noto Sans Arabic`
 - `hi` -> `Noto Sans Devanagari`
 
-Fallback fonts are fetched from Google Fonts CSS using a bot user agent, the TTF
-asset URLs are resolved, and the results are cached in memory per locale.
+Fallback fonts are fetched from Google Fonts CSS, resolved to font files, and
+cached in memory by locale.
 
-## Core Usage
-
-```ts
-import { getFontsForRequest, getOgContext } from "better-og";
-```
-
-The root entry point exports:
-
-- `STANDARD`, `SQUARE`, `PORTRAIT`, `INSTAGRAM`
-- `getOgContext(request)`
-- `getFontsForRequest(context, options)`
-- `clearFontCache()`
-- shared interfaces like `Font`, `OgContext`, and `OgAdapterOptions`
-
-## Next.js Usage
+## Next.js
 
 Node runtime:
 
@@ -118,8 +106,17 @@ export const GET = createOgRouteHandler({
 });
 ```
 
-`better-og/next` expects `@takumi-rs/image-response`, `next`, and `react` to be
-installed in your app.
+For the Node runtime entry, Takumi's Node backend should be externalized:
+
+```ts
+import type { NextConfig } from "next";
+
+const nextConfig: NextConfig = {
+  serverExternalPackages: ["@takumi-rs/image-response"],
+};
+
+export default nextConfig;
+```
 
 Edge runtime:
 
@@ -135,66 +132,32 @@ export const GET = createOgRouteHandler({
 });
 ```
 
-`better-og/next/edge` expects `@takumi-rs/image-response`, `@takumi-rs/wasm`,
-`next`, and `react` to be installed in your app.
+`better-og/next/edge` auto-wires Takumi's documented Next.js WASM module entry,
+so you do not pass a `module` option yourself.
 
-For the Node runtime entry point, Next.js should externalize Takumi's Node
-backend:
-
-```ts
-import type { NextConfig } from "next";
-
-const nextConfig: NextConfig = {
-  serverExternalPackages: ["@takumi-rs/image-response"],
-};
-
-export default nextConfig;
-```
-
-Rewrite helper:
-
-```ts
-import type { NextRequest } from "next/server";
-import { withOgRewrite } from "better-og/next";
-
-export const proxy = (request: NextRequest) => withOgRewrite(request);
-```
-
-## Generic Edge Usage
+## Generic WASM Runtimes
 
 ```tsx
 import { createOgHandler } from "better-og/edge";
 
 const handler = createOgHandler({
-  component: <div>Hello from Edge</div>,
+  component: <div>Hello</div>,
   fallbackFonts: true,
-  module: import("@takumi-rs/wasm/takumi_wasm_bg.wasm").then(
-    (wasm) => wasm.default
-  ),
+  module: wasmModule,
 });
 ```
 
-`better-og/edge` requires an explicit WASM module input because it is runtime
-agnostic. `better-og/edge` expects `@takumi-rs/image-response`,
-`@takumi-rs/wasm`, and `react` to be installed. `better-og/next/edge` wires the
-Next-specific module for you.
+For `better-og/edge`, `module` is the runtime-specific WASM module value that
+Takumi expects in that environment. `better-og` does not guess it because Takumi
+uses different WASM entry/loading patterns for different runtimes.
 
-## Docs App
+Use `better-og/next/edge` for Next.js. For other runtimes, determine the right
+WASM module input from the official Takumi docs for that runtime.
 
-`docs` demonstrates both Next adapter modes:
+## Takumi References
 
-- `/og/[lang]` -> `better-og/next`
-- `/og-edge/[lang]` -> `better-og/next/edge`
+These are the official Takumi pages this package aligns with:
 
-The app also uses `proxy.ts` to append `?aspect_ratio=` automatically from the
-incoming user agent.
-
-## Workspace Commands
-
-```sh
-pnpm install
-pnpm build
-pnpm --filter ./docs dev
-```
-
-Use the docs app routes above as the concrete reference for the Next adapters.
+- [Takumi docs](https://takumi.kane.tw/docs/)
+- [Takumi: From Next.js ImageResponse](https://takumi.kane.tw/docs/migration/image-response/)
+- [Takumi: Cloudflare Workers](https://takumi.kane.tw/docs/integrations/cloudflare-workers)

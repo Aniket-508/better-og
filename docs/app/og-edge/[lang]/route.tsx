@@ -1,5 +1,6 @@
 import { createOgRouteHandler } from "better-og/next/edge";
 
+export const dynamic = "force-dynamic";
 export const runtime = "edge";
 export const revalidate = false;
 

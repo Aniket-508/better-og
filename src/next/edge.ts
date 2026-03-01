@@ -15,13 +15,24 @@ export interface NextEdgeOgHandlerOptions extends OgAdapterOptions {
   component: ReactNode;
 }
 
+type EdgeModule = Extract<ImageResponseOptions, { module: unknown }>["module"];
 type EdgeFonts = Extract<ImageResponseOptions, { module: unknown }>["fonts"];
 
-const nextWasmModule = (async () => {
+let nextWasmModule: Promise<EdgeModule> | undefined;
+
+const loadNextWasmModule = async (): Promise<EdgeModule> => {
   const nextModule = await import("@takumi-rs/wasm/next");
 
   return nextModule.default;
-})();
+};
+
+const getNextWasmModule = (): Promise<EdgeModule> => {
+  if (!nextWasmModule) {
+    nextWasmModule = loadNextWasmModule();
+  }
+
+  return nextWasmModule;
+};
 
 export const createOgRouteHandler =
   (options: NextEdgeOgHandlerOptions) =>
@@ -41,7 +52,7 @@ export const createOgRouteHandler =
       fonts: fonts as EdgeFonts,
       format: options.format ?? "webp",
       height: ogContext.height,
-      module: nextWasmModule,
+      module: getNextWasmModule(),
       width: ogContext.width,
     });
 
