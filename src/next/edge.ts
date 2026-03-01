@@ -7,7 +7,7 @@ import type { OgRouteHandlerContext } from "./utils";
 
 export interface NextEdgeOgHandlerOptions extends Omit<
   EdgeOgHandlerOptions,
-  "module"
+  "module" | "ImageResponse"
 > {
   component: EdgeOgHandlerOptions["component"];
 }
@@ -20,8 +20,10 @@ export const createOgRouteHandler =
   ): Promise<Response> => {
     const params = context?.params ? await context.params : undefined;
     const { localeFromRequest } = options;
+    const { ImageResponse } = await import("@takumi-rs/image-response/wasm");
     const handler = createOgHandler({
       ...options,
+      ImageResponse,
       localeFromRequest: (input) =>
         localeFromRequest?.(input) ?? resolveLocaleFromParams(params),
       module: nextWasmModule,

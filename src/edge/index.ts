@@ -7,26 +7,6 @@ type EdgeWasmImageResponseOptions = Extract<
   ImageResponseOptions,
   { module: unknown }
 >;
-type EdgeWasmModule = EdgeWasmImageResponseOptions["module"];
-type EdgeImageResponseOptions = Omit<
-  EdgeWasmImageResponseOptions,
-  "fonts" | "format" | "height" | "module" | "width"
->;
-
-interface EdgeImageResponseModule {
-  ImageResponse: new (
-    element: ReactNode,
-    options: ImageResponseOptions
-  ) => Response;
-}
-
-export interface EdgeOgHandlerOptions
-  extends OgAdapterOptions, EdgeImageResponseOptions {
-  component: ReactNode;
-  module: EdgeWasmModule;
-}
-
-let edgeImageResponseModule: Promise<EdgeImageResponseModule> | undefined;
 
 const STABLE_CACHE_CONTROL =
   "public, immutable, no-transform, max-age=31536000";
@@ -45,16 +25,20 @@ const applyStableCacheHeaders = (response: Response): Response => {
   });
 };
 
-const loadEdgeImageResponseModule = (): Promise<EdgeImageResponseModule> =>
-  import("@takumi-rs/image-response/wasm") as Promise<EdgeImageResponseModule>;
-
-const getEdgeImageResponseModule = (): Promise<EdgeImageResponseModule> => {
-  if (!edgeImageResponseModule) {
-    edgeImageResponseModule = loadEdgeImageResponseModule();
-  }
-
-  return edgeImageResponseModule;
-};
+export interface EdgeOgHandlerOptions
+  extends
+    OgAdapterOptions,
+    Omit<
+      ImageResponseOptions,
+      "fonts" | "format" | "height" | "module" | "width"
+    > {
+  component: ReactNode;
+  ImageResponse: new (
+    element: ReactNode,
+    options: ImageResponseOptions
+  ) => Response;
+  module: unknown;
+}
 
 export const createOgHandler =
   (options: EdgeOgHandlerOptions) =>
@@ -66,6 +50,7 @@ export const createOgHandler =
       format,
       getFontsForLocale,
       getOgContext: getOgContextOverride,
+      ImageResponse,
       localeFromRequest,
       module,
       ...imageResponseOptions
@@ -89,7 +74,6 @@ export const createOgHandler =
         getFontsForLocale,
       }
     );
-    const { ImageResponse } = await getEdgeImageResponseModule();
     const response = new ImageResponse(component, {
       ...imageResponseOptions,
       fonts: fonts as EdgeWasmImageResponseOptions["fonts"],
