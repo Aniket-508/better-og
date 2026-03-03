@@ -1,0 +1,125 @@
+---
+title: API Reference
+description: Complete API reference for all better-og exports.
+---
+
+## Core (`better-og`)
+
+### Presets
+
+```ts
+const STANDARD: AspectRatioPreset; // 1200x630,  1.91:1
+const SQUARE: AspectRatioPreset; // 1200x1200, 1:1
+const PORTRAIT: AspectRatioPreset; // 630x1200,  1:1.91
+const INSTAGRAM: AspectRatioPreset; // 1200x1500, 4:5
+```
+
+### Functions
+
+#### `getOgContext(request: Request): OgContext`
+
+Detects the requesting platform from the `User-Agent` header and resolves the appropriate aspect ratio, dimensions, and safe area.
+
+#### `resolveFontSetup(options: ResolveFontSetupOptions): Promise<ResolvedFontSetup>`
+
+Resolves base fonts and locale-specific fallback fonts, returning both the font data and family name mappings.
+
+#### `getFontsForRequest(context, options): Promise<Font[]>`
+
+Resolves the complete font stack for a given request context, including base fonts and fallback fonts.
+
+#### `loadGoogleFonts(options: LoadGoogleFontsOptions): Promise<Font[]>`
+
+Loads font data from Google Fonts. Works in any runtime.
+
+#### `clearFontCache(): void`
+
+Clears the in-memory Google Fonts cache.
+
+#### `resolveLocaleFromParams(params): string | undefined`
+
+Extracts locale from route params, checking `params.lang`, `params.locale`, then first truthy value.
+
+#### `resolveSafeAreaForPlatform(platform: string): OgSafeArea`
+
+Returns platform-specific safe area insets. Currently only Twitter has a non-zero bottom inset (44px).
+
+### Types
+
+```ts
+interface AspectRatioPreset {
+  label: string;
+  width: number;
+  height: number;
+}
+
+interface Font {
+  name?: string;
+  data: ArrayBuffer | Uint8Array;
+  weight?: number;
+  style?: string;
+}
+
+interface OgContext {
+  aspectRatio: string;
+  width: number;
+  height: number;
+  platform: string;
+  safeArea: OgSafeArea;
+}
+
+interface OgSafeArea {
+  top: number;
+  right: number;
+  bottom: number;
+  left: number;
+}
+
+interface OgAdapterOptions {
+  getOgContext?: (req: Request) => OgContext | Promise<OgContext>;
+  localeFromRequest?: (req: Request) => string | undefined;
+  format?: "webp" | "png";
+  loadDefaultFonts?: boolean;
+  fonts?: Font[];
+  getFontsForLocale?: GetFontsForLocale;
+  getFallbackFontsForLocale?: GetFontsForLocale;
+  fallbackFontLocales?: string[];
+}
+
+interface ResolveFontSetupOptions {
+  fonts?: Font[];
+  fallbackFontLocales?: string[];
+  getFallbackFontsForLocale?: GetFontsForLocale;
+  getFontsForLocale?: GetFontsForLocale;
+  locale?: string;
+  request?: Request;
+}
+
+interface ResolvedFontSetup {
+  families: {
+    base?: string;
+    locales: Record<string, string>;
+  };
+  fonts: Font[];
+}
+```
+
+## Next.js (`better-og/next`)
+
+### `createOgRouteHandler(options)`
+
+Creates a Next.js route handler for OG image generation.
+
+### `loadGoogleFontForImageResponse(options)`
+
+Loads Google Fonts in a format compatible with `next/og` `ImageResponse`.
+
+### `withOgRewrite(request, options?)`
+
+Middleware helper that detects the platform and rewrites the URL with an `aspect_ratio` query parameter.
+
+## Next.js Edge (`better-og/next/edge`)
+
+### `createOgRouteHandler(options)`
+
+Same interface as `better-og/next` but for the Edge runtime. Only supports the `next/og` provider.

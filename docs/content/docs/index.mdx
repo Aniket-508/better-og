@@ -1,0 +1,31 @@
+---
+title: Introduction
+description: Open Graph image helpers with sane aspect-ratio defaults, locale-aware font fallbacks, and multi-runtime adapters.
+---
+
+## What is better-og?
+
+**better-og** provides a set of utilities for generating Open Graph images that automatically adapt to the platform requesting them. Whether a link is shared on Twitter, Telegram, Slack, iMessage, or Instagram, better-og detects the caller and renders the image at the optimal aspect ratio.
+
+### Key Features
+
+- **Automatic aspect-ratio detection** -- detects the requesting platform (Twitter, Telegram, Slack, iMessage, Instagram) and renders the appropriate dimensions.
+- **Locale-aware font fallbacks** -- built-in Google Fonts integration with automatic fallback fonts for `en`, `ja`, `ko`, `zh`, `ar`, `hi`, `ru`, and `uk`.
+- **Platform safe areas** -- provides safe-area insets (e.g. Twitter's bottom crop zone) so your content stays visible.
+- **Multi-runtime adapters** -- works with Next.js (Node & Edge), Cloudflare Workers, and TanStack Start.
+- **Two rendering providers** -- choose between `next/og` (Vercel's built-in Satori) or [Takumi](https://takumi.kane.tw/docs/) for WASM-based rendering.
+
+### Aspect Ratio Presets
+
+| Preset      | Dimensions  | Ratio    | Used by          |
+| ----------- | ----------- | -------- | ---------------- |
+| `STANDARD`  | 1200 x 630  | 1.91 : 1 | Twitter, Generic |
+| `SQUARE`    | 1200 x 1200 | 1 : 1    | Telegram, Slack  |
+| `PORTRAIT`  | 630 x 1200  | 1 : 1.91 | iMessage         |
+| `INSTAGRAM` | 1200 x 1500 | 4 : 5    | Instagram        |
+
+### How It Works
+
+1. A middleware intercepts OG image requests and inspects the `User-Agent` header.
+2. Based on the detected platform, an `aspect_ratio` query parameter is appended via URL rewrite.
+3. The OG route handler reads the aspect ratio, resolves dimensions and safe areas, loads locale-aware fonts, and renders the component at the correct size.

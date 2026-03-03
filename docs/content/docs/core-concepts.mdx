@@ -1,0 +1,75 @@
+---
+title: Core Concepts
+description: Understand aspect ratios, platform detection, safe areas, and the OG context.
+---
+
+## Platform Detection
+
+When a social platform fetches your OG image, it sends a characteristic `User-Agent` header. better-og inspects this header to determine which platform is requesting the image and selects the optimal aspect ratio preset.
+
+| Platform  | User-Agent pattern | Default Preset |
+| --------- | ------------------ | -------------- |
+| Twitter   | `twitterbot`       | STANDARD       |
+| Telegram  | `telegrambot`      | SQUARE         |
+| Slack     | `slackbot`         | SQUARE         |
+| iMessage  | `imessage`         | PORTRAIT       |
+| Instagram | `instagram`        | INSTAGRAM      |
+| Generic   | everything else    | STANDARD       |
+
+## Aspect Ratio Presets
+
+Four built-in presets cover the most common OG image dimensions:
+
+```ts
+import { STANDARD, SQUARE, PORTRAIT, INSTAGRAM } from "better-og";
+
+STANDARD; // { width: 1200, height: 630,  label: "1.91:1" }
+SQUARE; // { width: 1200, height: 1200, label: "1:1"    }
+PORTRAIT; // { width: 630,  height: 1200, label: "1:1.91" }
+INSTAGRAM; // { width: 1200, height: 1500, label: "4:5"    }
+```
+
+You can also pass aspect ratio values via the `?aspect_ratio=` query parameter. Supported aliases include `standard`, `square`, `portrait`, `instagram`, and explicit dimension strings like `1200x630`.
+
+## OG Context
+
+The `OgContext` object is passed to your component factory function and contains everything you need to render a platform-aware image:
+
+```ts
+interface OgContext {
+  aspectRatio: string; // e.g. "1.91:1"
+  width: number; // e.g. 1200
+  height: number; // e.g. 630
+  platform: string; // e.g. "twitter"
+  safeArea: OgSafeArea; // platform-specific insets
+}
+```
+
+## Safe Areas
+
+Some platforms crop OG images. Twitter, for example, crops the bottom 44px of a standard OG image to overlay engagement buttons. better-og exposes this as `safeArea.bottom`:
+
+```tsx
+const handler = createOgRouteHandler({
+  component: (ogContext) => (
+    <div
+      style={{
+        paddingBottom: 32 + ogContext.safeArea.bottom,
+      }}
+    >
+      {/* Content stays above the crop zone */}
+    </div>
+  ),
+});
+```
+
+## Middleware Rewrite Flow
+
+The `withOgRewrite` middleware works as follows:
+
+1. Intercepts requests matching the OG pathname prefix (default `/og`).
+2. Skips if `aspect_ratio` is already in the query string.
+3. Calls `getOgContext(request)` to detect the platform from the `User-Agent`.
+4. Rewrites the URL with the resolved `aspect_ratio` query parameter.
+
+This ensures OG route handlers always receive a normalized aspect ratio without exposing it in the public URL.

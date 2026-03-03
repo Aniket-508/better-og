@@ -1,0 +1,86 @@
+---
+title: Next.js (Node)
+description: Use better-og with the Next.js Node runtime, supporting both next/og and Takumi providers.
+---
+
+## Import
+
+```ts
+import {
+  createOgRouteHandler,
+  loadGoogleFontForImageResponse,
+  withOgRewrite,
+} from "better-og/next";
+```
+
+## Basic Usage
+
+```tsx title="app/og/route.tsx"
+import { resolveFontSetup } from "better-og";
+import {
+  createOgRouteHandler,
+  loadGoogleFontForImageResponse,
+} from "better-og/next";
+
+export const runtime = "nodejs";
+
+const fontSetup = await resolveFontSetup({
+  fonts: await loadGoogleFontForImageResponse({
+    family: "Inter",
+    weights: [400, 700],
+  }),
+});
+
+export const GET = createOgRouteHandler({
+  component: (ogContext) => (
+    <div
+      style={{
+        width: "100%",
+        height: "100%",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        fontFamily: fontSetup.families.base,
+        background: "#000",
+        color: "#fff",
+        fontSize: 48,
+      }}
+    >
+      My OG Image
+    </div>
+  ),
+  fonts: fontSetup.fonts,
+});
+```
+
+## Using the Takumi Provider
+
+By default, `better-og/next` uses the `next/og` provider (Satori). To use Takumi instead:
+
+```tsx
+export const GET = createOgRouteHandler({
+  provider: "takumi",
+  component: myComponent,
+  fonts: fontSetup.fonts,
+});
+```
+
+When using Takumi, add it to `serverExternalPackages` in your Next.js config:
+
+```ts title="next.config.ts"
+const nextConfig = {
+  serverExternalPackages: ["@takumi-rs/image-response"],
+};
+```
+
+## Middleware
+
+The `withOgRewrite` function creates a middleware that detects the requesting platform and rewrites the URL with the correct `aspect_ratio`:
+
+```ts title="middleware.ts"
+import { withOgRewrite } from "better-og/next";
+
+export default function middleware(request) {
+  return withOgRewrite(request, { pathnamePrefix: "/og" });
+}
+```

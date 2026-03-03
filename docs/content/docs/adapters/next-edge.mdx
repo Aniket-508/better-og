@@ -1,0 +1,52 @@
+---
+title: Next.js (Edge)
+description: Use better-og on the Next.js Edge runtime with next/og.
+---
+
+## Import
+
+```ts
+import { createOgRouteHandler } from "better-og/next/edge";
+```
+
+## Usage
+
+```tsx title="app/og/route.tsx"
+import { resolveFontSetup } from "better-og";
+import { loadGoogleFontForImageResponse } from "better-og/next";
+import { createOgRouteHandler } from "better-og/next/edge";
+
+export const runtime = "edge";
+
+const fontSetup = await resolveFontSetup({
+  fonts: await loadGoogleFontForImageResponse({
+    family: "Geist",
+    weights: [400, 700],
+  }),
+});
+
+export const GET = createOgRouteHandler({
+  component: (ogContext) => (
+    <div
+      style={{
+        width: "100%",
+        height: "100%",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        fontFamily: fontSetup.families.base,
+        background: "linear-gradient(140deg, #0e102a, #1d557a, #44bc9b)",
+        color: "#fff",
+        fontSize: 48,
+      }}
+    >
+      Edge OG Image
+    </div>
+  ),
+  fonts: fontSetup.fonts,
+});
+```
+
+## Limitations
+
+The Edge adapter only supports the `next/og` provider. Takumi is not available on the Next.js Edge runtime due to WASM module constraints. If you need Takumi on Edge, use `better-og/edge` with an explicit WASM module.

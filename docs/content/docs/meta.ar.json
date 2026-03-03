@@ -1,0 +1,15 @@
+{
+  "title": "better-og",
+  "pages": [
+    "---البداية---",
+    "index",
+    "getting-started",
+    "---المفاهيم---",
+    "core-concepts",
+    "fonts",
+    "---المحولات---",
+    "adapters",
+    "---المرجع---",
+    "api-reference"
+  ]
+}

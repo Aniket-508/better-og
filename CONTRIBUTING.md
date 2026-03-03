@@ -27,6 +27,6 @@ pnpm --filter ./docs dev
 
 ## Notes
 
-- The only publishable package is the repository root package: `better-og`.
+- The only publishable package is `packages/better-og`.
 - `docs/` is a local Next.js app used for validation and examples.
 - Keep changes compatible with the current TypeScript project-reference setup.

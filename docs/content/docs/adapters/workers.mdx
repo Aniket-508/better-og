@@ -1,0 +1,41 @@
+---
+title: Cloudflare Workers
+description: Preconfigured Takumi WASM adapter for Cloudflare Workers.
+---
+
+## Import
+
+```ts
+import { createWorkersOgHandler } from "better-og/workers";
+```
+
+## Usage
+
+The Workers adapter wraps `better-og/edge` with the default Takumi WASM module bundled for Cloudflare Workers:
+
+```ts
+import { createWorkersOgHandler } from "better-og/workers";
+
+export default {
+  async fetch(request: Request): Promise<Response> {
+    const handler = createWorkersOgHandler({
+      component: (ogContext) => (
+        <div style={{
+          width: "100%",
+          height: "100%",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          background: "#1a1a2e",
+          color: "#fff",
+          fontSize: 48,
+        }}>
+          Workers OG
+        </div>
+      ),
+    });
+
+    return handler(request);
+  },
+};
+```

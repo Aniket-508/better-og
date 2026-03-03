@@ -1,0 +1,93 @@
+---
+title: Fonts & i18n
+description: Locale-aware font loading with automatic fallbacks for multilingual OG images.
+---
+
+## Font Loading
+
+better-og provides two approaches to loading fonts for OG image rendering:
+
+### Google Fonts (for next/og)
+
+Use `loadGoogleFontForImageResponse` to load fonts compatible with `next/og`:
+
+```ts
+import { loadGoogleFontForImageResponse } from "better-og/next";
+
+const fonts = await loadGoogleFontForImageResponse({
+  family: "Geist",
+  weights: [400, 700],
+});
+```
+
+### Raw Google Fonts
+
+Use `loadGoogleFonts` from the core package for any runtime:
+
+```ts
+import { loadGoogleFonts } from "better-og";
+
+const fonts = await loadGoogleFonts({
+  family: "Inter",
+  weights: [400, 600],
+});
+```
+
+## Font Setup
+
+The `resolveFontSetup` function combines your base fonts with locale-specific fallbacks and returns both the font data and resolved family names:
+
+```ts
+import { resolveFontSetup } from "better-og";
+
+const fontSetup = await resolveFontSetup({
+  fonts: myBaseFonts,
+  fallbackFontLocales: ["ja", "ar"],
+});
+
+// fontSetup.families.base     → "Geist"
+// fontSetup.families.locales  → { ja: "Noto Sans JP", ar: "Noto Sans Arabic" }
+// fontSetup.fonts             → [...all font data]
+```
+
+## Built-in Locale Fallbacks
+
+better-og ships with Google Fonts mappings for these locales:
+
+| Locale | Font Family          |
+| ------ | -------------------- |
+| `en`   | Noto Sans            |
+| `ru`   | Noto Sans            |
+| `uk`   | Noto Sans            |
+| `zh`   | Noto Sans SC         |
+| `ja`   | Noto Sans JP         |
+| `ko`   | Noto Sans KR         |
+| `ar`   | Noto Sans Arabic     |
+| `hi`   | Noto Sans Devanagari |
+
+When you specify `fallbackFontLocales`, better-og automatically loads the appropriate Noto Sans variant and appends it to the font stack.
+
+## Using Locale Fonts in Components
+
+Use the resolved family names from `fontSetup.families.locales` to apply the correct font per locale:
+
+```tsx
+<div
+  style={{
+    fontFamily:
+      lang === "ja" ? fontSetup.families.locales.ja : fontSetup.families.base,
+  }}
+>
+  {localizedText}
+</div>
+```
+
+## Locale Resolution
+
+In route handlers, better-og resolves the locale from:
+
+1. `localeFromRequest` callback (custom per-request locale detection)
+2. Route params (`params.lang` or `params.locale`)
+3. First truthy param value as fallback
+
+This integrates naturally with Next.js `[lang]` dynamic segments and i18n middleware.

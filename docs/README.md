@@ -1,28 +1,45 @@
-# Docs App
+# docs
 
-This folder contains the local Next.js docs/demo app for `better-og`.
+This is a Next.js application generated with
+[Create Fumadocs](https://github.com/fuma-nama/fumadocs).
 
-It is not published to npm. The only publishable package in this repository is
-the root `better-og` package.
+Run development server:
 
-## Run
-
-```sh
-pnpm install
-pnpm --filter ./docs dev
+```bash
+npm run dev
+# or
+pnpm dev
+# or
+yarn dev
 ```
 
-## Build
+Open http://localhost:3000 with your browser to see the result.
 
-```sh
-pnpm --filter ./docs build
-```
+## Explore
 
-## Routes
+In the project, you can see:
 
-- `/`: Demo page that previews both OG handlers
-- `/og/[lang]`: Node runtime route using `better-og/next`
-- `/og-edge/[lang]`: Edge runtime route using `better-og/next/edge` with the default `next/og` provider
+- `lib/source.ts`: Code for content source adapter, [`loader()`](https://fumadocs.dev/docs/headless/source-api) provides the interface to access your content.
+- `lib/layout.shared.tsx`: Shared options for layouts, optional but preferred to keep.
 
-The app also uses `proxy.ts` to rewrite OG requests and append
-`?aspect_ratio=` based on the caller's user agent.
+| Route                     | Description                                            |
+| ------------------------- | ------------------------------------------------------ |
+| `app/(home)`              | The route group for your landing page and other pages. |
+| `app/docs`                | The documentation layout and pages.                    |
+| `app/api/search/route.ts` | The Route Handler for search.                          |
+
+### Fumadocs MDX
+
+A `source.config.ts` config file has been included, you can customise different options like frontmatter schema.
+
+Read the [Introduction](https://fumadocs.dev/docs/mdx) for further details.
+
+## Learn More
+
+To learn more about Next.js and Fumadocs, take a look at the following
+resources:
+
+- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js
+  features and API.
+- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- [Fumadocs](https://fumadocs.dev) - learn about Fumadocs

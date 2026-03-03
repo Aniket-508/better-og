@@ -1,0 +1,15 @@
+{
+  "title": "better-og",
+  "pages": [
+    "---Getting Started---",
+    "index",
+    "getting-started",
+    "---Concepts---",
+    "core-concepts",
+    "fonts",
+    "---Adapters---",
+    "adapters",
+    "---Reference---",
+    "api-reference"
+  ]
+}

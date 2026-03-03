@@ -1,0 +1,113 @@
+{
+  "name": "better-og",
+  "version": "0.1.0",
+  "description": "Open Graph image generation with Takumi, plus adapters for Next.js, TanStack Start, and Workers runtimes.",
+  "keywords": [
+    "image-response",
+    "nextjs",
+    "og",
+    "open-graph",
+    "takumi",
+    "tanstack-start",
+    "workers"
+  ],
+  "homepage": "https://github.com/Aniket-508/better-og/tree/main/packages/better-og#readme",
+  "bugs": {
+    "url": "https://github.com/Aniket-508/better-og/issues"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Aniket-508/better-og.git",
+    "directory": "packages/better-og"
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "type": "module",
+  "sideEffects": false,
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "imports": {
+    "#core": "./src/index.ts",
+    "#edge": "./src/edge/index.ts"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
+    },
+    "./next": {
+      "types": "./dist/next/index.d.ts",
+      "import": "./dist/next/index.js",
+      "default": "./dist/next/index.js"
+    },
+    "./next/edge": {
+      "types": "./dist/next/edge.d.ts",
+      "import": "./dist/next/edge.js",
+      "default": "./dist/next/edge.js"
+    },
+    "./edge": {
+      "types": "./dist/edge/index.d.ts",
+      "import": "./dist/edge/index.js",
+      "default": "./dist/edge/index.js"
+    },
+    "./workers": {
+      "types": "./dist/workers/index.d.ts",
+      "import": "./dist/workers/index.js",
+      "default": "./dist/workers/index.js"
+    },
+    "./tanstack-start": {
+      "types": "./dist/tanstack-start/index.d.ts",
+      "import": "./dist/tanstack-start/index.js",
+      "default": "./dist/tanstack-start/index.js"
+    }
+  },
+  "scripts": {
+    "dev": "tsdown --watch",
+    "build": "pnpm clean && NODE_ENV=production tsdown",
+    "clean": "rm -rf dist tsconfig.tsbuildinfo tsconfig.build.tsbuildinfo",
+    "typecheck": "tsc -p tsconfig.json --pretty && tsc -p tests/tsconfig.json --pretty",
+    "test": "pnpm build && vitest run"
+  },
+  "devDependencies": {
+    "@takumi-rs/image-response": "^0.69.5",
+    "@takumi-rs/wasm": "^0.69.5",
+    "@types/node": "^22.0.0",
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3",
+    "next": "^16.1.6",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "tsdown": "^0.20.3",
+    "typescript": "^5.9.0",
+    "vitest": "^4.0.18"
+  },
+  "peerDependencies": {
+    "@takumi-rs/image-response": "^0.69.5",
+    "@takumi-rs/wasm": "^0.69.5",
+    "next": "^16.1.6",
+    "react": "^19.2.0"
+  },
+  "peerDependenciesMeta": {
+    "@takumi-rs/image-response": {
+      "optional": true
+    },
+    "@takumi-rs/wasm": {
+      "optional": true
+    },
+    "next": {
+      "optional": true
+    },
+    "react": {
+      "optional": true
+    }
+  },
+  "engines": {
+    "node": ">=22.20.0",
+    "pnpm": ">=10.29.1"
+  },
+  "packageManager": "pnpm@10.29.1"
+}
