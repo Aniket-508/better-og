@@ -1,14 +1,13 @@
 import type { ImageResponseOptions as TakumiWasmImageResponseOptions } from "@takumi-rs/image-response/wasm";
-import { ImageResponse as NextImageResponse } from "next/og";
-import type { ReactElement, ReactNode } from "react";
-
 import {
   applyStableCacheHeaders,
   resolveOgComponent,
   resolveLocaleFromParams,
   resolveOgRequestState,
-} from "#core";
-import type { OgAdapterOptions, OgComponentFactory } from "#core";
+} from "better-og";
+import type { OgAdapterOptions, OgComponentFactory } from "better-og";
+import { ImageResponse as NextImageResponse } from "next/og";
+import type { ReactElement, ReactNode } from "react";
 
 import { normalizeFontsForNextImageResponse } from "./utils";
 import type { OgRouteHandlerContext } from "./utils";
@@ -56,7 +55,7 @@ export const createOgRouteHandler =
 
     if (provider === "takumi") {
       throw new Error(
-        "better-og/next/edge currently only supports the `next` provider. Use `better-og/edge` with `module` from `@takumi-rs/wasm/next` if you need Takumi on Next Edge before the Vercel duplicate-WASM fix lands."
+        "@better-og/next/edge currently only supports the `next` provider. Use `@better-og/edge` with `module` from `@takumi-rs/wasm/next` if you need Takumi on Next Edge before the Vercel duplicate-WASM fix lands."
       );
     }
 

@@ -1,14 +1,17 @@
 import type { ImageResponseOptions } from "@takumi-rs/image-response";
-import type { ReactNode } from "react";
-
 import {
   applyStableCacheHeaders,
   createCachedModuleLoader,
   resolveOgComponent,
   resolveLocaleFromParams,
   resolveOgRequestState,
-} from "#core";
-import type { OgAdapterOptions, OgComponentFactory } from "#core";
+} from "better-og";
+import type {
+  OgAdapterOptions,
+  OgComponentFactory,
+  RouteParams,
+} from "better-og";
+import type { ReactNode } from "react";
 
 type TanStackStartImageResponseOptions = Omit<
   ImageResponseOptions,
@@ -23,7 +26,7 @@ interface TanStackImageResponseModule {
 }
 
 export interface TanStackStartRouteHandlerContext {
-  params?: Promise<Record<string, string>> | Record<string, string>;
+  params?: Promise<RouteParams> | RouteParams;
   request: Request;
 }
 

@@ -6,6 +6,8 @@ export const { GET } = createFromSource(source, {
   localeMap: {
     ar: { language: "arabic" },
     en: { language: "english" },
-    ja: { language: "japanese" },
+    // Orama does not support Japanese stemming. Use the default tokenizer
+    // config instead of forcing an unsupported language name.
+    ja: {},
   },
 });

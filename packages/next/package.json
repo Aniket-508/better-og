@@ -1,0 +1,81 @@
+{
+  "name": "@better-og/next",
+  "version": "0.0.0",
+  "description": "Next.js adapters for better-og.",
+  "keywords": [
+    "image-response",
+    "nextjs",
+    "og",
+    "open-graph",
+    "takumi"
+  ],
+  "homepage": "https://github.com/Aniket-508/better-og/tree/main/packages/next#readme",
+  "bugs": {
+    "url": "https://github.com/Aniket-508/better-og/issues"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Aniket-508/better-og.git",
+    "directory": "packages/next"
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "type": "module",
+  "sideEffects": false,
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
+    },
+    "./edge": {
+      "types": "./dist/edge.d.ts",
+      "import": "./dist/edge.js",
+      "default": "./dist/edge.js"
+    }
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "dev": "tsdown --watch",
+    "build": "pnpm clean && NODE_ENV=production tsdown",
+    "clean": "rm -rf dist tsconfig.tsbuildinfo tsconfig.build.tsbuildinfo",
+    "typecheck": "tsc -p tsconfig.json --pretty && tsc -p tests/tsconfig.json --pretty",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "better-og": "workspace:*"
+  },
+  "devDependencies": {
+    "@takumi-rs/image-response": "^0.69.5",
+    "@types/node": "^22.0.0",
+    "@types/react": "^19.2.14",
+    "next": "^16.1.6",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "tsdown": "^0.20.3",
+    "typescript": "^5.9.0",
+    "vitest": "^4.0.18"
+  },
+  "peerDependencies": {
+    "@takumi-rs/image-response": "^0.69.5",
+    "next": "^16.1.6",
+    "react": "^19.2.0"
+  },
+  "peerDependenciesMeta": {
+    "@takumi-rs/image-response": {
+      "optional": true
+    }
+  },
+  "engines": {
+    "node": ">=22.20.0",
+    "pnpm": ">=10.29.1"
+  },
+  "packageManager": "pnpm@10.29.1"
+}

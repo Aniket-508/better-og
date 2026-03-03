@@ -1,15 +1,14 @@
 import type { ImageResponseOptions as TakumiImageResponseOptions } from "@takumi-rs/image-response";
-import { ImageResponse as NextImageResponse } from "next/og";
-import type { ReactElement, ReactNode } from "react";
-
 import {
   applyStableCacheHeaders,
   createCachedModuleLoader,
   resolveOgComponent,
   resolveLocaleFromParams,
   resolveOgRequestState,
-} from "#core";
-import type { OgAdapterOptions, OgComponentFactory } from "#core";
+} from "better-og";
+import type { OgAdapterOptions, OgComponentFactory } from "better-og";
+import { ImageResponse as NextImageResponse } from "next/og";
+import type { ReactElement, ReactNode } from "react";
 
 import {
   loadGoogleFontForImageResponse,

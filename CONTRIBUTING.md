@@ -27,6 +27,8 @@ pnpm --filter ./docs dev
 
 ## Notes
 
-- The only publishable package is `packages/better-og`.
+- Publishable packages live under `packages/`.
+- Use `pnpm changeset` for user-facing package changes.
 - `docs/` is a local Next.js app used for validation and examples.
-- Keep changes compatible with the current TypeScript project-reference setup.
+- Keep package boundaries explicit. Put shared logic in `better-og` and keep
+  runtime-specific code inside the adapter packages.

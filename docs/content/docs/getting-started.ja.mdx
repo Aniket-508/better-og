@@ -68,15 +68,15 @@ export const GET = createOgRouteHandler({
 });
 ```
 
-## ミドルウェアの追加
+## プロキシの追加
 
-自動アスペクト比検出を有効にするには、ミドルウェアを追加します：
+自動アスペクト比検出を有効にするには、プロキシを追加します：
 
-```ts title="middleware.ts"
+```ts title="proxy.ts"
 import { withOgRewrite } from "better-og/next";
 import type { NextRequest } from "next/server";
 
-export default function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
   return withOgRewrite(request);
 }
 

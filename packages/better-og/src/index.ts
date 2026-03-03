@@ -52,6 +52,9 @@ export interface ResolvedFontSetupFamilies {
   locales: Record<string, string>;
 }
 
+export type RouteParamValue = string | string[] | undefined;
+export type RouteParams = Record<string, RouteParamValue>;
+
 export type GetFontsForLocale = (locale: string) => Font[] | Promise<Font[]>;
 
 export interface GetFontsForRequestOptions {
@@ -275,22 +278,44 @@ export const applyStableCacheHeaders = (response: Response): Response => {
   });
 };
 
+const resolveLocaleFromParamValue = (
+  value: RouteParamValue
+): string | undefined => {
+  if (typeof value === "string") {
+    return value || undefined;
+  }
+
+  if (Array.isArray(value)) {
+    return value.find(Boolean);
+  }
+
+  return undefined;
+};
+
 export const resolveLocaleFromParams = (
-  params: Record<string, string> | undefined
+  params: RouteParams | undefined
 ): string | undefined => {
   if (!params) {
     return undefined;
   }
 
-  if (params.lang) {
-    return params.lang;
+  const prioritizedLocale =
+    resolveLocaleFromParamValue(params.lang) ??
+    resolveLocaleFromParamValue(params.locale);
+
+  if (prioritizedLocale) {
+    return prioritizedLocale;
   }
 
-  if (params.locale) {
-    return params.locale;
+  for (const value of Object.values(params)) {
+    const resolvedLocale = resolveLocaleFromParamValue(value);
+
+    if (resolvedLocale) {
+      return resolvedLocale;
+    }
   }
 
-  return Object.values(params).find(Boolean);
+  return undefined;
 };
 
 export const resolveSafeAreaForPlatform = (platform: string): OgSafeArea => {

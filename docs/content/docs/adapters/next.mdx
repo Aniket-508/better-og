@@ -73,14 +73,14 @@ const nextConfig = {
 };
 ```
 
-## Middleware
+## Proxy
 
-The `withOgRewrite` function creates a middleware that detects the requesting platform and rewrites the URL with the correct `aspect_ratio`:
+The `withOgRewrite` function creates a proxy that detects the requesting platform and rewrites the URL with the correct `aspect_ratio`:
 
-```ts title="middleware.ts"
+```ts title="proxy.ts"
 import { withOgRewrite } from "better-og/next";
 
-export default function middleware(request) {
+export function proxy(request) {
   return withOgRewrite(request, { pathnamePrefix: "/og" });
 }
 ```

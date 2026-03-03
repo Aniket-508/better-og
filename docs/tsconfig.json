@@ -17,7 +17,13 @@
     "incremental": true,
     "paths": {
       "@/*": ["./src/*"],
-      "fumadocs-mdx:collections/*": [".source/*"]
+      "fumadocs-mdx:collections/*": [".source/*"],
+      "better-og": ["../packages/better-og/src/index.ts"],
+      "@better-og/edge": ["../packages/edge/src/index.ts"],
+      "@better-og/next": ["../packages/next/src/index.ts"],
+      "@better-og/next/edge": ["../packages/next/src/edge.ts"],
+      "@better-og/tanstack-start": ["../packages/tanstack-start/src/index.ts"],
+      "@better-og/workers": ["../packages/workers/src/index.ts"]
     },
     "plugins": [
       {

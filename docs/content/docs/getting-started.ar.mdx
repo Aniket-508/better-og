@@ -68,15 +68,15 @@ export const GET = createOgRouteHandler({
 });
 ```
 
-## إضافة الوسيط
+## إضافة الوكيل
 
-لتمكين الاكتشاف التلقائي لنسبة العرض إلى الارتفاع، أضف وسيطًا:
+لتمكين الاكتشاف التلقائي لنسبة العرض إلى الارتفاع، أضف وكيلًا:
 
-```ts title="middleware.ts"
+```ts title="proxy.ts"
 import { withOgRewrite } from "better-og/next";
 import type { NextRequest } from "next/server";
 
-export default function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
   return withOgRewrite(request);
 }
 

@@ -1,13 +1,12 @@
 import type { ImageResponseOptions } from "@takumi-rs/image-response/wasm";
-import type { ReactNode } from "react";
-
 import {
   applyStableCacheHeaders,
   createCachedModuleLoader,
   resolveOgComponent,
   resolveOgRequestState,
-} from "#core";
-import type { OgAdapterOptions, OgComponentFactory } from "#core";
+} from "better-og";
+import type { OgAdapterOptions, OgComponentFactory } from "better-og";
+import type { ReactNode } from "react";
 
 type EdgeWasmImageResponseOptions = Extract<
   ImageResponseOptions,
@@ -55,7 +54,7 @@ export const createOgHandler =
 
     if (!module) {
       throw new Error(
-        "better-og/edge requires `module`. Pass the runtime-specific Takumi WASM module, such as `@takumi-rs/wasm/next` in Next.js Edge."
+        "@better-og/edge requires `module`. Pass the runtime-specific Takumi WASM module, such as `@takumi-rs/wasm/next` in Next.js Edge."
       );
     }
 

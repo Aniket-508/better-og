@@ -32,8 +32,11 @@ jobs:
       - name: Lint and format check
         run: pnpm check
 
-      - name: TypeScript build
+      - name: Build packages
         run: pnpm build
+
+      - name: Typecheck
+        run: pnpm typecheck
 
       - name: Docs app build
         run: pnpm --filter ./docs build

@@ -68,15 +68,15 @@ export const GET = createOgRouteHandler({
 });
 ```
 
-## Add the Middleware
+## Add the Proxy
 
-To enable automatic aspect-ratio detection, add a middleware:
+To enable automatic aspect-ratio detection, add a proxy:
 
-```ts title="middleware.ts"
+```ts title="proxy.ts"
 import { withOgRewrite } from "better-og/next";
 import type { NextRequest } from "next/server";
 
-export default function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
   return withOgRewrite(request);
 }
 

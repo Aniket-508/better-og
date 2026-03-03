@@ -1,0 +1,19 @@
+{
+  "$schema": "https://unpkg.com/@changesets/config@3.0.0/schema.json",
+  "changelog": false,
+  "commit": false,
+  "fixed": [
+    [
+      "better-og",
+      "@better-og/next",
+      "@better-og/edge",
+      "@better-og/workers",
+      "@better-og/tanstack-start"
+    ]
+  ],
+  "linked": [],
+  "access": "public",
+  "baseBranch": "main",
+  "updateInternalDependencies": "patch",
+  "ignore": []
+}

@@ -1,0 +1,10 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "module": "ES2022",
+    "noEmit": true,
+    "types": ["node"]
+  },
+  "include": ["src/**/*.ts", "*.config.ts"],
+  "exclude": ["dist"]
+}

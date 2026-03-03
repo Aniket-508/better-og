@@ -1,25 +1,29 @@
-import { resolveFontSetup } from "better-og";
 import {
   createOgRouteHandler,
   loadGoogleFontForImageResponse,
-} from "better-og/next";
+} from "@better-og/next";
+import { createCachedModuleLoader, resolveFontSetup } from "better-og";
 import { notFound } from "next/navigation";
 
 import { source } from "@/lib/source";
 
-export const runtime = "nodejs";
 export const revalidate = false;
 
 const fallbackFontLocales = ["ja", "ar"];
-const fontSetup = await resolveFontSetup({
-  fallbackFontLocales,
-  fonts: await loadGoogleFontForImageResponse({
-    family: "Geist",
-    weights: [400, 700],
+const getFontSetup = createCachedModuleLoader(async () =>
+  resolveFontSetup({
+    fallbackFontLocales,
+    fonts: await loadGoogleFontForImageResponse({
+      family: "Geist",
+      weights: [400, 700],
+    }),
   }),
-});
+);
 
-const getDescriptionFontFamily = (lang: string) => {
+const getDescriptionFontFamily = (
+  fontSetup: Awaited<ReturnType<typeof getFontSetup>>,
+  lang: string,
+) => {
   if (lang === "ja") {
     return fontSetup.families.locales.ja ?? fontSetup.families.base;
   }
@@ -31,11 +35,13 @@ const getDescriptionFontFamily = (lang: string) => {
 
 export const GET = async (
   request: Request,
-  { params }: { params: Promise<{ lang: string; slug: string[] }> }
+  { params }: { params: Promise<{ lang: string; slug: string[] }> },
 ) => {
   const { lang, slug } = await params;
   const pageSlug = slug.slice(0, -1);
   const page = source.getPage(pageSlug, lang);
+  const fontSetup = await getFontSetup();
+
   if (!page) {
     notFound();
   }
@@ -91,7 +97,7 @@ export const GET = async (
           <div
             style={{
               display: "flex",
-              fontFamily: getDescriptionFontFamily(lang),
+              fontFamily: getDescriptionFontFamily(fontSetup, lang),
               fontSize: 28,
               opacity: 0.85,
             }}
@@ -102,19 +108,8 @@ export const GET = async (
       </div>
     ),
     fonts: fontSetup.fonts,
+    provider: "takumi",
   });
 
   return handler(request, { params });
-};
-
-export const generateStaticParams = () => {
-  const locales = ["en", "ja", "ar"];
-  const pages = locales.flatMap((lang) =>
-    source.getPages(lang).map((page) => ({
-      lang,
-      slug: [...page.slugs, "image.png"],
-    }))
-  );
-
-  return pages;
 };

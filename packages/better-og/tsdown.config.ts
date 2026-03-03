@@ -25,34 +25,4 @@ export default defineConfig([
       index: "./src/index.ts",
     },
   },
-  {
-    ...sharedConfig,
-    entry: {
-      "edge/index": "./src/edge/index.ts",
-    },
-  },
-  {
-    ...sharedConfig,
-    entry: {
-      "next/index": "./src/next/index.ts",
-    },
-  },
-  {
-    ...sharedConfig,
-    entry: {
-      "next/edge": "./src/next/edge.ts",
-    },
-  },
-  {
-    ...sharedConfig,
-    entry: {
-      "tanstack-start/index": "./src/tanstack-start/index.ts",
-    },
-  },
-  {
-    ...sharedConfig,
-    entry: {
-      "workers/index": "./src/workers/index.ts",
-    },
-  },
 ]);

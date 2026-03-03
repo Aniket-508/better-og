@@ -3,14 +3,19 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "build": "pnpm --filter better-og build",
-    "clean": "pnpm --filter better-og clean && rm -rf docs/.next docs/tsconfig.tsbuildinfo docs/tsconfig.typecheck.tsbuildinfo",
-    "typecheck": "pnpm --filter better-og typecheck && pnpm exec tsc -b docs/tsconfig.typecheck.json --pretty",
+    "build": "pnpm -r --filter './packages/*' build",
+    "clean": "pnpm -r --filter './packages/*' clean && rm -rf docs/.next docs/tsconfig.tsbuildinfo docs/tsconfig.typecheck.tsbuildinfo",
+    "typecheck": "pnpm -r --filter './packages/*' typecheck && pnpm --filter docs types:check",
+    "test": "pnpm -r --filter './packages/*' test",
     "check": "ultracite check",
     "fix": "ultracite fix",
+    "changeset": "changeset",
+    "version-packages": "changeset version",
+    "release": "changeset publish",
     "prepare": "lefthook install"
   },
   "devDependencies": {
+    "@changesets/cli": "^2.29.7",
     "lefthook": "^2.1.1",
     "oxfmt": "^0.35.0",
     "oxlint": "^1.50.0",

@@ -1,11 +1,9 @@
+import { getOgContext, loadGoogleFonts } from "better-og";
+import type { Font, LoadGoogleFontsOptions, RouteParams } from "better-og";
 import { NextResponse } from "next/server";
-import type { NextRequest } from "next/server";
-
-import { getOgContext, loadGoogleFonts } from "#core";
-import type { Font, LoadGoogleFontsOptions } from "#core";
 
 export interface OgRouteHandlerContext {
-  params?: Promise<Record<string, string>>;
+  params?: Promise<RouteParams>;
 }
 
 export interface OgRewriteOptions {
@@ -99,23 +97,23 @@ export const loadGoogleFontForImageResponse = async (
 };
 
 export const withOgRewrite = (
-  request: NextRequest,
+  request: Request,
   options: OgRewriteOptions = {}
 ): NextResponse => {
   const pathnamePrefix = options.pathnamePrefix ?? "/og";
+  const requestUrl = new URL(request.url);
 
-  if (!matchesPathPrefix(request.nextUrl.pathname, pathnamePrefix)) {
+  if (!matchesPathPrefix(requestUrl.pathname, pathnamePrefix)) {
     return NextResponse.next();
   }
 
-  if (request.nextUrl.searchParams.has("aspect_ratio")) {
+  if (requestUrl.searchParams.has("aspect_ratio")) {
     return NextResponse.next();
   }
 
   const ogContext = getOgContext(request);
-  const rewriteUrl = request.nextUrl.clone();
 
-  rewriteUrl.searchParams.set("aspect_ratio", ogContext.aspectRatio);
+  requestUrl.searchParams.set("aspect_ratio", ogContext.aspectRatio);
 
-  return NextResponse.rewrite(rewriteUrl);
+  return NextResponse.rewrite(requestUrl);
 };
