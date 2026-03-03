@@ -17,12 +17,12 @@ const getFontSetup = createCachedModuleLoader(async () =>
       family: "Geist",
       weights: [400, 700],
     }),
-  }),
+  })
 );
 
 const getDescriptionFontFamily = (
   fontSetup: Awaited<ReturnType<typeof getFontSetup>>,
-  lang: string,
+  lang: string
 ) => {
   if (lang === "ja") {
     return fontSetup.families.locales.ja ?? fontSetup.families.base;
@@ -35,7 +35,7 @@ const getDescriptionFontFamily = (
 
 export const GET = async (
   request: Request,
-  { params }: { params: Promise<{ lang: string; slug: string[] }> },
+  { params }: { params: Promise<{ lang: string; slug: string[] }> }
 ) => {
   const { lang, slug } = await params;
   const pageSlug = slug.slice(0, -1);
