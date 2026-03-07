@@ -1,0 +1,48 @@
+---
+title: Cloudflare Workers
+description: Preconfigured Takumi WASM adapter for Cloudflare Workers and worker-style runtimes.
+---
+
+## Import
+
+```ts
+import { createOgHandler } from "@better-og/workers";
+```
+
+## Usage
+
+The Workers adapter initializes Takumi and creates a renderer for you. In the common case, you only pass the component and any extra `ImageResponse` options such as `fetchedResources`.
+
+```ts
+import { createOgHandler } from "@better-og/workers";
+
+const handler = createOgHandler({
+  component: (
+    <div
+      style={{
+        width: "100%",
+        height: "100%",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        background: "#1a1a2e",
+        color: "#fff",
+        fontSize: 48,
+      }}
+    >
+      Workers OG
+    </div>
+  ),
+});
+
+export default {
+  fetch(request: Request) {
+    return handler(request);
+  },
+};
+```
+
+## Notes
+
+- `initSync(...)` and `new Renderer(...)` are handled internally.
+- You can still pass a custom `renderer` if you need reuse or extra control.

@@ -3,12 +3,13 @@
   "pages": [
     "---البداية---",
     "index",
-    "getting-started",
-    "---المفاهيم---",
     "core-concepts",
     "fonts",
     "---المحولات---",
-    "adapters",
+    "next",
+    "edge",
+    "workers",
+    "tanstack-start",
     "---المرجع---",
     "api-reference"
   ]

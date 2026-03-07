@@ -29,3 +29,98 @@ description: أدوات مساعدة لصور Open Graph مع نسب عرض إل
 1. يعترض الوسيط طلبات صور OG ويفحص رأس `User-Agent`.
 2. بناءً على المنصة المكتشفة، يُضاف معامل استعلام `aspect_ratio` عبر إعادة كتابة URL.
 3. يقرأ معالج مسار OG نسبة العرض إلى الارتفاع، ويحل الأبعاد والمناطق الآمنة، ويحمل الخطوط حسب اللغة، ويعرض المكون بالحجم الصحيح.
+
+## التثبيت
+
+قم بتثبيت الحزم المطلوبة فقط حسب بيئة التشغيل.
+
+```bash tab="Next.js (next/og)"
+pnpm add better-og next react
+```
+
+```bash tab="Next.js + Takumi"
+pnpm add better-og @takumi-rs/image-response next react
+```
+
+```bash tab="Edge / Workers"
+pnpm add better-og @takumi-rs/image-response @takumi-rs/wasm next react
+```
+
+```bash tab="TanStack Start"
+pnpm add better-og @takumi-rs/image-response react
+```
+
+## أول مسار (Next.js)
+
+أنشئ أول مسار OG داخل تطبيق Next.js:
+
+```tsx title="app/og/[lang]/route.tsx"
+import { resolveFontSetup } from "better-og";
+import {
+  createOgRouteHandler,
+  loadGoogleFontForImageResponse,
+} from "@better-og/next";
+
+export const runtime = "nodejs";
+export const revalidate = false;
+
+const fontSetup = await resolveFontSetup({
+  fonts: await loadGoogleFontForImageResponse({
+    family: "Geist",
+    weights: [400, 700],
+  }),
+  fallbackFontLocales: ["ar"],
+});
+
+export const GET = createOgRouteHandler({
+  component: (ogContext) => (
+    <div
+      style={{
+        display: "flex",
+        width: "100%",
+        height: "100%",
+        alignItems: "center",
+        justifyContent: "center",
+        fontFamily: fontSetup.families.base,
+        paddingBottom: 32 + ogContext.safeArea.bottom,
+        background: "linear-gradient(135deg, #0d192c, #174a70, #4993d6)",
+        color: "white",
+      }}
+    >
+      <div style={{ fontSize: 64, fontWeight: 700 }}>مرحبًا من better-og</div>
+    </div>
+  ),
+  fonts: fontSetup.fonts,
+});
+```
+
+## إضافة الوكيل
+
+لتفعيل اكتشاف نسبة العرض إلى الارتفاع تلقائيًا، أضف وكيلًا:
+
+```ts title="proxy.ts"
+import { withOgRewrite } from "@better-og/next";
+import type { NextRequest } from "next/server";
+
+export function proxy(request: NextRequest) {
+  return withOgRewrite(request);
+}
+
+export const config = {
+  matcher: ["/og/:path*"],
+};
+```
+
+## إعدادات Next.js
+
+إذا كنت تستخدم مزود Takumi، فأبقِه كحزمة خارجية:
+
+```ts title="next.config.ts"
+import type { NextConfig } from "next";
+
+const nextConfig: NextConfig = {
+  serverExternalPackages: ["@takumi-rs/image-response"],
+};
+
+export default nextConfig;
+```

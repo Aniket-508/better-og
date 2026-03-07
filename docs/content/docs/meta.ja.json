@@ -3,12 +3,13 @@
   "pages": [
     "---はじめに---",
     "index",
-    "getting-started",
-    "---コンセプト---",
     "core-concepts",
     "fonts",
     "---アダプター---",
-    "adapters",
+    "next",
+    "edge",
+    "workers",
+    "tanstack-start",
     "---リファレンス---",
     "api-reference"
   ]

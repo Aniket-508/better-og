@@ -10,23 +10,24 @@ import {
   createOgRouteHandler,
   loadGoogleFontForImageResponse,
   withOgRewrite,
-} from "better-og/next";
+} from "@better-og/next";
 ```
 
 ## Basic Usage
 
-```tsx title="app/og/route.tsx"
+```tsx title="app/og/[lang]/route.tsx"
 import { resolveFontSetup } from "better-og";
 import {
   createOgRouteHandler,
   loadGoogleFontForImageResponse,
-} from "better-og/next";
+} from "@better-og/next";
 
 export const runtime = "nodejs";
+export const revalidate = false;
 
 const fontSetup = await resolveFontSetup({
   fonts: await loadGoogleFontForImageResponse({
-    family: "Inter",
+    family: "Geist",
     weights: [400, 700],
   }),
 });
@@ -41,6 +42,7 @@ export const GET = createOgRouteHandler({
         alignItems: "center",
         justifyContent: "center",
         fontFamily: fontSetup.families.base,
+        paddingBottom: 24 + ogContext.safeArea.bottom,
         background: "#000",
         color: "#fff",
         fontSize: 48,
@@ -53,9 +55,11 @@ export const GET = createOgRouteHandler({
 });
 ```
 
-## Using the Takumi Provider
+## Providers
 
-By default, `better-og/next` uses the `next/og` provider (Satori). To use Takumi instead:
+By default, `@better-og/next` uses `next/og`.
+
+If you need Takumi on the Node runtime:
 
 ```tsx
 export const GET = createOgRouteHandler({
@@ -65,22 +69,27 @@ export const GET = createOgRouteHandler({
 });
 ```
 
-When using Takumi, add it to `serverExternalPackages` in your Next.js config:
+When using Takumi, keep it external in Next.js:
 
 ```ts title="next.config.ts"
-const nextConfig = {
+import type { NextConfig } from "next";
+
+const nextConfig: NextConfig = {
   serverExternalPackages: ["@takumi-rs/image-response"],
 };
+
+export default nextConfig;
 ```
 
 ## Proxy
 
-The `withOgRewrite` function creates a proxy that detects the requesting platform and rewrites the URL with the correct `aspect_ratio`:
+Use `withOgRewrite` to detect the caller platform and append the normalized `aspect_ratio` query.
 
 ```ts title="proxy.ts"
-import { withOgRewrite } from "better-og/next";
+import { withOgRewrite } from "@better-og/next";
+import type { NextRequest } from "next/server";
 
-export function proxy(request) {
+export function proxy(request: NextRequest) {
   return withOgRewrite(request, { pathnamePrefix: "/og" });
 }
 ```

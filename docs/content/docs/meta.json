@@ -3,12 +3,13 @@
   "pages": [
     "---Getting Started---",
     "index",
-    "getting-started",
-    "---Concepts---",
     "core-concepts",
     "fonts",
     "---Adapters---",
-    "adapters",
+    "next",
+    "edge",
+    "workers",
+    "tanstack-start",
     "---Reference---",
     "api-reference"
   ]

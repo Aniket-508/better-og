@@ -1,0 +1,44 @@
+---
+title: TanStack Start
+description: Use better-og with TanStack Start for server-side OG image rendering.
+---
+
+## Import
+
+```ts
+import { createOgRouteHandler } from "@better-og/tanstack-start";
+```
+
+## Usage
+
+The TanStack Start adapter uses Takumi on Node and supports both route params and `localeFromRequest`.
+
+```ts
+import { loadGoogleFonts, resolveFontSetup } from "better-og";
+import { createOgRouteHandler } from "@better-og/tanstack-start";
+
+const fontSetup = await resolveFontSetup({
+  fonts: await loadGoogleFonts({
+    family: "Inter",
+    weights: [400, 700],
+  }),
+});
+
+export const handler = createOgRouteHandler({
+  component: (
+    <div
+      style={{
+        width: "100%",
+        height: "100%",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        fontFamily: fontSetup.families.base,
+      }}
+    >
+      TanStack Start OG
+    </div>
+  ),
+  fonts: fontSetup.fonts,
+});
+```

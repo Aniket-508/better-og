@@ -1,0 +1,47 @@
+---
+title: Generic Edge
+description: Low-level Takumi WASM adapter for generic edge runtimes.
+---
+
+## Import
+
+```ts
+import { createOgHandler } from "@better-og/edge";
+```
+
+## Usage
+
+This adapter requires an explicit Takumi WASM module and is meant for runtimes where you control that module import yourself.
+
+```ts
+import module from "@takumi-rs/wasm/next";
+import { createOgHandler } from "@better-og/edge";
+
+const handler = createOgHandler({
+  module,
+  component: (
+    <div
+      style={{
+        width: "100%",
+        height: "100%",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+      }}
+    >
+      Edge OG
+    </div>
+  ),
+  localeFromRequest: (req) => {
+    const url = new URL(req.url);
+    return url.searchParams.get("locale") ?? undefined;
+  },
+});
+```
+
+## When To Use It
+
+Use `@better-og/edge` when:
+
+- you are not on Next.js, or
+- you need the lower-level Takumi WASM path and can supply the runtime-specific module yourself.
