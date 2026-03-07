@@ -1,11 +1,11 @@
-import type { ImageResponseOptions as TakumiWasmImageResponseOptions } from "@takumi-rs/image-response/wasm";
 import {
   applyStableCacheHeaders,
   resolveOgComponent,
   resolveLocaleFromParams,
   resolveOgRequestState,
-} from "better-og";
-import type { OgAdapterOptions, OgComponentFactory } from "better-og";
+} from "@better-og/core";
+import type { OgAdapterOptions, OgComponentFactory } from "@better-og/core";
+import type { ImageResponseOptions as TakumiWasmImageResponseOptions } from "@takumi-rs/image-response/wasm";
 import { ImageResponse as NextImageResponse } from "next/og";
 import type { ReactElement, ReactNode } from "react";
 

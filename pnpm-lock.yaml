@@ -29,6 +29,9 @@ importers:
 
   docs:
     dependencies:
+      '@better-og/core':
+        specifier: workspace:*
+        version: link:../packages/better-og
       '@better-og/next':
         specifier: workspace:*
         version: link:../packages/next
@@ -38,9 +41,6 @@ importers:
       '@takumi-rs/image-response':
         specifier: ^0.70.4
         version: 0.70.4
-      better-og:
-        specifier: workspace:*
-        version: link:../packages/better-og
       class-variance-authority:
         specifier: ^0.7.1
         version: 0.7.1
@@ -117,7 +117,7 @@ importers:
 
   packages/edge:
     dependencies:
-      better-og:
+      '@better-og/core':
         specifier: workspace:*
         version: link:../better-og
     devDependencies:
@@ -145,7 +145,7 @@ importers:
 
   packages/next:
     dependencies:
-      better-og:
+      '@better-og/core':
         specifier: workspace:*
         version: link:../better-og
     devDependencies:
@@ -179,7 +179,7 @@ importers:
 
   packages/tanstack-start:
     dependencies:
-      better-og:
+      '@better-og/core':
         specifier: workspace:*
         version: link:../better-og
     devDependencies:
@@ -207,7 +207,7 @@ importers:
 
   packages/workers:
     dependencies:
-      better-og:
+      '@better-og/core':
         specifier: workspace:*
         version: link:../better-og
     devDependencies:

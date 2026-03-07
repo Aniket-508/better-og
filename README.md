@@ -10,7 +10,7 @@ adapters.
 
 ## Packages
 
-- [`better-og`](./packages/better-og/README.md): core OG context, safe-area, and font helpers
+- [`@better-og/core`](./packages/better-og/README.md): core OG context, safe-area, and font helpers
 - [`@better-og/next`](./packages/next/README.md): Next.js Node and Edge adapters
 - [`@better-og/edge`](./packages/edge/README.md): low-level Takumi WASM adapter
 - [`@better-og/workers`](./packages/workers/README.md): Workers adapter with bundled Takumi WASM

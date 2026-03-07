@@ -44,7 +44,7 @@ const mocks = vi.hoisted(() => ({
   takumiImageResponseCalls: [] as { element: unknown; options: unknown }[],
 }));
 
-vi.mock<typeof import("better-og")>(import("better-og"), () => ({
+vi.mock<typeof import("@better-og/core")>(import("@better-og/core"), () => ({
   applyStableCacheHeaders: mocks.applyStableCacheHeaders as never,
   createCachedModuleLoader: mocks.createCachedModuleLoader as never,
   getOgContext: vi.fn() as never,

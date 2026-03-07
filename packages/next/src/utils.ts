@@ -1,5 +1,9 @@
-import { getOgContext, loadGoogleFonts } from "better-og";
-import type { Font, LoadGoogleFontsOptions, RouteParams } from "better-og";
+import { getOgContext, loadGoogleFonts } from "@better-og/core";
+import type {
+  Font,
+  LoadGoogleFontsOptions,
+  RouteParams,
+} from "@better-og/core";
 import { NextResponse } from "next/server";
 
 export interface OgRouteHandlerContext {

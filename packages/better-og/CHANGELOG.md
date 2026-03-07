@@ -1,4 +1,4 @@
-# better-og
+# @better-og/core
 
 ## 0.1.0
 

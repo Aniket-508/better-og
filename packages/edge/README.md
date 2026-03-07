@@ -5,7 +5,7 @@ Low-level Takumi WASM adapter for `better-og`.
 ## Install
 
 ```sh
-pnpm add better-og @better-og/edge @takumi-rs/image-response react
+pnpm add @better-og/core @better-og/edge @takumi-rs/image-response react
 ```
 
 ## Usage

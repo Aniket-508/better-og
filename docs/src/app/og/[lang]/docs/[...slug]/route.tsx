@@ -1,8 +1,8 @@
+import { createCachedModuleLoader, resolveFontSetup } from "@better-og/core";
 import {
   createOgRouteHandler,
   loadGoogleFontForImageResponse,
 } from "@better-og/next";
-import { createCachedModuleLoader, resolveFontSetup } from "better-og";
 import { notFound } from "next/navigation";
 
 import { source } from "@/lib/source";

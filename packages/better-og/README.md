@@ -1,4 +1,4 @@
-# better-og
+# @better-og/core
 
 The core package for the `better-og` workspace.
 
@@ -13,13 +13,13 @@ It contains the runtime-agnostic helpers used by every adapter:
 ## Install
 
 ```sh
-pnpm add better-og
+pnpm add @better-og/core
 ```
 
 ## Usage
 
 ```ts
-import { getOgContext, resolveFontSetup } from "better-og";
+import { getOgContext, resolveFontSetup } from "@better-og/core";
 
 const ogContext = getOgContext(request);
 

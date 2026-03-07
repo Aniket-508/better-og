@@ -1,16 +1,16 @@
-import type { ImageResponseOptions } from "@takumi-rs/image-response";
 import {
   applyStableCacheHeaders,
   createCachedModuleLoader,
   resolveOgComponent,
   resolveLocaleFromParams,
   resolveOgRequestState,
-} from "better-og";
+} from "@better-og/core";
 import type {
   OgAdapterOptions,
   OgComponentFactory,
   RouteParams,
-} from "better-og";
+} from "@better-og/core";
+import type { ImageResponseOptions } from "@takumi-rs/image-response";
 import type { ReactNode } from "react";
 
 type TanStackStartImageResponseOptions = Omit<

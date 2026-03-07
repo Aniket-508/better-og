@@ -48,7 +48,7 @@ const mockTanstackImageResponse = function MockTanStackImageResponse(
   return new Response("tanstack-start");
 };
 
-vi.mock<typeof import("better-og")>(import("better-og"), () => ({
+vi.mock<typeof import("@better-og/core")>(import("@better-og/core"), () => ({
   applyStableCacheHeaders: mocks.applyStableCacheHeaders as never,
   createCachedModuleLoader: mocks.createCachedModuleLoader as never,
   resolveLocaleFromParams: mocks.resolveLocaleFromParams as never,

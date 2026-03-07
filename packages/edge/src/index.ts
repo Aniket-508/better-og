@@ -1,11 +1,11 @@
-import type { ImageResponseOptions } from "@takumi-rs/image-response/wasm";
 import {
   applyStableCacheHeaders,
   createCachedModuleLoader,
   resolveOgComponent,
   resolveOgRequestState,
-} from "better-og";
-import type { OgAdapterOptions, OgComponentFactory } from "better-og";
+} from "@better-og/core";
+import type { OgAdapterOptions, OgComponentFactory } from "@better-og/core";
+import type { ImageResponseOptions } from "@takumi-rs/image-response/wasm";
 import type { ReactNode } from "react";
 
 type EdgeWasmImageResponseOptions = Extract<

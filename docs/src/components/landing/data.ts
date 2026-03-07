@@ -154,7 +154,7 @@ export const adapterCards: AdapterCardConfig[] = [
     id: "node",
     previewAlt: "Node.js setup preview",
     previewLines: [
-      'import { getOgContext } from "better-og"',
+      'import { getOgContext } from "@better-og/core"',
       "const context = getOgContext(request)",
       "const fonts = await resolveFontSetup(...)",
     ],

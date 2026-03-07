@@ -5,7 +5,7 @@ TanStack Start adapter for `better-og`.
 ## Install
 
 ```sh
-pnpm add better-og @better-og/tanstack-start @takumi-rs/image-response react
+pnpm add @better-og/core @better-og/tanstack-start @takumi-rs/image-response react
 ```
 
 ## Usage

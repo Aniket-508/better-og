@@ -35,19 +35,19 @@ description: Open Graph image helpers with sane aspect-ratio defaults, locale-aw
 Install only the runtime pieces you need.
 
 ```bash tab="Next.js (next/og)"
-pnpm add better-og next react
+pnpm add @better-og/core next react
 ```
 
 ```bash tab="Next.js + Takumi"
-pnpm add better-og @takumi-rs/image-response next react
+pnpm add @better-og/core @takumi-rs/image-response next react
 ```
 
 ```bash tab="Edge / Workers"
-pnpm add better-og @takumi-rs/image-response @takumi-rs/wasm next react
+pnpm add @better-og/core @takumi-rs/image-response @takumi-rs/wasm next react
 ```
 
 ```bash tab="TanStack Start"
-pnpm add better-og @takumi-rs/image-response react
+pnpm add @better-og/core @takumi-rs/image-response react
 ```
 
 ## First Route (Next.js)
@@ -55,7 +55,7 @@ pnpm add better-og @takumi-rs/image-response react
 Create your first OG route in a Next.js app:
 
 ```tsx title="app/og/[lang]/route.tsx"
-import { resolveFontSetup } from "better-og";
+import { resolveFontSetup } from "@better-og/core";
 import {
   createOgRouteHandler,
   loadGoogleFontForImageResponse,

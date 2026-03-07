@@ -1,13 +1,17 @@
-import { ImageResponse } from "@takumi-rs/image-response/wasm";
-import type { ImageResponseOptions } from "@takumi-rs/image-response/wasm";
-import { Renderer, initSync } from "@takumi-rs/wasm/no-bundler";
-import workersWasmModule from "@takumi-rs/wasm/takumi_wasm_bg.wasm";
 import {
   applyStableCacheHeaders,
   resolveOgComponent,
   resolveOgRequestState,
-} from "better-og";
-import type { Font, OgAdapterOptions, OgComponentFactory } from "better-og";
+} from "@better-og/core";
+import type {
+  Font,
+  OgAdapterOptions,
+  OgComponentFactory,
+} from "@better-og/core";
+import { ImageResponse } from "@takumi-rs/image-response/wasm";
+import type { ImageResponseOptions } from "@takumi-rs/image-response/wasm";
+import { Renderer, initSync } from "@takumi-rs/wasm/no-bundler";
+import workersWasmModule from "@takumi-rs/wasm/takumi_wasm_bg.wasm";
 import type { ReactNode } from "react";
 
 type WorkersRenderer = Renderer;

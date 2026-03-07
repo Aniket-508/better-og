@@ -5,7 +5,7 @@ Next.js adapters for `better-og`.
 ## Install
 
 ```sh
-pnpm add better-og @better-og/next next react
+pnpm add @better-og/core @better-og/next next react
 ```
 
 If you use `provider: "takumi"` on the Node runtime adapter, also install:
@@ -22,7 +22,7 @@ pnpm add @takumi-rs/image-response
 ## Usage
 
 ```tsx
-import { resolveFontSetup } from "better-og";
+import { resolveFontSetup } from "@better-og/core";
 import {
   createOgRouteHandler,
   loadGoogleFontForImageResponse,

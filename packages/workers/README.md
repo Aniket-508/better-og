@@ -9,7 +9,7 @@ examples.
 ## Install
 
 ```sh
-pnpm add better-og @better-og/workers @takumi-rs/image-response @takumi-rs/wasm react
+pnpm add @better-og/core @better-og/workers @takumi-rs/image-response @takumi-rs/wasm react
 ```
 
 ## Usage

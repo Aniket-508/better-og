@@ -50,7 +50,7 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "better-og": "workspace:*"
+    "@better-og/core": "workspace:*"
   },
   "devDependencies": {
     "@takumi-rs/image-response": "^0.70.4",

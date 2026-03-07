@@ -25,7 +25,7 @@ const fonts = await loadGoogleFontForImageResponse({
 Use `loadGoogleFonts` from the core package for any runtime:
 
 ```ts
-import { loadGoogleFonts } from "better-og";
+import { loadGoogleFonts } from "@better-og/core";
 
 const fonts = await loadGoogleFonts({
   family: "Inter",
@@ -38,7 +38,7 @@ const fonts = await loadGoogleFonts({
 The `resolveFontSetup` function combines your base fonts with locale-specific fallbacks and returns both the font data and resolved family names:
 
 ```ts
-import { resolveFontSetup } from "better-og";
+import { resolveFontSetup } from "@better-og/core";
 
 const fontSetup = await resolveFontSetup({
   fonts: myBaseFonts,

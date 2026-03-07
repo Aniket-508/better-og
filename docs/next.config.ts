@@ -6,7 +6,7 @@ const withMDX = createMDX();
 const config: NextConfig = {
   reactStrictMode: true,
   serverExternalPackages: ["@takumi-rs/image-response"],
-  transpilePackages: ["better-og", "@better-og/next"],
+  transpilePackages: ["@better-og/core", "@better-og/next"],
 };
 
 export default withMDX(config);

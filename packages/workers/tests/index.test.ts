@@ -59,7 +59,7 @@ const mockWorkersImageResponse = function MockWorkersImageResponse(
   return new Response("workers");
 };
 
-vi.mock<typeof import("better-og")>(import("better-og"), () => ({
+vi.mock<typeof import("@better-og/core")>(import("@better-og/core"), () => ({
   applyStableCacheHeaders: mocks.applyStableCacheHeaders as never,
   resolveOgComponent: mocks.resolveOgComponent as never,
   resolveOgRequestState: mocks.resolveOgRequestState as never,

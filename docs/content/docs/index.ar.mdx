@@ -35,19 +35,19 @@ description: أدوات مساعدة لصور Open Graph مع نسب عرض إل
 قم بتثبيت الحزم المطلوبة فقط حسب بيئة التشغيل.
 
 ```bash tab="Next.js (next/og)"
-pnpm add better-og next react
+pnpm add @better-og/core next react
 ```
 
 ```bash tab="Next.js + Takumi"
-pnpm add better-og @takumi-rs/image-response next react
+pnpm add @better-og/core @takumi-rs/image-response next react
 ```
 
 ```bash tab="Edge / Workers"
-pnpm add better-og @takumi-rs/image-response @takumi-rs/wasm next react
+pnpm add @better-og/core @takumi-rs/image-response @takumi-rs/wasm next react
 ```
 
 ```bash tab="TanStack Start"
-pnpm add better-og @takumi-rs/image-response react
+pnpm add @better-og/core @takumi-rs/image-response react
 ```
 
 ## أول مسار (Next.js)
@@ -55,7 +55,7 @@ pnpm add better-og @takumi-rs/image-response react
 أنشئ أول مسار OG داخل تطبيق Next.js:
 
 ```tsx title="app/og/[lang]/route.tsx"
-import { resolveFontSetup } from "better-og";
+import { resolveFontSetup } from "@better-og/core";
 import {
   createOgRouteHandler,
   loadGoogleFontForImageResponse,

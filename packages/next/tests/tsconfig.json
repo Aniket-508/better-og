@@ -8,7 +8,7 @@
       "#next-edge": ["src/edge.ts"],
       "#next-utils": ["src/utils.ts"],
       "@better-og/next": ["src/index.ts"],
-      "better-og": ["../better-og/src/index.ts"]
+      "@better-og/core": ["../better-og/src/index.ts"]
     },
     "types": ["node", "vitest/globals"]
   },

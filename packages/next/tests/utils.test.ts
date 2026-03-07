@@ -9,7 +9,7 @@ const mocks = vi.hoisted(() => ({
   rewrite: vi.fn((url: URL) => ({ kind: "rewrite", url: url.toString() })),
 }));
 
-vi.mock<typeof import("better-og")>(import("better-og"), () => ({
+vi.mock<typeof import("@better-og/core")>(import("@better-og/core"), () => ({
   getOgContext: mocks.getOgContext as never,
   loadGoogleFonts: mocks.loadGoogleFonts as never,
 }));

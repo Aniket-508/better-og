@@ -30,7 +30,7 @@ const mocks = vi.hoisted(() => ({
   })),
 }));
 
-vi.mock<typeof import("better-og")>(import("better-og"), () => ({
+vi.mock<typeof import("@better-og/core")>(import("@better-og/core"), () => ({
   applyStableCacheHeaders: mocks.applyStableCacheHeaders as never,
   resolveLocaleFromParams: mocks.resolveLocaleFromParams as never,
   resolveOgComponent: mocks.resolveOgComponent as never,

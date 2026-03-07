@@ -1,5 +1,5 @@
 {
-  "name": "better-og",
+  "name": "@better-og/core",
   "version": "0.1.0",
   "description": "Core Open Graph context, safe-area, and font helpers for the better-og workspace.",
   "keywords": [
