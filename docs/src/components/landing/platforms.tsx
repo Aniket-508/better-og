@@ -3,10 +3,13 @@
 import Image from "next/image";
 import type { MouseEvent } from "react";
 import { useCallback, useState } from "react";
-import { FaApple } from "react-icons/fa";
-import { SiInstagram, SiSlack, SiTelegram, SiX } from "react-icons/si";
 
 import type { AspectRatioCard } from "@/components/landing/data";
+import { Apple } from "@/components/ui/svgs/apple";
+import { Instagram } from "@/components/ui/svgs/instagram";
+import { Slack } from "@/components/ui/svgs/slack";
+import { Telegram } from "@/components/ui/svgs/telegram";
+import { X } from "@/components/ui/svgs/x";
 import { cn } from "@/lib/utils";
 import type { Translation } from "@/translations";
 
@@ -21,19 +24,19 @@ const PlatformLogo = ({
 
   switch (logo) {
     case "apple": {
-      return <FaApple className={iconClassName} />;
+      return <Apple className={iconClassName} />;
     }
     case "instagram": {
-      return <SiInstagram className={iconClassName} />;
+      return <Instagram className={iconClassName} />;
     }
     case "slack": {
-      return <SiSlack className={iconClassName} />;
+      return <Slack className={iconClassName} />;
     }
     case "telegram": {
-      return <SiTelegram className={iconClassName} />;
+      return <Telegram className={iconClassName} />;
     }
     case "x": {
-      return <SiX className={iconClassName} />;
+      return <X className={iconClassName} />;
     }
     default: {
       return null;

@@ -4,11 +4,12 @@ import { ChevronDown } from "lucide-react";
 import Link from "next/link";
 import type { ChangeEvent } from "react";
 import { useCallback, useState } from "react";
-import { FaNodeJs } from "react-icons/fa";
-import { SiCloudflare, SiNextdotjs } from "react-icons/si";
 
 import { adapterCards, nextAdapterVariants } from "@/components/landing/data";
 import type { AdapterCardConfig } from "@/components/landing/data";
+import { CloudflareWorkers } from "@/components/ui/svgs/cloudflare-workers";
+import { NextjsIconDark } from "@/components/ui/svgs/nextjs";
+import { Nodejs } from "@/components/ui/svgs/nodejs";
 import { cn } from "@/lib/utils";
 import type { Translation } from "@/translations";
 
@@ -38,15 +39,15 @@ const PreviewFrame = ({ lines, title }: { lines: string[]; title: string }) => (
 
 const AdapterLogo = ({ id }: { id: AdapterCardConfig["id"] | "next" }) => {
   if (id === "node") {
-    return <FaNodeJs className="size-10 sm:size-14" />;
+    return <Nodejs className="size-10 sm:size-14" />;
   }
 
   if (id === "workers") {
-    return <SiCloudflare className="size-10 sm:size-14" />;
+    return <CloudflareWorkers className="size-10 sm:size-14" />;
   }
 
   if (id === "next") {
-    return <SiNextdotjs className="size-10 sm:size-14" />;
+    return <NextjsIconDark className="size-10 sm:size-14" />;
   }
 
   return (
@@ -121,7 +122,7 @@ const NextAdapterCard = ({ lang }: { lang: string }) => {
         aria-label={`Open Next.js ${variant.label} docs`}
       />
 
-      <SiNextdotjs className="size-10 sm:size-14" />
+      <NextjsIconDark className="size-10 sm:size-14" />
       <div className="relative z-20 hidden items-center gap-2 sm:mt-4 sm:flex">
         <span className="font-mono text-base font-medium uppercase tracking-[0.64px] text-foreground">
           NEXT.JS
