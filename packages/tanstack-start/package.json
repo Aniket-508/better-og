@@ -1,6 +1,6 @@
 {
   "name": "@better-og/tanstack-start",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "TanStack Start adapter for better-og.",
   "keywords": [
     "image-response",
