@@ -1,12 +1,8 @@
 import type { MetadataRoute } from "next";
 
+import { SITE } from "@/constants/site";
 import { i18n } from "@/lib/i18n";
 import { source } from "@/lib/source";
-
-const baseUrl =
-  process.env.VERCEL_URL !== undefined && process.env.VERCEL_URL !== null
-    ? `https://${process.env.VERCEL_URL}`
-    : (process.env.SITE_URL ?? "https://better-og-docs.vercel.app");
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const routes: MetadataRoute.Sitemap = [];
@@ -16,13 +12,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: "weekly",
       lastModified: new Date(),
       priority: 1,
-      url: `${baseUrl}/${lang}`,
+      url: `${SITE.URL}/${lang}`,
     });
     routes.push({
       changeFrequency: "weekly",
       lastModified: new Date(),
       priority: 0.9,
-      url: `${baseUrl}/${lang}/docs`,
+      url: `${SITE.URL}/${lang}/docs`,
     });
 
     for (const page of source.getPages(lang)) {
@@ -30,7 +26,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
         changeFrequency: "weekly",
         lastModified: new Date(),
         priority: 0.8,
-        url: `${baseUrl}/${page.url}`,
+        url: `${SITE.URL}/${page.url}`,
       });
     }
   }

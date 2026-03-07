@@ -3,7 +3,7 @@ import type { BaseLayoutProps } from "fumadocs-ui/layouts/shared";
 import { BetterOgLogo } from "@/components/logos/better-og-logo";
 import { i18n } from "@/lib/i18n";
 
-export const baseOptions = (_locale: string): BaseLayoutProps => ({
+export const baseOptions: (_locale: string) => BaseLayoutProps = () => ({
   githubUrl: "https://github.com/Aniket-508/better-og",
   i18n,
   nav: {

@@ -4,50 +4,11 @@ import type { Metadata } from "next";
 import { Inter, Geist_Mono } from "next/font/google";
 
 import { i18n } from "@/lib/i18n";
+import { baseMetadata } from "@/seo/metadata";
 
 import "@/app/global.css";
 
-const baseUrl =
-  process.env.VERCEL_URL !== undefined && process.env.VERCEL_URL !== null
-    ? `https://${process.env.VERCEL_URL}`
-    : (process.env.SITE_URL ?? "https://better-og-docs.vercel.app");
-
-export const metadata: Metadata = {
-  authors: [{ name: "Aniket-508", url: "https://github.com/Aniket-508" }],
-  creator: "Aniket-508",
-  description:
-    "Open Graph image helpers with sane aspect-ratio defaults, locale-aware font fallbacks, and adapters for Next.js, Edge, Workers, and TanStack Start.",
-  icons: { icon: "/icon.svg" },
-  keywords: [
-    "OG image",
-    "Open Graph",
-    "better-og",
-    "Next.js",
-    "Edge",
-    "Workers",
-    "TanStack Start",
-    "aspect ratio",
-    "i18n",
-  ],
-  metadataBase: new URL(baseUrl),
-  openGraph: {
-    description:
-      "Open Graph image helpers with sane aspect-ratio defaults and locale-aware font fallbacks.",
-    siteName: "better-og",
-    title: "better-og",
-    type: "website",
-  },
-  title: {
-    default: "better-og",
-    template: "%s | better-og",
-  },
-  twitter: {
-    card: "summary_large_image",
-    description:
-      "Open Graph image helpers with sane aspect-ratio defaults and locale-aware font fallbacks.",
-    title: "better-og",
-  },
-};
+export const metadata: Metadata = baseMetadata;
 
 const inter = Inter({
   subsets: ["latin"],

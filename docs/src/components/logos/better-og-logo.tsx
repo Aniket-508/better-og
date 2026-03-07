@@ -5,31 +5,32 @@ export const BetterOgLogo = forwardRef<SVGSVGElement, SVGProps<SVGSVGElement>>(
   (props, ref) => (
     <svg
       ref={ref}
+      fill="none"
+      viewBox="0 0 256 160"
       xmlns="http://www.w3.org/2000/svg"
-      width="300"
-      height="300"
-      viewBox="0 0 300 300"
       {...props}
     >
-      {/* O letter (ring) */}
-      <path
-        fillRule="evenodd"
-        d="M 30 150 A 55 55 0 0 1 140 150 A 55 55 0 0 1 30 150 Z M 55 150 A 30 30 0 0 0 115 150 A 30 30 0 0 0 55 150 Z"
-        fill="currentColor"
-      />
-      {/* G letter body (C-shape) */}
-      <path
-        d="M 260 182 A 55 55 0 1 0 260 118 L 240 133 A 30 30 0 1 1 240 167 Z"
-        fill="currentColor"
-      />
-      {/* G letter bar */}
-      <path d="M 212 142 L 262 142 L 262 158 L 212 158 Z" fill="currentColor" />
-      {/* Star sparkle */}
-      <path
-        d="M 150 133 L 153 147 L 167 150 L 153 153 L 150 167 L 147 153 L 133 150 L 147 147 Z"
-        fill="currentColor"
-      />
+      <defs>
+        <mask id="og-star-cutout">
+          <rect fill="white" height="160" width="256" />
+          <polygon
+            fill="black"
+            points="64,40 72,60 88,56 84,72 104,80 84,88 88,104 72,100 64,120 56,100 40,104 44,88 24,80 44,72 40,56 56,60"
+          />
+        </mask>
+      </defs>
+
+      <g fill="currentColor" mask="url(#og-star-cutout)">
+        <rect height="128" width="128" x="0" y="16" />
+        <rect height="128" width="32" x="96" y="16" />
+        <rect height="32" width="160" x="96" y="16" />
+        <rect height="32" width="160" x="96" y="112" />
+        <rect height="48" width="32" x="224" y="16" />
+        <rect height="48" width="32" x="224" y="96" />
+        <rect height="32" width="64" x="160" y="64" />
+      </g>
     </svg>
   )
 );
+
 BetterOgLogo.displayName = "BetterOgLogo";
