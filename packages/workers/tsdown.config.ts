@@ -7,5 +7,4 @@ export default defineConfig({
     index: "./src/index.ts",
   },
   fixedExtension: false,
-  tsconfig: "./tsconfig.build.json",
 });

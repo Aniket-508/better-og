@@ -3,7 +3,6 @@ import { defineConfig } from "tsdown";
 const sharedConfig = {
   dts: true,
   fixedExtension: false,
-  tsconfig: "./tsconfig.build.json",
 };
 
 export default defineConfig([

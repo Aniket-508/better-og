@@ -44,6 +44,7 @@ jobs:
           pnpm check
           pnpm build
           pnpm typecheck
+          pnpm test
           pnpm --filter ./docs build
 
       - name: Create release PR or publish

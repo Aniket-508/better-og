@@ -14,7 +14,6 @@ const sharedConfig = {
     VERSION: process.env.VERSION ?? packageJson.version,
   },
   fixedExtension: false,
-  tsconfig: "./tsconfig.build.json",
 };
 
 export default defineConfig([

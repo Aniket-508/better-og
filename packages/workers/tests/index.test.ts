@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/consistent-type-imports */
+/* oxlint-disable typescript/consistent-type-imports */
 
 const mocks = vi.hoisted(() => {
   const imageResponseCalls: { element: unknown; options: unknown }[] = [];
@@ -108,6 +108,7 @@ describe("createOgHandler (workers)", () => {
     await handler(new Request("https://example.com/og"));
     await handler(new Request("https://example.com/og"));
 
+    // oxlint-disable-next-line vitest/prefer-called-once
     expect(mocks.initSync).toHaveBeenCalledTimes(1);
     expect(mocks.rendererInstances).toHaveLength(2);
     expect(mocks.rendererInstances[0]?.options).toMatchObject({
@@ -135,6 +136,7 @@ describe("createOgHandler (workers)", () => {
     await handler(new Request("https://example.com/og"));
 
     expect(mocks.initSync).not.toHaveBeenCalled();
+    // oxlint-disable-next-line vitest/prefer-called-once
     expect(renderer.loadFont).toHaveBeenCalledTimes(1);
     expect(mocks.imageResponseCalls[0]?.options).toMatchObject({
       renderer,

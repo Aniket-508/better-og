@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/consistent-type-imports */
+/* oxlint-disable typescript/consistent-type-imports */
 
 import "vitest";
 
@@ -90,6 +90,7 @@ describe("withOgRewrite", () => {
     const response = withOgRewrite(new Request("https://example.com/docs"));
 
     expect(response).toStrictEqual({ kind: "next" });
+    // oxlint-disable-next-line vitest/prefer-called-once
     expect(mocks.next).toHaveBeenCalledTimes(1);
     expect(mocks.getOgContext).not.toHaveBeenCalled();
   });
@@ -109,6 +110,7 @@ describe("withOgRewrite", () => {
       kind: "rewrite",
       url: "https://example.com/og/docs/image.png?aspect_ratio=4%3A5",
     });
+    // oxlint-disable-next-line vitest/prefer-called-once
     expect(mocks.rewrite).toHaveBeenCalledTimes(1);
   });
 });

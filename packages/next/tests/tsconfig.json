@@ -2,6 +2,8 @@
   "extends": "../tsconfig.json",
   "compilerOptions": {
     "baseUrl": "..",
+    "declaration": false,
+    "declarationMap": false,
     "paths": {
       "#next-edge": ["src/edge.ts"],
       "#next-utils": ["src/utils.ts"],

@@ -45,7 +45,7 @@
   "scripts": {
     "dev": "tsdown --watch",
     "build": "pnpm clean && NODE_ENV=production tsdown",
-    "clean": "rm -rf dist tsconfig.tsbuildinfo tsconfig.build.tsbuildinfo",
+    "clean": "rm -rf dist tsconfig.tsbuildinfo",
     "typecheck": "tsc -p tsconfig.json --pretty && tsc -p tests/tsconfig.json --pretty",
     "test": "vitest run"
   },
@@ -53,18 +53,18 @@
     "better-og": "workspace:*"
   },
   "devDependencies": {
-    "@takumi-rs/image-response": "^0.69.5",
-    "@types/node": "^22.0.0",
+    "@takumi-rs/image-response": "^0.70.4",
+    "@types/node": "^25.3.5",
     "@types/react": "^19.2.14",
     "next": "^16.1.6",
-    "react": "^19.2.0",
-    "react-dom": "^19.2.0",
-    "tsdown": "^0.20.3",
-    "typescript": "^5.9.0",
+    "react": "^19.2.4",
+    "react-dom": "^19.2.4",
+    "tsdown": "^0.21.0",
+    "typescript": "^5.9.3",
     "vitest": "^4.0.18"
   },
   "peerDependencies": {
-    "@takumi-rs/image-response": "^0.69.5",
+    "@takumi-rs/image-response": "^0.70.4",
     "next": "^16.1.6",
     "react": "^19.2.0"
   },
