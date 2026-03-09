@@ -1,0 +1,50 @@
+---
+title: Node.js
+description: Node.js वातावरण के लिए मूल Takumi अनुकूलक।
+---
+
+## आयात करें
+
+```ts
+import { createOgHandler } from "@better-og/node";
+```
+
+## उपयोग
+
+Node.js अनुकूलक Takumi के मूल Node.js रनटाइम का उपयोग करता है। सामान्य मामले में, आप बस कंपोनेंट और किसी भी अतिरिक्त `ImageResponse` विकल्प पास करते हैं।
+
+```ts
+import { createOgHandler } from "@better-og/node";
+
+const handler = createOgHandler({
+  component: (
+    <div
+      style={{
+        width: "100%",
+        height: "100%",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        background: "#1a1a2e",
+        color: "#fff",
+        fontSize: 48,
+      }}
+    >
+      Node.js OG
+    </div>
+  ),
+});
+
+export default {
+  fetch(request: Request) {
+    return handler(request);
+  },
+};
+```
+
+## कब उपयोग करें
+
+`@better-og/node` का उपयोग तब करें जब:
+
+- आप Node.js वातावरण में चला रहे हों (Next.js, Cloudflare Workers नहीं)
+- आप Takumi के मूल Node.js रनटाइम का उपयोग करना चाहते हैं

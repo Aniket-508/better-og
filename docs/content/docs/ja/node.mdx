@@ -1,0 +1,50 @@
+---
+title: Node.js
+description: Node.js 環境のネイティブ Takumi アダプター。
+---
+
+## インポート
+
+```ts
+import { createOgHandler } from "@better-og/node";
+```
+
+## 使用方法
+
+Node.js アダプターは Takumi のネイティブ Node.js ランタイムを使用します。一般的には、コンポーネントと追加の `ImageResponse` オプションを渡すだけです。
+
+```ts
+import { createOgHandler } from "@better-og/node";
+
+const handler = createOgHandler({
+  component: (
+    <div
+      style={{
+        width: "100%",
+        height: "100%",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        background: "#1a1a2e",
+        color: "#fff",
+        fontSize: 48,
+      }}
+    >
+      Node.js OG
+    </div>
+  ),
+});
+
+export default {
+  fetch(request: Request) {
+    return handler(request);
+  },
+};
+```
+
+## いつ使うか
+
+以下の場合に `@better-og/node` を使用してください：
+
+- Node.js 環境で実行している場合（Next.js や Cloudflare Workers ではない）
+- Takumi のネイティブ Node.js ランタイムを使用したい場合

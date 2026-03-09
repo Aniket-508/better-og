@@ -1,0 +1,50 @@
+---
+title: Node.js
+description: محول Takumi الأصلي لبيئات Node.js.
+---
+
+## الاستيراد
+
+```ts
+import { createOgHandler } from "@better-og/node";
+```
+
+## الاستخدام
+
+يستخدم محول Node.js بيئة التشغيل الأصلية لـ Node.js من Takumi. في الحالة الشائعة، يمكنك تمرير المكون وأي خيارات إضافية لـ `ImageResponse`.
+
+```ts
+import { createOgHandler } from "@better-og/node";
+
+const handler = createOgHandler({
+  component: (
+    <div
+      style={{
+        width: "100%",
+        height: "100%",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        background: "#1a1a2e",
+        color: "#fff",
+        fontSize: 48,
+      }}
+    >
+      Node.js OG
+    </div>
+  ),
+});
+
+export default {
+  fetch(request: Request) {
+    return handler(request);
+  },
+};
+```
+
+## متى تستخدمه
+
+استخدم `@better-og/node` عندما:
+
+- تقوم بتشغيله في بيئة Node.js (ليس Next.js أو Cloudflare Workers)
+- تريد استخدام بيئة التشغيل الأصلية لـ Node.js من Takumi

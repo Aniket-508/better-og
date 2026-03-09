@@ -136,7 +136,7 @@ export const getAdapterCards = (
   translation: Translation
 ): AdapterCardConfig[] => [
   {
-    href: "/docs/core-concepts",
+    href: "/docs/node",
     id: "node",
     title: translation.landing.adapters.node,
   },

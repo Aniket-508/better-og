@@ -1,0 +1,9 @@
+{
+  "extends": "../../../tsconfig.json",
+  "compilerOptions": {
+    "moduleResolution": "bundler",
+    "types": ["vitest/globals"],
+    "noEmit": true
+  },
+  "include": ["./**/*.ts"]
+}

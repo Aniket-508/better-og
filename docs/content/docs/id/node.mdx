@@ -1,0 +1,50 @@
+---
+title: Node.js
+description: Adaptor Takumi asli untuk lingkungan Node.js.
+---
+
+## Impor
+
+```ts
+import { createOgHandler } from "@better-og/node";
+```
+
+## Penggunaan
+
+Adaptor Node.js menggunakan runtime Node.js asli dari Takumi. Dalam kasus umum, Anda hanya perlu meneruskan komponen dan opsi `ImageResponse` tambahan.
+
+```ts
+import { createOgHandler } from "@better-og/node";
+
+const handler = createOgHandler({
+  component: (
+    <div
+      style={{
+        width: "100%",
+        height: "100%",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        background: "#1a1a2e",
+        color: "#fff",
+        fontSize: 48,
+      }}
+    >
+      Node.js OG
+    </div>
+  ),
+});
+
+export default {
+  fetch(request: Request) {
+    return handler(request);
+  },
+};
+```
+
+## Kapan Menggunakan
+
+Gunakan `@better-og/node` ketika:
+
+- Anda menjalankan di lingkungan Node.js (bukan Next.js, bukan Cloudflare Workers)
+- Anda ingin menggunakan runtime Node.js asli dari Takumi

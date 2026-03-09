@@ -1,0 +1,50 @@
+---
+title: Node.js
+description: Node.js 환경을 위한 기본 Takumi 어댑터.
+---
+
+## 가져오기
+
+```ts
+import { createOgHandler } from "@better-og/node";
+```
+
+## 사용법
+
+Node.js 어댑터는 Takumi의 기본 Node.js 런타임을 사용합니다. 일반적으로 컴포넌트와 추가 `ImageResponse` 옵션만 전달하면 됩니다.
+
+```ts
+import { createOgHandler } from "@better-og/node";
+
+const handler = createOgHandler({
+  component: (
+    <div
+      style={{
+        width: "100%",
+        height: "100%",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        background: "#1a1a2e",
+        color: "#fff",
+        fontSize: 48,
+      }}
+    >
+      Node.js OG
+    </div>
+  ),
+});
+
+export default {
+  fetch(request: Request) {
+    return handler(request);
+  },
+};
+```
+
+## 언제 사용하나
+
+다음 경우에 `@better-og/node`를 사용하세요:
+
+- Node.js 환경에서 실행하는 경우 (Next.js, Cloudflare Workers 아님)
+- Takumi의 기본 Node.js 런타임을 사용하고 싶은 경우

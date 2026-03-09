@@ -1,0 +1,50 @@
+---
+title: Node.js
+description: Node.js 环境的原生 Takumi 适配器。
+---
+
+## 导入
+
+```ts
+import { createOgHandler } from "@better-og/node";
+```
+
+## 使用方法
+
+Node.js 适配器使用 Takumi 的原生 Node.js 运行时。通常只需传递组件和任何额外的 `ImageResponse` 选项即可。
+
+```ts
+import { createOgHandler } from "@better-og/node";
+
+const handler = createOgHandler({
+  component: (
+    <div
+      style={{
+        width: "100%",
+        height: "100%",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        background: "#1a1a2e",
+        color: "#fff",
+        fontSize: 48,
+      }}
+    >
+      Node.js OG
+    </div>
+  ),
+});
+
+export default {
+  fetch(request: Request) {
+    return handler(request);
+  },
+};
+```
+
+## 何时使用
+
+在以下情况下使用 `@better-og/node`：
+
+- 你在 Node.js 环境中运行（不是 Next.js，不是 Cloudflare Workers）
+- 你想使用 Takumi 的原生 Node.js 运行时

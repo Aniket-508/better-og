@@ -180,6 +180,34 @@ importers:
         specifier: ^4.0.18
         version: 4.0.18(@types/node@25.3.5)(jiti@2.6.1)(lightningcss@1.31.1)
 
+  packages/node:
+    dependencies:
+      '@better-og/core':
+        specifier: workspace:*
+        version: link:../core
+    devDependencies:
+      '@takumi-rs/image-response':
+        specifier: ^0.70.4
+        version: 0.70.4
+      '@types/node':
+        specifier: ^25.3.5
+        version: 25.3.5
+      '@types/react':
+        specifier: ^19.2.14
+        version: 19.2.14
+      react:
+        specifier: ^19.2.4
+        version: 19.2.4
+      tsdown:
+        specifier: ^0.21.0
+        version: 0.21.0(typescript@5.9.3)
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+      vitest:
+        specifier: ^4.0.18
+        version: 4.0.18(@types/node@25.3.5)(jiti@2.6.1)(lightningcss@1.31.1)
+
   packages/tanstack-start:
     dependencies:
       '@better-og/core':

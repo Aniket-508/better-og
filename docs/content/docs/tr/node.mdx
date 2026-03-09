@@ -1,0 +1,50 @@
+---
+title: Node.js
+description: Node.js ortamları için yerel Takumi adaptörü.
+---
+
+## İçe Aktar
+
+```ts
+import { createOgHandler } from "@better-og/node";
+```
+
+## Kullanım
+
+Node.js adaptörü, Takumi'nin yerel Node.js çalışma zamanını kullanır. Yaygın durumda, yalnızca bileşeni ve ek `ImageResponse` seçeneklerini iletmeniz yeterlidir.
+
+```ts
+import { createOgHandler } from "@better-og/node";
+
+const handler = createOgHandler({
+  component: (
+    <div
+      style={{
+        width: "100%",
+        height: "100%",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        background: "#1a1a2e",
+        color: "#fff",
+        fontSize: 48,
+      }}
+    >
+      Node.js OG
+    </div>
+  ),
+});
+
+export default {
+  fetch(request: Request) {
+    return handler(request);
+  },
+};
+```
+
+## Ne Zaman Kullanılır
+
+`@better-og/node` şu durumlarda kullanın:
+
+- Node.js ortamında çalışıyorsunuz (Next.js, Cloudflare Workers değil)
+- Takumi'nin yerel Node.js çalışma zamanını kullanmak istiyorsunuz

@@ -1,0 +1,50 @@
+---
+title: Node.js
+description: Нативный адаптер Takumi для сред Node.js.
+---
+
+## Импорт
+
+```ts
+import { createOgHandler } from "@better-og/node";
+```
+
+## Использование
+
+Адаптер Node.js использует нативную среду выполнения Node.js от Takumi. В обычном случае вы просто передаете компонент и любые дополнительные параметры `ImageResponse`.
+
+```ts
+import { createOgHandler } from "@better-og/node";
+
+const handler = createOgHandler({
+  component: (
+    <div
+      style={{
+        width: "100%",
+        height: "100%",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        background: "#1a1a2e",
+        color: "#fff",
+        fontSize: 48,
+      }}
+    >
+      Node.js OG
+    </div>
+  ),
+});
+
+export default {
+  fetch(request: Request) {
+    return handler(request);
+  },
+};
+```
+
+## Когда использовать
+
+Используйте `@better-og/node`, когда:
+
+- Вы запускаете в среде Node.js (не Next.js, не Cloudflare Workers)
+- Вы хотите использовать нативную среду выполнения Node.js от Takumi

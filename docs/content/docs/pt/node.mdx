@@ -1,0 +1,50 @@
+---
+title: Node.js
+description: Adaptador Takumi nativo para ambientes Node.js.
+---
+
+## Importar
+
+```ts
+import { createOgHandler } from "@better-og/node";
+```
+
+## Uso
+
+O adaptador Node.js usa o runtime nativo Node.js da Takumi. No caso comum, você apenas passa o componente e quaisquer opções adicionais de `ImageResponse`.
+
+```ts
+import { createOgHandler } from "@better-og/node";
+
+const handler = createOgHandler({
+  component: (
+    <div
+      style={{
+        width: "100%",
+        height: "100%",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        background: "#1a1a2e",
+        color: "#fff",
+        fontSize: 48,
+      }}
+    >
+      Node.js OG
+    </div>
+  ),
+});
+
+export default {
+  fetch(request: Request) {
+    return handler(request);
+  },
+};
+```
+
+## Quando usar
+
+Use `@better-og/node` quando:
+
+- Você está executando em um ambiente Node.js (não Next.js, não Cloudflare Workers)
+- Você deseja usar o runtime nativo Node.js da Takumi

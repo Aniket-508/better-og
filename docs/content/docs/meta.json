@@ -6,6 +6,7 @@
     "core-concepts",
     "fonts",
     "---Adapters---",
+    "node",
     "next",
     "edge",
     "workers",

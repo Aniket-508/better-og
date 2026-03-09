@@ -1,0 +1,67 @@
+{
+  "name": "@better-og/node",
+  "version": "0.1.0",
+  "description": "Node.js adapter for better-og using Takumi's native runtime.",
+  "keywords": [
+    "node",
+    "og",
+    "open-graph",
+    "takumi"
+  ],
+  "homepage": "https://github.com/Aniket-508/better-og/tree/main/packages/node#readme",
+  "bugs": {
+    "url": "https://github.com/Aniket-508/better-og/issues"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Aniket-508/better-og.git",
+    "directory": "packages/node"
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "type": "module",
+  "sideEffects": false,
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
+    }
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "dev": "tsdown --watch",
+    "build": "pnpm clean && NODE_ENV=production tsdown",
+    "clean": "rm -rf dist tsconfig.tsbuildinfo",
+    "typecheck": "tsc -p tsconfig.json --pretty && tsc -p tests/tsconfig.json --pretty",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@better-og/core": "workspace:*"
+  },
+  "devDependencies": {
+    "@takumi-rs/image-response": "^0.70.4",
+    "@types/node": "^25.3.5",
+    "@types/react": "^19.2.14",
+    "react": "^19.2.4",
+    "tsdown": "^0.21.0",
+    "typescript": "^5.9.3",
+    "vitest": "^4.0.18"
+  },
+  "peerDependencies": {
+    "@takumi-rs/image-response": "^0.70.4",
+    "react": "^19.2.0"
+  },
+  "engines": {
+    "node": ">=22.20.0",
+    "pnpm": ">=10.29.1"
+  },
+  "packageManager": "pnpm@10.29.1"
+}
