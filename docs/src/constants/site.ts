@@ -26,6 +26,6 @@ export const SITE = {
     "i18n",
   ],
   NAME: "better-og",
-  OG_IMAGE: "/og/en/docs/image.png",
+  OG_IMAGE: "/og.png",
   URL: baseUrl,
 } as const;
