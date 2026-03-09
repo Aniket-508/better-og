@@ -5,11 +5,11 @@ import type { MouseEvent } from "react";
 import { useCallback, useState } from "react";
 
 import type { AspectRatioCard } from "@/components/landing/data";
-import { Apple } from "@/components/ui/svgs/apple";
-import { Instagram } from "@/components/ui/svgs/instagram";
-import { Slack } from "@/components/ui/svgs/slack";
-import { Telegram } from "@/components/ui/svgs/telegram";
-import { X } from "@/components/ui/svgs/x";
+import { IMessage } from "@/components/ui/icon/imessage";
+import { Instagram } from "@/components/ui/icon/instagram";
+import { Slack } from "@/components/ui/icon/slack";
+import { Telegram } from "@/components/ui/icon/telegram";
+import { X } from "@/components/ui/icon/x";
 import { cn } from "@/lib/utils";
 import type { Translation } from "@/translations";
 
@@ -20,11 +20,15 @@ const PlatformLogo = ({
   className?: string;
   logo: AspectRatioCard["logos"][number];
 }) => {
-  const iconClassName = cn("size-4", className);
+  const iconClassName = cn(
+    "size-8 sm:size-10",
+    logo === "x" && "sm:pt-2",
+    className
+  );
 
   switch (logo) {
     case "apple": {
-      return <Apple className={iconClassName} />;
+      return <IMessage className={iconClassName} />;
     }
     case "instagram": {
       return <Instagram className={iconClassName} />;
@@ -86,7 +90,7 @@ export const Platforms = ({
               <button
                 key={card.id}
                 className={cn(
-                  "flex w-full items-start gap-4 px-4 py-5 text-left transition-colors duration-200",
+                  "flex flex-col w-full items-start gap-4 px-4 py-5 text-left transition-colors duration-200",
                   "border-border",
                   index > 0 ? "border-t" : "",
                   selectedId === card.id ? "bg-muted/40" : "hover:bg-muted/20"
@@ -95,7 +99,7 @@ export const Platforms = ({
                 type="button"
                 value={card.id}
               >
-                <div className="mt-1 flex items-center gap-2 text-muted-foreground">
+                <div className="flex items-center gap-2 text-muted-foreground">
                   {card.logos.map((logo) => (
                     <PlatformLogo key={`${card.id}-${logo}`} logo={logo} />
                   ))}
@@ -104,7 +108,7 @@ export const Platforms = ({
                 <div className="min-w-0">
                   <div className="font-medium">{card.title}</div>
                   <div className="mt-1 font-mono text-xs text-muted-foreground">
-                    {card.dimensionLabel} ({card.aspectRatio})
+                    {card.dimensionLabel} [{card.aspectRatio}]
                   </div>
                 </div>
               </button>
