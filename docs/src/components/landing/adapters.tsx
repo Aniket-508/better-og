@@ -23,6 +23,7 @@ import type { Translation } from "@/translations";
 const PreviewFrame = () => (
   <div className="hidden sm:block absolute top-0 -right-4 h-58 overflow-hidden rounded-lg">
     <div className="block dark:hidden">
+      {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         width="305"
         height="232"
@@ -32,6 +33,7 @@ const PreviewFrame = () => (
       />
     </div>
     <div className="hidden dark:block">
+      {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         width="305"
         height="232"
@@ -106,8 +108,12 @@ const NextAdapterCard = ({
         event.target.value as (typeof nextAdapterVariants)[number]["id"]
       );
     },
-    []
+    [nextAdapterVariants]
   );
+  const handleSelectClick = useCallback((e: React.MouseEvent) => {
+    e.preventDefault();
+  }, []);
+
   const variant =
     nextAdapterVariants.find((item) => item.id === variantId) ??
     nextAdapterVariants[0];
@@ -124,10 +130,7 @@ const NextAdapterCard = ({
         aria-label={translation.landing.nextRuntimeAriaLabel}
         onChange={handleVariantChange}
         value={variantId}
-        onClick={(e) => {
-          e.stopPropagation();
-          e.preventDefault();
-        }}
+        onClick={handleSelectClick}
       >
         {nextAdapterVariants.map((option) => (
           <NativeSelectOption key={option.id} value={option.id}>

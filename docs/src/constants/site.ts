@@ -5,8 +5,9 @@ const baseUrl =
 
 export const SITE = {
   AUTHOR: {
-    NAME: "Aniket-508",
-    TWITTER: "@Aniket_508",
+    GITHUB: "Aniket-508",
+    NAME: "Aniket Pawar",
+    TWITTER: "@alaymanguy",
   },
   DESCRIPTION: {
     LONG: "Platform-aware Open Graph image helpers with sane aspect-ratio defaults, locale-aware font loading, and adapters for Next.js, Edge runtimes, Workers, and TanStack Start.",

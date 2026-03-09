@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import type { MouseEvent } from "react";
 import { useCallback, useState } from "react";
 
@@ -49,16 +48,11 @@ const PlatformLogo = ({
 };
 
 interface PlatformsProps {
-  lang: string;
   platformCards: AspectRatioCard[];
   translation: Translation;
 }
 
-export const Platforms = ({
-  lang,
-  platformCards,
-  translation,
-}: PlatformsProps) => {
+export const Platforms = ({ platformCards, translation }: PlatformsProps) => {
   const [selectedId, setSelectedId] = useState(platformCards[0]?.id);
   const handleSelect = useCallback((event: MouseEvent<HTMLButtonElement>) => {
     setSelectedId(event.currentTarget.value);
@@ -116,7 +110,7 @@ export const Platforms = ({
           </div>
 
           <div className="px-4 py-8 md:px-10">
-            <div className="mx-auto flex max-w-3xl items-center justify-center rounded-[2rem] border border-border/70 bg-[radial-gradient(circle_at_top_left,rgba(148,163,184,0.18),transparent_45%),linear-gradient(180deg,rgba(15,23,42,0.03),transparent)] p-6 md:min-h-[44rem]">
+            {/* <div className="mx-auto flex max-w-3xl items-center justify-center rounded-[2rem] border border-border/70 bg-[radial-gradient(circle_at_top_left,rgba(148,163,184,0.18),transparent_45%),linear-gradient(180deg,rgba(15,23,42,0.03),transparent)] p-6 md:min-h-[44rem]">
               <div className="relative w-full max-w-[24rem] rounded-[2.4rem] border border-zinc-300/80 bg-zinc-950 p-3 shadow-2xl dark:border-zinc-800">
                 <div className="mb-3 flex items-center justify-between rounded-[1.8rem] bg-zinc-900 px-4 py-2 text-[11px] text-zinc-400">
                   <span>9:41</span>
@@ -180,7 +174,7 @@ export const Platforms = ({
                   </div>
                 </div>
               </div>
-            </div>
+            </div> */}
           </div>
         </div>
       </div>

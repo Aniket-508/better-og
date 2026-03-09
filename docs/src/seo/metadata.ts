@@ -67,6 +67,9 @@ export const createMetadata = (
 };
 
 export const baseMetadata: Metadata = {
+  alternates: {
+    canonical: "/",
+  },
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
@@ -77,7 +80,6 @@ export const baseMetadata: Metadata = {
   category: "technology",
   creator: SITE.AUTHOR.NAME,
   description: SITE.DESCRIPTION.LONG,
-  icons: { icon: "/icon.svg" },
   keywords: [...SITE.KEYWORDS],
   metadataBase: new URL(SITE.URL),
   openGraph: {
