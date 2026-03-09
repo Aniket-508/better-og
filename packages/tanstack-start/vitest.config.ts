@@ -6,7 +6,7 @@ export default defineConfig({
   resolve: {
     alias: {
       "@better-og/core": fileURLToPath(
-        new URL("../better-og/src/index.ts", import.meta.url)
+        new URL("../core/src/index.ts", import.meta.url)
       ),
       "@better-og/tanstack-start": fileURLToPath(
         new URL("src/index.ts", import.meta.url)

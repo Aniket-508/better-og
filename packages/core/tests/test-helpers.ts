@@ -1,4 +1,5 @@
-import type { Font, OgContext } from "#core";
+import { createLayout, getPlatformCapabilities } from "#core";
+import type { Font, ResolvedOgRequest } from "#core";
 
 export const createFont = (name?: string): Font => ({
   ...(name ? { name } : {}),
@@ -11,10 +12,27 @@ export const createRequest = (url: string, userAgent?: string): Request =>
   });
 
 export const createOgContext = (
-  overrides: Partial<OgContext> = {}
-): OgContext => ({
+  overrides: Partial<ResolvedOgRequest> = {}
+): ResolvedOgRequest => ({
   aspectRatio: "1.91:1",
+  capabilities: getPlatformCapabilities("generic"),
+  confidence: 0,
+  crawler: "Generic",
   height: 630,
+  layout: createLayout({
+    height: 630,
+    safeArea: {
+      bottom: 0,
+      left: 0,
+      right: 0,
+      top: 0,
+    },
+    strategy: "wide",
+    width: 1200,
+  }),
+  layoutStrategy: "wide",
+  matchedSignals: [],
+  normalizedQuery: {},
   platform: "generic",
   safeArea: {
     bottom: 0,

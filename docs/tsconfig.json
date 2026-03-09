@@ -18,7 +18,7 @@
     "paths": {
       "@/*": ["./src/*"],
       "fumadocs-mdx:collections/*": [".source/*"],
-      "@better-og/core": ["../packages/better-og/src/index.ts"],
+      "@better-og/core": ["../packages/core/src/index.ts"],
       "@better-og/edge": ["../packages/edge/src/index.ts"],
       "@better-og/next": ["../packages/next/src/index.ts"],
       "@better-og/next/edge": ["../packages/next/src/edge.ts"],

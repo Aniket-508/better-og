@@ -6,7 +6,7 @@
     "lib": ["ES2022", "DOM"],
     "baseUrl": ".",
     "paths": {
-      "better-og": ["packages/better-og/src/index.ts"],
+      "better-og": ["packages/core/src/index.ts"],
       "@better-og/edge": ["packages/edge/src/index.ts"],
       "@better-og/next": ["packages/next/src/index.ts"],
       "@better-og/next/edge": ["packages/next/src/edge.ts"],
