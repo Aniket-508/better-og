@@ -1577,14 +1577,19 @@ const resolveRequestedPlatform = (
 ): string =>
   platform ? normalizePlatform(platform) : detectedPlatform.platform;
 
+const resolveExplicitAspectRatio = (
+  options: ResolveOgRequestOptions,
+  requestUrl: URL
+): AspectRatioPreset | undefined =>
+  resolveAspectRatioPreset(options.aspectRatio) ??
+  resolveAspectRatioPreset(requestUrl.searchParams.get("aspect_ratio"));
+
 const resolveRequestedAspectRatio = (
   options: ResolveOgRequestOptions,
   requestUrl: URL,
   profile: PlatformProfile
 ): AspectRatioPreset =>
-  resolveAspectRatioPreset(options.aspectRatio) ??
-  resolveAspectRatioPreset(requestUrl.searchParams.get("aspect_ratio")) ??
-  profile.defaultAspectRatio;
+  resolveExplicitAspectRatio(options, requestUrl) ?? profile.defaultAspectRatio;
 
 const resolveRequestedLayout = (
   options: ResolveOgRequestOptions,
@@ -1608,6 +1613,39 @@ const resolveRequestedLayout = (
   };
 };
 
+const resolveRequestLayout = ({
+  layoutStrategy,
+  options,
+  preset,
+  profiles,
+  resolvedPlatform,
+}: {
+  layoutStrategy: ResolvedLayoutStrategy;
+  options: ResolveOgRequestOptions;
+  preset: AspectRatioPreset;
+  profiles: PlatformProfile[];
+  resolvedPlatform: string;
+}): { layout: OgLayout; safeArea: OgSafeArea } => {
+  const safeArea = getSafeArea({
+    aspectRatio: preset.label,
+    height: preset.height,
+    platform: resolvedPlatform,
+    platformProfiles: profiles,
+    width: preset.width,
+  });
+
+  return {
+    layout: createLayout({
+      height: preset.height,
+      padding: options.padding,
+      safeArea,
+      strategy: layoutStrategy,
+      width: preset.width,
+    }),
+    safeArea,
+  };
+};
+
 export const resolveOgRequest = async (
   request: Request,
   options: ResolveOgRequestOptions = {}
@@ -1620,6 +1658,7 @@ export const resolveOgRequest = async (
     detectedPlatform
   );
   const profile = getPlatformProfile(resolvedPlatform, profiles);
+  const explicitAspectRatio = resolveExplicitAspectRatio(options, requestUrl);
   const preset = resolveRequestedAspectRatio(options, requestUrl, profile);
   const { explicitLayout, layoutStrategy } = resolveRequestedLayout(
     options,
@@ -1627,19 +1666,12 @@ export const resolveOgRequest = async (
     preset,
     profile
   );
-  const safeArea = getSafeArea({
-    aspectRatio: preset.label,
-    height: preset.height,
-    platform: resolvedPlatform,
-    platformProfiles: profiles,
-    width: preset.width,
-  });
-  const layout = createLayout({
-    height: preset.height,
-    padding: options.padding,
-    safeArea,
-    strategy: layoutStrategy,
-    width: preset.width,
+  const { layout, safeArea } = resolveRequestLayout({
+    layoutStrategy,
+    options,
+    preset,
+    profiles,
+    resolvedPlatform,
   });
 
   return {
