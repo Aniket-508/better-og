@@ -1,31 +1,9 @@
 /* oxlint-disable typescript/consistent-type-imports */
 
 const mocks = vi.hoisted(() => {
+  const capturedOptions: unknown[] = [];
   const imageResponseCalls: { element: unknown; options: unknown }[] = [];
   const initSync = vi.fn();
-  const resolveOgComponent = vi.fn((component: unknown) => component);
-  const resolveOgRequestState = vi.fn(() => ({
-    fonts: [
-      {
-        data: Uint8Array.from([1, 2, 3]),
-        name: "Geist",
-        style: "italic",
-        weight: 400,
-      },
-    ],
-    ogContext: {
-      aspectRatio: "1.91:1",
-      height: 630,
-      platform: "generic",
-      safeArea: {
-        bottom: 0,
-        left: 0,
-        right: 0,
-        top: 0,
-      },
-      width: 1200,
-    },
-  }));
   const rendererInstances: FakeRenderer[] = [];
 
   class FakeRenderer {
@@ -40,12 +18,15 @@ const mocks = vi.hoisted(() => {
 
   return {
     Renderer: FakeRenderer,
-    applyStableCacheHeaders: vi.fn((response: Response) => response),
+    capturedOptions,
+    createOgRouteHandler: vi.fn((options: unknown) => {
+      capturedOptions.push(options);
+
+      return () => new Response("handled");
+    }),
     imageResponseCalls,
     initSync,
     rendererInstances,
-    resolveOgComponent,
-    resolveOgRequestState,
   };
 });
 
@@ -60,9 +41,7 @@ const mockWorkersImageResponse = function MockWorkersImageResponse(
 };
 
 vi.mock<typeof import("@better-og/core")>(import("@better-og/core"), () => ({
-  applyStableCacheHeaders: mocks.applyStableCacheHeaders as never,
-  resolveOgComponent: mocks.resolveOgComponent as never,
-  resolveOgRequestState: mocks.resolveOgRequestState as never,
+  createOgRouteHandler: mocks.createOgRouteHandler as never,
 }));
 
 vi.mock<typeof import("@takumi-rs/image-response/wasm")>(
@@ -88,28 +67,97 @@ vi.mock<typeof import("@takumi-rs/wasm/takumi_wasm_bg.wasm")>(
     }) as never
 );
 
+const resolvedRequest = {
+  aspectRatio: "1.91:1",
+  capabilities: {
+    emoji: true,
+    maxResponseBytes: 8_000_000,
+    preferredFormat: "webp",
+    svg: true,
+    webp: true,
+  },
+  confidence: 0.7,
+  crawler: "Generic",
+  height: 630,
+  layout: {
+    bleed: { height: 630, width: 1200, x: 0, y: 0 },
+    canvas: { height: 630, width: 1200, x: 0, y: 0 },
+    center: { height: 300, width: 900, x: 150, y: 120 },
+    content: { height: 534, width: 1104, x: 48, y: 48 },
+    safe: { height: 630, width: 1200, x: 0, y: 0 },
+    strategy: "wide",
+  },
+  layoutStrategy: "wide",
+  matchedSignals: [],
+  normalizedQuery: {},
+  platform: "generic",
+  safeArea: { bottom: 0, left: 0, right: 0, top: 0 },
+  width: 1200,
+};
+
 const resetWorkerTestState = () => {
   vi.resetModules();
+  mocks.capturedOptions.length = 0;
   mocks.imageResponseCalls.length = 0;
   mocks.initSync.mockClear();
   mocks.rendererInstances.length = 0;
-  mocks.resolveOgRequestState.mockClear();
 };
 
 describe("createOgHandler (workers)", () => {
-  it("initializes the wasm runtime once and creates a renderer per request", async () => {
+  it("initializes the wasm runtime once and creates a renderer per render", async () => {
     resetWorkerTestState();
 
     const { createOgHandler } = await import("@better-og/workers");
-    const handler = createOgHandler({
+    createOgHandler({
       component: "card",
     });
 
-    await handler(new Request("https://example.com/og"));
-    await handler(new Request("https://example.com/og"));
+    const options = mocks.capturedOptions[0] as {
+      renderOptions: unknown;
+      renderer: (context: {
+        component: string;
+        fonts: {
+          data: Uint8Array;
+          name: string;
+          style?: string;
+          weight?: number;
+        }[];
+        options: unknown;
+        request: Request;
+        resolvedRequest: typeof resolvedRequest;
+      }) => Response;
+    };
 
-    // oxlint-disable-next-line vitest/prefer-called-once
-    expect(mocks.initSync).toHaveBeenCalledTimes(1);
+    options.renderer({
+      component: "card",
+      fonts: [
+        {
+          data: Uint8Array.from([1, 2, 3]),
+          name: "Geist",
+          style: "italic",
+          weight: 400,
+        },
+      ],
+      options: options.renderOptions,
+      request: new Request("https://example.com/og"),
+      resolvedRequest,
+    });
+    options.renderer({
+      component: "card",
+      fonts: [
+        {
+          data: Uint8Array.from([1, 2, 3]),
+          name: "Geist",
+          style: "italic",
+          weight: 400,
+        },
+      ],
+      options: options.renderOptions,
+      request: new Request("https://example.com/og"),
+      resolvedRequest,
+    });
+
+    expect(mocks.initSync).toHaveBeenCalledOnce();
     expect(mocks.rendererInstances).toHaveLength(2);
     expect(mocks.rendererInstances[0]?.options).toMatchObject({
       fonts: [
@@ -128,16 +176,44 @@ describe("createOgHandler (workers)", () => {
 
     const { createOgHandler } = await import("@better-og/workers");
     const renderer = new mocks.Renderer();
-    const handler = createOgHandler({
+    createOgHandler({
       component: "card",
-      renderer: renderer as never,
+      takumiRenderer: renderer as never,
     });
 
-    await handler(new Request("https://example.com/og"));
+    const options = mocks.capturedOptions[0] as {
+      renderOptions: unknown;
+      renderer: (context: {
+        component: string;
+        fonts: {
+          data: Uint8Array;
+          name: string;
+          style?: string;
+          weight?: number;
+        }[];
+        options: unknown;
+        request: Request;
+        resolvedRequest: typeof resolvedRequest;
+      }) => Response;
+    };
+
+    options.renderer({
+      component: "card",
+      fonts: [
+        {
+          data: Uint8Array.from([1, 2, 3]),
+          name: "Geist",
+          style: "italic",
+          weight: 400,
+        },
+      ],
+      options: options.renderOptions,
+      request: new Request("https://example.com/og"),
+      resolvedRequest,
+    });
 
     expect(mocks.initSync).not.toHaveBeenCalled();
-    // oxlint-disable-next-line vitest/prefer-called-once
-    expect(renderer.loadFont).toHaveBeenCalledTimes(1);
+    expect(renderer.loadFont).toHaveBeenCalledOnce();
     expect(mocks.imageResponseCalls[0]?.options).toMatchObject({
       renderer,
       width: 1200,

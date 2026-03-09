@@ -1,4 +1,4 @@
-import { getOgContext, loadGoogleFonts } from "@better-og/core";
+import { loadGoogleFonts, resolveOgRequest } from "@better-og/core";
 import type {
   Font,
   LoadGoogleFontsOptions,
@@ -67,6 +67,24 @@ const normalizeGoogleFontWeights = (
   ];
 };
 
+const shouldBypassRewrite = (
+  requestUrl: URL,
+  pathnamePrefix: string
+): boolean =>
+  !matchesPathPrefix(requestUrl.pathname, pathnamePrefix) ||
+  requestUrl.searchParams.has("aspect_ratio");
+
+const applyRewriteQuery = (
+  requestUrl: URL,
+  ogRequest: Awaited<ReturnType<typeof resolveOgRequest>>
+): URL => {
+  requestUrl.searchParams.set("aspect_ratio", ogRequest.aspectRatio);
+  requestUrl.searchParams.set("layout", ogRequest.layoutStrategy);
+  requestUrl.searchParams.set("platform", ogRequest.platform);
+
+  return requestUrl;
+};
+
 export const normalizeFontsForNextImageResponse = (
   fonts: Font[]
 ): NextImageResponseFont[] | undefined => {
@@ -100,24 +118,18 @@ export const loadGoogleFontForImageResponse = async (
   return normalizeFontsForNextImageResponse(fonts) ?? [];
 };
 
-export const withOgRewrite = (
+export const withOgRewrite = async (
   request: Request,
   options: OgRewriteOptions = {}
-): NextResponse => {
+): Promise<NextResponse> => {
   const pathnamePrefix = options.pathnamePrefix ?? "/og";
   const requestUrl = new URL(request.url);
 
-  if (!matchesPathPrefix(requestUrl.pathname, pathnamePrefix)) {
+  if (shouldBypassRewrite(requestUrl, pathnamePrefix)) {
     return NextResponse.next();
   }
 
-  if (requestUrl.searchParams.has("aspect_ratio")) {
-    return NextResponse.next();
-  }
-
-  const ogContext = getOgContext(request);
-
-  requestUrl.searchParams.set("aspect_ratio", ogContext.aspectRatio);
-
-  return NextResponse.rewrite(requestUrl);
+  return NextResponse.rewrite(
+    applyRewriteQuery(requestUrl, await resolveOgRequest(request))
+  );
 };

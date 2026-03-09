@@ -1,11 +1,15 @@
 import {
-  applyStableCacheHeaders,
-  resolveOgComponent,
+  createOgRouteHandler as createCoreOgRouteHandler,
   resolveLocaleFromParams,
-  resolveOgRequestState,
 } from "@better-og/core";
-import type { OgAdapterOptions, OgComponentFactory } from "@better-og/core";
-import type { ImageResponseOptions as TakumiWasmImageResponseOptions } from "@takumi-rs/image-response/wasm";
+import type {
+  CreateOgRouteHandlerOptions,
+  Font,
+  FontSource,
+  LayoutStrategy,
+  OgComponentFactory,
+  ResolveOgRequestOptions,
+} from "@better-og/core";
 import { ImageResponse as NextImageResponse } from "next/og";
 import type { ReactElement, ReactNode } from "react";
 
@@ -16,70 +20,92 @@ type NextProviderImageResponseOptions = Omit<
   NonNullable<ConstructorParameters<typeof NextImageResponse>[1]>,
   "fonts" | "height" | "width"
 >;
-type TakumiProviderImageResponseOptions = Omit<
-  TakumiWasmImageResponseOptions,
-  "fonts" | "format" | "height" | "module" | "width"
->;
+type SharedTextResolver = CreateOgRouteHandlerOptions<
+  ReactNode,
+  OgRouteHandlerContext,
+  NextProviderImageResponseOptions
+>["textFromComponent"];
 
-export interface NextEdgeOgHandlerOptions
-  extends
-    OgAdapterOptions,
-    NextProviderImageResponseOptions,
-    TakumiProviderImageResponseOptions {
-  component: ReactNode | OgComponentFactory<ReactNode>;
-  provider?: "next" | "takumi";
+interface SharedAdapterOptions {
+  aspectRatio?: string;
+  baseFonts?: Font[];
+  fallbackLocales?: string[];
+  layout?: LayoutStrategy;
+  localeFromRequest?: (request: Request) => string | undefined;
+  platform?: string;
+  resolveRequestOptions?: ResolveOgRequestOptions;
+  sources?: FontSource[];
+  text?: string;
+  textFromComponent?: SharedTextResolver;
 }
 
-export const createOgRouteHandler =
-  (options: NextEdgeOgHandlerOptions) =>
-  async (
-    request: Request,
-    context?: OgRouteHandlerContext
-  ): Promise<Response> => {
-    const params = context?.params ? await context.params : undefined;
-    const {
-      component,
-      fallbackFontLocales,
-      fonts: configuredFonts,
-      format: _format,
-      getFallbackFontsForLocale,
-      getFontsForLocale,
-      getOgContext: getOgContextOverride,
-      loadDefaultFonts: _loadDefaultFonts,
-      localeFromRequest,
-      provider = "next",
-      ...imageResponseOptions
-    } = options;
-    const resolvedLocaleFromRequest = (input: Request): string | undefined =>
-      localeFromRequest?.(input) ?? resolveLocaleFromParams(params);
+export interface NextEdgeOgHandlerOptions
+  extends SharedAdapterOptions, NextProviderImageResponseOptions {
+  component: ReactNode | OgComponentFactory<ReactNode>;
+  renderer?: "next" | "takumi";
+}
 
-    if (provider === "takumi") {
-      throw new Error(
-        "@better-og/next/edge currently only supports the `next` provider. Use `@better-og/edge` with `module` from `@takumi-rs/wasm/next` if you need Takumi on Next Edge before the Vercel duplicate-WASM fix lands."
-      );
-    }
+export const createOgRouteHandler = (options: NextEdgeOgHandlerOptions) => {
+  const {
+    aspectRatio: _aspectRatio,
+    component,
+    fallbackLocales: _fallbackLocales,
+    layout: _layout,
+    localeFromRequest,
+    platform: _platform,
+    renderer = "next",
+    resolveRequestOptions,
+    sources: _sources,
+    text,
+    textFromComponent,
+    ...imageResponseOptions
+  } = options;
 
-    const locale = resolvedLocaleFromRequest(request);
-    const { fonts, ogContext } = await resolveOgRequestState({
-      configuredFonts,
-      fallbackFontLocales,
-      getFallbackFontsForLocale,
-      getFontsForLocale,
-      getOgContextOverride,
-      locale,
-      request,
-    });
-    const resolvedComponent = resolveOgComponent(component, ogContext);
-    const nextFonts = normalizeFontsForNextImageResponse(fonts);
-
-    return applyStableCacheHeaders(
-      new NextImageResponse(resolvedComponent as ReactElement, {
-        ...imageResponseOptions,
-        ...(nextFonts ? { fonts: nextFonts } : {}),
-        height: ogContext.height,
-        width: ogContext.width,
-      })
+  if (renderer === "takumi") {
+    throw new Error(
+      "@better-og/next/edge currently only supports the `next` renderer. Use `@better-og/edge` with `module` from `@takumi-rs/wasm/next` if you need Takumi on Next Edge."
     );
-  };
+  }
+
+  return createCoreOgRouteHandler<
+    ReactNode,
+    OgRouteHandlerContext,
+    NextProviderImageResponseOptions
+  >({
+    baseFonts: options.baseFonts,
+    component,
+    fallbackLocales: options.fallbackLocales,
+    localeFromContext: async (context: OgRouteHandlerContext) =>
+      resolveLocaleFromParams(
+        context.params ? await context.params : undefined
+      ),
+    localeFromRequest,
+    renderOptions: imageResponseOptions,
+    renderer: ({
+      component: renderComponent,
+      fonts,
+      options: renderOptions,
+      resolvedRequest,
+    }) => {
+      const nextFonts = normalizeFontsForNextImageResponse(fonts);
+
+      return new NextImageResponse(renderComponent as ReactElement, {
+        ...renderOptions,
+        ...(nextFonts ? { fonts: nextFonts } : {}),
+        height: resolvedRequest.height,
+        width: resolvedRequest.width,
+      });
+    },
+    resolveRequestOptions: {
+      ...resolveRequestOptions,
+      ...(options.aspectRatio ? { aspectRatio: options.aspectRatio } : {}),
+      ...(options.layout ? { layout: options.layout } : {}),
+      ...(options.platform ? { platform: options.platform } : {}),
+    },
+    sources: options.sources,
+    text,
+    textFromComponent,
+  });
+};
 
 export type { OgRouteHandlerContext };

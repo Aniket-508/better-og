@@ -1,14 +1,16 @@
 import {
-  applyStableCacheHeaders,
   createCachedModuleLoader,
-  resolveOgComponent,
+  createOgRouteHandler as createCoreOgRouteHandler,
   resolveLocaleFromParams,
-  resolveOgRequestState,
 } from "@better-og/core";
 import type {
-  OgAdapterOptions,
+  CreateOgRouteHandlerOptions,
+  Font,
+  FontSource,
+  LayoutStrategy,
   OgComponentFactory,
   RouteParams,
+  ResolveOgRequestOptions,
 } from "@better-og/core";
 import type { ImageResponseOptions } from "@takumi-rs/image-response";
 import type { ReactNode } from "react";
@@ -17,6 +19,11 @@ type TanStackStartImageResponseOptions = Omit<
   ImageResponseOptions,
   "fonts" | "format" | "height" | "loadDefaultFonts" | "renderer" | "width"
 >;
+type SharedTextResolver = CreateOgRouteHandlerOptions<
+  ReactNode,
+  TanStackStartRouteHandlerContext,
+  TanStackStartImageResponseOptions
+>["textFromComponent"];
 
 interface TanStackImageResponseModule {
   ImageResponse: new (
@@ -30,56 +37,85 @@ export interface TanStackStartRouteHandlerContext {
   request: Request;
 }
 
-export interface TanStackStartOgHandlerOptions
-  extends OgAdapterOptions, TanStackStartImageResponseOptions {
+export interface TanStackStartOgHandlerOptions extends TanStackStartImageResponseOptions {
+  aspectRatio?: string;
+  baseFonts?: Font[];
   component: ReactNode | OgComponentFactory<ReactNode>;
+  fallbackLocales?: string[];
+  format?: "png" | "webp";
+  layout?: LayoutStrategy;
+  loadDefaultFonts?: boolean;
+  localeFromRequest?: (request: Request) => string | undefined;
+  platform?: string;
+  resolveRequestOptions?: ResolveOgRequestOptions;
+  sources?: FontSource[];
+  text?: string;
+  textFromComponent?: SharedTextResolver;
 }
+
 const getImageResponseModule = createCachedModuleLoader(
   () =>
     import("@takumi-rs/image-response") as Promise<TanStackImageResponseModule>
 );
 
-export const createOgRouteHandler =
-  (options: TanStackStartOgHandlerOptions) =>
-  async ({
-    params: paramsInput,
-    request,
-  }: TanStackStartRouteHandlerContext): Promise<Response> => {
-    const {
-      component,
-      fallbackFontLocales,
-      fonts: configuredFonts,
-      format,
-      getFallbackFontsForLocale,
-      getFontsForLocale,
-      getOgContext: getOgContextOverride,
-      loadDefaultFonts,
-      localeFromRequest,
-      ...imageResponseOptions
-    } = options;
-    const params = paramsInput ? await paramsInput : undefined;
-    const locale =
-      localeFromRequest?.(request) ?? resolveLocaleFromParams(params);
-    const { fonts, ogContext } = await resolveOgRequestState({
-      configuredFonts,
-      fallbackFontLocales,
-      getFallbackFontsForLocale,
-      getFontsForLocale,
-      getOgContextOverride,
-      locale,
-      request,
-    });
-    const resolvedComponent = resolveOgComponent(component, ogContext);
-    const { ImageResponse } = await getImageResponseModule();
+export const createOgRouteHandler = (
+  options: TanStackStartOgHandlerOptions
+) => {
+  const {
+    aspectRatio: _aspectRatio,
+    component,
+    fallbackLocales: _fallbackLocales,
+    format = "webp",
+    layout: _layout,
+    loadDefaultFonts,
+    localeFromRequest,
+    platform: _platform,
+    resolveRequestOptions,
+    sources: _sources,
+    text,
+    textFromComponent,
+    ...imageResponseOptions
+  } = options;
 
-    return applyStableCacheHeaders(
-      new ImageResponse(resolvedComponent, {
-        ...imageResponseOptions,
+  return createCoreOgRouteHandler<
+    ReactNode,
+    TanStackStartRouteHandlerContext,
+    TanStackStartImageResponseOptions
+  >({
+    baseFonts: options.baseFonts,
+    component,
+    fallbackLocales: options.fallbackLocales,
+    localeFromContext: async (context: TanStackStartRouteHandlerContext) =>
+      resolveLocaleFromParams(
+        context.params ? await context.params : undefined
+      ),
+    localeFromRequest,
+    renderOptions: imageResponseOptions,
+    renderer: async ({
+      component: renderComponent,
+      fonts,
+      options: renderOptions,
+      resolvedRequest,
+    }) => {
+      const { ImageResponse } = await getImageResponseModule();
+
+      return new ImageResponse(renderComponent, {
+        ...renderOptions,
         fonts,
-        format: format ?? "webp",
-        height: ogContext.height,
+        format,
+        height: resolvedRequest.height,
         loadDefaultFonts: loadDefaultFonts ?? true,
-        width: ogContext.width,
-      })
-    );
-  };
+        width: resolvedRequest.width,
+      });
+    },
+    resolveRequestOptions: {
+      ...resolveRequestOptions,
+      ...(options.aspectRatio ? { aspectRatio: options.aspectRatio } : {}),
+      ...(options.layout ? { layout: options.layout } : {}),
+      ...(options.platform ? { platform: options.platform } : {}),
+    },
+    sources: options.sources,
+    text,
+    textFromComponent,
+  });
+};

@@ -1,12 +1,11 @@
-import {
-  applyStableCacheHeaders,
-  resolveOgComponent,
-  resolveOgRequestState,
-} from "@better-og/core";
+import { createOgRouteHandler as createCoreOgRouteHandler } from "@better-og/core";
 import type {
+  CreateOgRouteHandlerOptions,
   Font,
-  OgAdapterOptions,
+  FontSource,
+  LayoutStrategy,
   OgComponentFactory,
+  ResolveOgRequestOptions,
 } from "@better-og/core";
 import { ImageResponse } from "@takumi-rs/image-response/wasm";
 import type { ImageResponseOptions } from "@takumi-rs/image-response/wasm";
@@ -24,11 +23,27 @@ type WorkersImageResponseOptions = Omit<
   WorkersRendererOptions,
   "format" | "height" | "renderer" | "width"
 >;
+type SharedTextResolver = CreateOgRouteHandlerOptions<
+  ReactNode,
+  undefined,
+  WorkersImageResponseOptions
+>["textFromComponent"];
 
-export interface WorkersOgHandlerOptions
-  extends OgAdapterOptions, WorkersImageResponseOptions {
+export interface WorkersOgHandlerOptions extends WorkersImageResponseOptions {
+  aspectRatio?: string;
+  baseFonts?: Font[];
   component: ReactNode | OgComponentFactory<ReactNode>;
+  fallbackLocales?: string[];
+  format?: "png" | "webp";
+  layout?: LayoutStrategy;
+  localeFromRequest?: (request: Request) => string | undefined;
+  platform?: string;
   renderer?: WorkersRenderer;
+  resolveRequestOptions?: ResolveOgRequestOptions;
+  sources?: FontSource[];
+  takumiRenderer?: WorkersRenderer;
+  text?: string;
+  textFromComponent?: SharedTextResolver;
 }
 
 let isWorkersWasmInitialized = false;
@@ -87,41 +102,61 @@ const resolveWorkersRenderer = (
   return configuredRenderer;
 };
 
-export const createOgHandler =
-  (options: WorkersOgHandlerOptions) =>
-  async (request: Request): Promise<Response> => {
-    const {
-      component,
-      fallbackFontLocales,
-      fonts: configuredFonts,
-      format,
-      getFallbackFontsForLocale,
-      getFontsForLocale,
-      getOgContext: getOgContextOverride,
-      localeFromRequest,
-      renderer: configuredRenderer,
-      ...imageResponseOptions
-    } = options;
-    const locale = localeFromRequest?.(request);
-    const { fonts, ogContext } = await resolveOgRequestState({
-      configuredFonts,
-      fallbackFontLocales,
-      getFallbackFontsForLocale,
-      getFontsForLocale,
-      getOgContextOverride,
-      locale,
-      request,
-    });
-    const resolvedComponent = resolveOgComponent(component, ogContext);
-    const renderer = resolveWorkersRenderer(configuredRenderer, fonts);
+export const createOgHandler = (options: WorkersOgHandlerOptions) => {
+  const {
+    aspectRatio: _aspectRatio,
+    component,
+    fallbackLocales: _fallbackLocales,
+    format = "webp",
+    layout: _layout,
+    localeFromRequest,
+    platform: _platform,
+    renderer,
+    resolveRequestOptions,
+    sources: _sources,
+    takumiRenderer,
+    text,
+    textFromComponent,
+    ...imageResponseOptions
+  } = options;
 
-    const response = new ImageResponse(resolvedComponent, {
-      ...imageResponseOptions,
-      format: format ?? "webp",
-      height: ogContext.height,
-      renderer,
-      width: ogContext.width,
-    });
+  return createCoreOgRouteHandler<
+    ReactNode,
+    undefined,
+    WorkersImageResponseOptions
+  >({
+    baseFonts: options.baseFonts,
+    component,
+    fallbackLocales: options.fallbackLocales,
+    localeFromRequest,
+    renderOptions: imageResponseOptions,
+    renderer: ({
+      component: renderComponent,
+      fonts,
+      options: renderOptions,
+      resolvedRequest,
+    }) => {
+      const resolvedRenderer = resolveWorkersRenderer(
+        takumiRenderer ?? renderer,
+        fonts
+      );
 
-    return applyStableCacheHeaders(response);
-  };
+      return new ImageResponse(renderComponent, {
+        ...renderOptions,
+        format,
+        height: resolvedRequest.height,
+        renderer: resolvedRenderer,
+        width: resolvedRequest.width,
+      });
+    },
+    resolveRequestOptions: {
+      ...resolveRequestOptions,
+      ...(options.aspectRatio ? { aspectRatio: options.aspectRatio } : {}),
+      ...(options.layout ? { layout: options.layout } : {}),
+      ...(options.platform ? { platform: options.platform } : {}),
+    },
+    sources: options.sources,
+    text,
+    textFromComponent,
+  });
+};

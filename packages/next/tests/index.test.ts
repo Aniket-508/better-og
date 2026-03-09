@@ -3,7 +3,7 @@
 import "vitest";
 
 const mocks = vi.hoisted(() => ({
-  applyStableCacheHeaders: vi.fn((response: Response) => response),
+  capturedOptions: [] as unknown[],
   createCachedModuleLoader: <T>(loadModule: () => Promise<T>) => {
     let modulePromise: Promise<T> | undefined;
 
@@ -15,50 +15,20 @@ const mocks = vi.hoisted(() => ({
       return modulePromise;
     };
   },
+  createOgRouteHandler: vi.fn((options: unknown) => {
+    mocks.capturedOptions.push(options);
+
+    return () => new Response("handled");
+  }),
   nextImageResponseCalls: [] as { element: unknown; options: unknown }[],
   resolveLocaleFromParams: vi.fn(() => "params-locale"),
-  resolveOgComponent: vi.fn((component: unknown) => component),
-  resolveOgRequestState: vi.fn(() => ({
-    fonts: [
-      {
-        data: Uint8Array.from([1, 2, 3]),
-        name: "Geist",
-        style: "italic",
-        weight: 400,
-      },
-    ],
-    ogContext: {
-      aspectRatio: "1.91:1",
-      height: 630,
-      platform: "generic",
-      safeArea: {
-        bottom: 0,
-        left: 0,
-        right: 0,
-        top: 0,
-      },
-      width: 1200,
-    },
-  })),
-  rewrite: vi.fn(),
   takumiImageResponseCalls: [] as { element: unknown; options: unknown }[],
 }));
 
 vi.mock<typeof import("@better-og/core")>(import("@better-og/core"), () => ({
-  applyStableCacheHeaders: mocks.applyStableCacheHeaders as never,
   createCachedModuleLoader: mocks.createCachedModuleLoader as never,
-  getOgContext: vi.fn() as never,
-  loadGoogleFonts: vi.fn() as never,
+  createOgRouteHandler: mocks.createOgRouteHandler as never,
   resolveLocaleFromParams: mocks.resolveLocaleFromParams as never,
-  resolveOgComponent: mocks.resolveOgComponent as never,
-  resolveOgRequestState: mocks.resolveOgRequestState as never,
-}));
-
-vi.mock<typeof import("next/server")>(import("next/server"), () => ({
-  NextResponse: {
-    next: vi.fn(),
-    rewrite: mocks.rewrite,
-  } as never,
 }));
 
 vi.mock<typeof import("next/og")>(import("next/og"), () => ({
@@ -88,45 +58,140 @@ vi.mock<typeof import("@takumi-rs/image-response")>(
   })
 );
 
+const resolvedRequest = {
+  aspectRatio: "1.91:1",
+  capabilities: {
+    emoji: true,
+    maxResponseBytes: 8_000_000,
+    preferredFormat: "webp",
+    svg: true,
+    webp: true,
+  },
+  confidence: 0.7,
+  crawler: "Generic",
+  height: 630,
+  layout: {
+    bleed: { height: 630, width: 1200, x: 0, y: 0 },
+    canvas: { height: 630, width: 1200, x: 0, y: 0 },
+    center: { height: 300, width: 900, x: 150, y: 120 },
+    content: { height: 534, width: 1104, x: 48, y: 48 },
+    safe: { height: 630, width: 1200, x: 0, y: 0 },
+    strategy: "wide",
+  },
+  layoutStrategy: "wide",
+  matchedSignals: [],
+  normalizedQuery: {},
+  platform: "generic",
+  safeArea: { bottom: 0, left: 0, right: 0, top: 0 },
+  width: 1200,
+};
+
 describe("createOgRouteHandler (next)", () => {
-  it("uses the next/og provider by default", async () => {
+  it("builds a shared handler that resolves locale from route params", async () => {
     const { createOgRouteHandler } = await import("@better-og/next");
     const handler = createOgRouteHandler({
       component: "card",
     });
 
-    const response = await handler(new Request("https://example.com/og"), {
-      params: Promise.resolve({ lang: "ja" }),
+    expect(handler).toBeTypeOf("function");
+    expect(mocks.createOgRouteHandler).toHaveBeenCalledOnce();
+    const options = mocks.capturedOptions[0] as {
+      localeFromContext: (context: {
+        params: Promise<{ lang: string }>;
+      }) => Promise<string>;
+    };
+
+    await expect(
+      options.localeFromContext({
+        params: Promise.resolve({ lang: "ja" }),
+      })
+    ).resolves.toBe("params-locale");
+    expect(mocks.resolveLocaleFromParams).toHaveBeenCalledWith({ lang: "ja" });
+  });
+
+  it("renders through next/og by default", async () => {
+    const { createOgRouteHandler } = await import("@better-og/next");
+    createOgRouteHandler({
+      component: "card",
+    });
+
+    const options = mocks.capturedOptions.at(-1) as {
+      renderOptions: unknown;
+      renderer: (context: {
+        component: string;
+        fonts: {
+          data: Uint8Array;
+          name: string;
+          style?: string;
+          weight?: number;
+        }[];
+        options: unknown;
+        request: Request;
+        resolvedRequest: typeof resolvedRequest;
+      }) => Response;
+    };
+
+    const response = options.renderer({
+      component: "card",
+      fonts: [
+        {
+          data: Uint8Array.from([1, 2, 3]),
+          name: "Geist",
+          style: "italic",
+          weight: 400,
+        },
+      ],
+      options: options.renderOptions,
+      request: new Request("https://example.com/og"),
+      resolvedRequest,
     });
 
     expect(response).toBeInstanceOf(Response);
-    expect(mocks.resolveLocaleFromParams).toHaveBeenCalledWith({ lang: "ja" });
-    expect(mocks.resolveOgRequestState).toHaveBeenCalledWith({
-      configuredFonts: undefined,
-      fallbackFontLocales: undefined,
-      getFallbackFontsForLocale: undefined,
-      getFontsForLocale: undefined,
-      getOgContextOverride: undefined,
-      locale: "params-locale",
-      request: expect.any(Request),
-    });
-    expect(mocks.nextImageResponseCalls).toHaveLength(1);
     expect(mocks.nextImageResponseCalls[0]?.options).toMatchObject({
       height: 630,
       width: 1200,
     });
   });
 
-  it("uses Takumi when requested", async () => {
+  it("renders through Takumi when requested", async () => {
     const { createOgRouteHandler } = await import("@better-og/next");
-    const handler = createOgRouteHandler({
+    createOgRouteHandler({
       component: "card",
-      provider: "takumi",
+      loadDefaultFonts: true,
+      renderer: "takumi",
     });
 
-    await handler(new Request("https://example.com/og"));
+    const options = mocks.capturedOptions.at(-1) as {
+      renderOptions: unknown;
+      renderer: (context: {
+        component: string;
+        fonts: {
+          data: Uint8Array;
+          name: string;
+          style?: string;
+          weight?: number;
+        }[];
+        options: unknown;
+        request: Request;
+        resolvedRequest: typeof resolvedRequest;
+      }) => Promise<Response>;
+    };
 
-    expect(mocks.takumiImageResponseCalls).toHaveLength(1);
+    await options.renderer({
+      component: "card",
+      fonts: [
+        {
+          data: Uint8Array.from([1, 2, 3]),
+          name: "Geist",
+          style: "italic",
+          weight: 400,
+        },
+      ],
+      options: options.renderOptions,
+      request: new Request("https://example.com/og"),
+      resolvedRequest,
+    });
+
     expect(mocks.takumiImageResponseCalls[0]?.options).toMatchObject({
       fonts: [
         {

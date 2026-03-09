@@ -3,15 +3,15 @@
 import "vitest";
 
 const mocks = vi.hoisted(() => ({
-  getOgContext: vi.fn(),
   loadGoogleFonts: vi.fn(),
   next: vi.fn(() => ({ kind: "next" })),
+  resolveOgRequest: vi.fn(),
   rewrite: vi.fn((url: URL) => ({ kind: "rewrite", url: url.toString() })),
 }));
 
 vi.mock<typeof import("@better-og/core")>(import("@better-og/core"), () => ({
-  getOgContext: mocks.getOgContext as never,
   loadGoogleFonts: mocks.loadGoogleFonts as never,
+  resolveOgRequest: mocks.resolveOgRequest as never,
 }));
 
 vi.mock<typeof import("next/server")>(import("next/server"), () => ({
@@ -87,28 +87,32 @@ describe("loadGoogleFontForImageResponse", () => {
 describe("withOgRewrite", () => {
   it("skips non-matching paths", async () => {
     const { withOgRewrite } = await import("#next-utils");
-    const response = withOgRewrite(new Request("https://example.com/docs"));
+    const response = await withOgRewrite(
+      new Request("https://example.com/docs")
+    );
 
     expect(response).toStrictEqual({ kind: "next" });
     // oxlint-disable-next-line vitest/prefer-called-once
     expect(mocks.next).toHaveBeenCalledTimes(1);
-    expect(mocks.getOgContext).not.toHaveBeenCalled();
+    expect(mocks.resolveOgRequest).not.toHaveBeenCalled();
   });
 
-  it("rewrites matching paths with the detected aspect ratio", async () => {
+  it("rewrites matching paths with the resolved request metadata", async () => {
     const { withOgRewrite } = await import("#next-utils");
 
-    mocks.getOgContext.mockReturnValue({
+    mocks.resolveOgRequest.mockResolvedValue({
       aspectRatio: "4:5",
+      layoutStrategy: "portrait",
+      platform: "instagram",
     });
 
-    const response = withOgRewrite(
+    const response = await withOgRewrite(
       new Request("https://example.com/og/docs/image.png")
     );
 
     expect(response).toStrictEqual({
       kind: "rewrite",
-      url: "https://example.com/og/docs/image.png?aspect_ratio=4%3A5",
+      url: "https://example.com/og/docs/image.png?aspect_ratio=4%3A5&layout=portrait&platform=instagram",
     });
     // oxlint-disable-next-line vitest/prefer-called-once
     expect(mocks.rewrite).toHaveBeenCalledTimes(1);
