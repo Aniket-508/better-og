@@ -42,6 +42,7 @@
     "dev": "tsdown --watch",
     "build": "pnpm clean && NODE_ENV=production tsdown",
     "clean": "rm -rf dist tsconfig.tsbuildinfo",
+    "perf": "pnpm build && vitest run tests/performance.test.ts --reporter=verbose",
     "typecheck": "tsc -p tsconfig.json --pretty && tsc -p tests/tsconfig.json --pretty",
     "test": "pnpm build && vitest run"
   },
