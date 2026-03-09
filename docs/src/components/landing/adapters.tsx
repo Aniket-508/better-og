@@ -28,7 +28,7 @@ const PreviewFrame = ({ light, dark }: AdapterCardConfig["img"]) => (
         width="305"
         height="232"
         alt="NODE.JS code snippet"
-        className="w-full h-full object-cover object-top-left opacity-40 group-hover:opacity-100 transition-opacity duration-200 ease"
+        className="w-full h-full object-cover object-top-left opacity-15 group-hover:opacity-100 transition-opacity duration-200 ease"
         src={light}
       />
     </div>
@@ -38,7 +38,7 @@ const PreviewFrame = ({ light, dark }: AdapterCardConfig["img"]) => (
         width="305"
         height="232"
         alt="NODE.JS code snippet"
-        className="w-full h-full object-cover object-top-left opacity-40 group-hover:opacity-100 transition-opacity duration-200 ease"
+        className="w-full h-full object-cover object-top-left opacity-15 group-hover:opacity-100 transition-opacity duration-200 ease"
         src={dark}
       />
     </div>
@@ -66,9 +66,11 @@ const BaseAdapterCard = ({
   adapter,
   className,
   children,
-}: Pick<React.ComponentProps<typeof Link>, "className" | "children"> & {
+}: {
   lang: string;
   adapter: AdapterCardConfig;
+  className?: string;
+  children?: React.ReactNode;
 }) => {
   const { href, id, title, img } = adapter;
 
@@ -81,7 +83,8 @@ const BaseAdapterCard = ({
       href={`/${lang}${href}`}
     >
       <PreviewFrame {...img} />
-      <div className="relative z-20 flex items-end gap-4">
+
+      <div className="relative z-20 flex items-end gap-4 w-full bg-card pt-4 sm:pt-6 -mx-4 px-4 sm:-mx-6 sm:px-6">
         <div className="flex flex-col gap-2">
           <AdapterLogo id={id} />
           <span className="font-mono text-base font-medium uppercase tracking-[0.64px] text-foreground">
