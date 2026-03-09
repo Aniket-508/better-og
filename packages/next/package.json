@@ -47,7 +47,8 @@
     "build": "pnpm clean && NODE_ENV=production tsdown",
     "clean": "rm -rf dist tsconfig.tsbuildinfo",
     "typecheck": "tsc -p tsconfig.json --pretty && tsc -p tests/tsconfig.json --pretty",
-    "test": "vitest run"
+    "test": "vitest run",
+    "bench": "npx tsx tests/bench/index.ts"
   },
   "dependencies": {
     "@better-og/core": "workspace:*"
@@ -56,6 +57,7 @@
     "@takumi-rs/image-response": "^0.70.4",
     "@types/node": "^25.3.5",
     "@types/react": "^19.2.14",
+    "mitata": "^1.0.34",
     "next": "^16.1.6",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",

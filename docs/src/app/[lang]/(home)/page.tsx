@@ -48,11 +48,7 @@ export default async function HomePage({
         <div>
           <Hero lang={lang} translation={translation} />
           <LocalePreview localeCards={localeCards} translation={translation} />
-          <Platforms
-            lang={lang}
-            platformCards={platformCards}
-            translation={translation}
-          />
+          <Platforms platformCards={platformCards} translation={translation} />
           <Adapters lang={lang} translation={translation} />
         </div>
       </main>

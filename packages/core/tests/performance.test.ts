@@ -19,7 +19,8 @@ const busyWait = (durationMs: number): void => {
 };
 
 const median = (values: number[]): number => {
-  const sortedValues = [...values].toSorted((left, right) => left - right);
+  // oxlint-disable-next-line unicorn/no-array-sort
+  const sortedValues = [...values].sort((left, right) => left - right);
   const middleIndex = Math.floor(sortedValues.length / 2);
 
   if (sortedValues.length % 2 === 0) {
