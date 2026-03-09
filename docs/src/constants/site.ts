@@ -26,6 +26,7 @@ export const SITE = {
     "i18n",
   ],
   NAME: "better-og",
-  OG_IMAGE: "/og.png",
+  OG_IMAGE:
+    "https://yffrvzi8zwbljfuj.public.blob.vercel-storage.com/better-og/og.png",
   URL: baseUrl,
 } as const;

@@ -1,7 +1,7 @@
 "use client";
 
-import type { MouseEvent } from "react";
-import { useCallback, useState } from "react";
+// import type { MouseEvent } from "react";
+// import { useCallback, useState } from "react";
 
 import type { AspectRatioCard } from "@/components/landing/data";
 import { IMessage } from "@/components/ui/icon/imessage";
@@ -47,70 +47,77 @@ const PlatformLogo = ({
   }
 };
 
+const PlatformCard = ({
+  platform,
+  className,
+  ...props
+}: React.ComponentProps<"div"> & { platform: AspectRatioCard }) => {
+  const { id, title, dimensionLabel, aspectRatio, logos } = platform;
+
+  return (
+    // <button
+    //   key={card.id}
+    //   className={cn(
+    //     "flex flex-col w-full items-start gap-4 px-4 py-5 text-left transition-colors duration-200",
+    //     "border-border",
+    //     index > 0 ? "border-t" : "",
+    //     selectedId === card.id ? "bg-muted/40" : "hover:bg-muted/20",
+    //   )}
+    //   onClick={handleSelect}
+    //   type="button"
+    //   value={card.id}
+    // >
+    <div
+      className={cn(
+        "flex flex-col w-full items-start gap-4 px-4 py-6",
+        className
+      )}
+      {...props}
+    >
+      <div className="flex items-center gap-2 text-muted-foreground">
+        {logos.map((logo) => (
+          <PlatformLogo key={`${id}-${logo}`} logo={logo} />
+        ))}
+      </div>
+
+      <div className="min-w-0">
+        <div className="font-medium">{title}</div>
+        <div className="mt-1 font-mono text-xs text-muted-foreground">
+          {dimensionLabel} [{aspectRatio}]
+        </div>
+      </div>
+    </div>
+    // </button>
+  );
+};
+
 interface PlatformsProps {
   platformCards: AspectRatioCard[];
   translation: Translation;
 }
 
-export const Platforms = ({ platformCards, translation }: PlatformsProps) => {
-  const [selectedId, setSelectedId] = useState(platformCards[0]?.id);
-  const handleSelect = useCallback((event: MouseEvent<HTMLButtonElement>) => {
-    setSelectedId(event.currentTarget.value);
-  }, []);
-  const activeCard =
-    platformCards.find((card) => card.id === selectedId) ?? platformCards[0];
+export const Platforms = ({ platformCards, translation }: PlatformsProps) => (
+  <section className="relative mt-20 max-w-full">
+    <div className="relative before:absolute before:top-0 before:h-px before:w-full before:bg-border after:absolute after:bottom-0 after:h-px after:w-full after:bg-border">
+      <h2 className="max-w-2xl px-2 text-4xl font-medium tracking-tighter text-balance max-sm:px-4">
+        {translation.home.platformsTitle}
+      </h2>
+    </div>
+    <div className="relative font-mono text-xs/6 text-muted-foreground after:absolute after:bottom-0 after:h-px after:w-full md:after:bg-border">
+      <p className="px-2 text-balance max-sm:px-4">
+        {translation.home.platformsDescription}
+      </p>
+    </div>
 
-  if (!activeCard) {
-    return null;
-  }
-
-  return (
-    <section className="relative mt-20 max-w-full">
-      <div className="relative before:absolute before:top-0 before:h-px before:w-full before:bg-border after:absolute after:bottom-0 after:h-px after:w-full after:bg-border">
-        <h2 className="max-w-2xl px-2 text-4xl font-medium tracking-tighter text-balance max-sm:px-4">
-          {translation.home.platformsTitle}
-        </h2>
-      </div>
-      <div className="relative font-mono text-xs/6 text-muted-foreground after:absolute after:bottom-0 after:h-px after:w-full after:bg-border">
-        <p className="px-2 text-balance max-sm:px-4">
-          {translation.home.platformsDescription}
-        </p>
+    <div className="relative after:absolute after:bottom-0 after:h-px after:w-full after:bg-border">
+      <div className="grid grid-cols-1 md:grid-cols-4 md:[&>*:not(:nth-child(4n))]:border-r md:[&>*:nth-child(n+5)]:border-t *:border-border max-md:*:border-t">
+        {platformCards.map((card) => (
+          <PlatformCard key={card.id} platform={card} />
+        ))}
       </div>
 
-      <div className="relative after:absolute after:bottom-0 after:h-px after:w-full after:bg-border">
-        <div className="grid grid-cols-1 md:grid-cols-[minmax(0,26rem)_minmax(0,1fr)] md:[&>*:first-child]:border-r">
-          <div className="border-border">
-            {platformCards.map((card, index) => (
-              <button
-                key={card.id}
-                className={cn(
-                  "flex flex-col w-full items-start gap-4 px-4 py-5 text-left transition-colors duration-200",
-                  "border-border",
-                  index > 0 ? "border-t" : "",
-                  selectedId === card.id ? "bg-muted/40" : "hover:bg-muted/20"
-                )}
-                onClick={handleSelect}
-                type="button"
-                value={card.id}
-              >
-                <div className="flex items-center gap-2 text-muted-foreground">
-                  {card.logos.map((logo) => (
-                    <PlatformLogo key={`${card.id}-${logo}`} logo={logo} />
-                  ))}
-                </div>
-
-                <div className="min-w-0">
-                  <div className="font-medium">{card.title}</div>
-                  <div className="mt-1 font-mono text-xs text-muted-foreground">
-                    {card.dimensionLabel} [{card.aspectRatio}]
-                  </div>
-                </div>
-              </button>
-            ))}
-          </div>
-
-          <div className="px-4 py-8 md:px-10">
-            {/* <div className="mx-auto flex max-w-3xl items-center justify-center rounded-[2rem] border border-border/70 bg-[radial-gradient(circle_at_top_left,rgba(148,163,184,0.18),transparent_45%),linear-gradient(180deg,rgba(15,23,42,0.03),transparent)] p-6 md:min-h-[44rem]">
+      {/* <div className="px-4 py-8 md:px-10">
+            <div className="mx-auto flex max-w-3xl items-center justify-center rounded-[2rem] border border-border/70 bg-[radial-gradient(circle_at_top_left,rgba(148,163,184,0.18),transparent_45%),linear-gradient(180deg,rgba(15,23,42,0.03),transparent)] p-6 md:min-h-[44rem]">
               <div className="relative w-full max-w-[24rem] rounded-[2.4rem] border border-zinc-300/80 bg-zinc-950 p-3 shadow-2xl dark:border-zinc-800">
                 <div className="mb-3 flex items-center justify-between rounded-[1.8rem] bg-zinc-900 px-4 py-2 text-[11px] text-zinc-400">
                   <span>9:41</span>
@@ -174,10 +181,8 @@ export const Platforms = ({ platformCards, translation }: PlatformsProps) => {
                   </div>
                 </div>
               </div>
-            </div> */}
-          </div>
-        </div>
-      </div>
-    </section>
-  );
-};
+            </div>
+          </div> */}
+    </div>
+  </section>
+);

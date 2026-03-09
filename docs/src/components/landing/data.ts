@@ -28,6 +28,10 @@ export interface AdapterCardConfig {
   href: string;
   id: string;
   title: string;
+  img: {
+    light: string;
+    dark: string;
+  };
 }
 
 export interface NextAdapterVariant extends AdapterCardConfig {
@@ -138,16 +142,31 @@ export const getAdapterCards = (
   {
     href: "/docs/node",
     id: "node",
+    img: {
+      dark: "https://yffrvzi8zwbljfuj.public.blob.vercel-storage.com/better-og/node-example-dark.png",
+      light:
+        "https://yffrvzi8zwbljfuj.public.blob.vercel-storage.com/better-og/node-example.png",
+    },
     title: translation.landing.adapters.node,
   },
   {
     href: "/docs/workers",
     id: "workers",
+    img: {
+      dark: "https://yffrvzi8zwbljfuj.public.blob.vercel-storage.com/better-og/workers-example-dark.png",
+      light:
+        "https://yffrvzi8zwbljfuj.public.blob.vercel-storage.com/better-og/workers-example.png",
+    },
     title: translation.landing.adapters.workers,
   },
   {
     href: "/docs/tanstack-start",
     id: "tanstack",
+    img: {
+      dark: "https://yffrvzi8zwbljfuj.public.blob.vercel-storage.com/better-og/tanstack-example-dark.png",
+      light:
+        "https://yffrvzi8zwbljfuj.public.blob.vercel-storage.com/better-og/tanstack-example.png",
+    },
     title: translation.landing.adapters.tanstack,
   },
 ];
@@ -158,11 +177,21 @@ export const getNextAdapterVariants = (
   {
     href: "/docs/next",
     id: "node",
+    img: {
+      dark: "https://yffrvzi8zwbljfuj.public.blob.vercel-storage.com/better-og/nextjs-node-example-dark.png",
+      light:
+        "https://yffrvzi8zwbljfuj.public.blob.vercel-storage.com/better-og/nextjs-node-example.png",
+    },
     title: translation.landing.adapters.nextNode,
   },
   {
     href: "/docs/next/edge",
     id: "edge",
+    img: {
+      dark: "https://yffrvzi8zwbljfuj.public.blob.vercel-storage.com/better-og/nextjs-edge-example-dark.png",
+      light:
+        "https://yffrvzi8zwbljfuj.public.blob.vercel-storage.com/better-og/nextjs-edge-example.png",
+    },
     title: translation.landing.adapters.nextEdge,
   },
 ];

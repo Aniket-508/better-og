@@ -18,7 +18,7 @@ export const LocalePreview = ({
         {translation.home.localizedTitle}
       </h2>
     </div>
-    <div className="relative font-mono text-xs/6 text-muted-foreground after:absolute after:bottom-0 after:h-px after:w-full after:bg-border">
+    <div className="relative font-mono text-xs/6 text-muted-foreground after:absolute after:bottom-0 after:h-px after:w-full md:after:bg-border">
       <p className="px-2 text-balance max-sm:px-4">
         {translation.home.localizedDescription}
       </p>

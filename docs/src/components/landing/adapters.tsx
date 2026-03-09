@@ -20,8 +20,8 @@ import {
 import { cn } from "@/lib/utils";
 import type { Translation } from "@/translations";
 
-const PreviewFrame = () => (
-  <div className="hidden sm:block absolute top-0 -right-4 h-58 overflow-hidden rounded-lg">
+const PreviewFrame = ({ light, dark }: AdapterCardConfig["img"]) => (
+  <div className="absolute top-0 -right-4 h-58 overflow-hidden rounded-lg">
     <div className="block dark:hidden">
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
@@ -29,7 +29,7 @@ const PreviewFrame = () => (
         height="232"
         alt="NODE.JS code snippet"
         className="w-full h-full object-cover object-top-left opacity-40 group-hover:opacity-100 transition-opacity duration-200 ease"
-        src="https://dqy38fnwh4fqs.cloudfront.net/autosend/website/landing/nodejs-snippet-light.webp"
+        src={light}
       />
     </div>
     <div className="hidden dark:block">
@@ -39,7 +39,7 @@ const PreviewFrame = () => (
         height="232"
         alt="NODE.JS code snippet"
         className="w-full h-full object-cover object-top-left opacity-40 group-hover:opacity-100 transition-opacity duration-200 ease"
-        src="https://dqy38fnwh4fqs.cloudfront.net/autosend/website/landing/nodejs-snippet-dark.webp"
+        src={dark}
       />
     </div>
   </div>
@@ -62,35 +62,37 @@ const AdapterLogo = ({ id }: { id: AdapterCardConfig["id"] | "next" }) => {
 };
 
 const BaseAdapterCard = ({
-  className,
-  href,
-  id,
   lang,
-  title,
+  adapter,
+  className,
   children,
-  ...props
-}: React.ComponentProps<typeof Link> &
-  AdapterCardConfig & { lang: string }) => (
-  <Link
-    className={cn(
-      "group relative flex flex-col items-center justify-center overflow-hidden bg-card p-3 transition-colors duration-200 ease hover:bg-muted/20 sm:h-[356px] sm:items-start sm:justify-end sm:p-6",
-      className
-    )}
-    href={`/${lang}${href}`}
-    {...props}
-  >
-    <PreviewFrame />
-    <div className="relative z-20 hidden items-end gap-4 sm:flex">
-      <div className="flex flex-col gap-2">
-        <AdapterLogo id={id} />
-        <span className="font-mono text-base font-medium uppercase tracking-[0.64px] text-foreground">
-          {title}
-        </span>
+}: Pick<React.ComponentProps<typeof Link>, "className" | "children"> & {
+  lang: string;
+  adapter: AdapterCardConfig;
+}) => {
+  const { href, id, title, img } = adapter;
+
+  return (
+    <Link
+      className={cn(
+        "group relative flex flex-col overflow-hidden bg-card p-3 transition-colors duration-200 ease hover:bg-muted/20 h-[250px] sm:h-[356px] items-start justify-end sm:p-6",
+        className
+      )}
+      href={`/${lang}${href}`}
+    >
+      <PreviewFrame {...img} />
+      <div className="relative z-20 flex items-end gap-4">
+        <div className="flex flex-col gap-2">
+          <AdapterLogo id={id} />
+          <span className="font-mono text-base font-medium uppercase tracking-[0.64px] text-foreground">
+            {title}
+          </span>
+        </div>
+        {children}
       </div>
-      {children}
-    </div>
-  </Link>
-);
+    </Link>
+  );
+};
 
 const NextAdapterCard = ({
   lang,
@@ -120,10 +122,8 @@ const NextAdapterCard = ({
 
   return (
     <BaseAdapterCard
-      href={`/${variant.href}`}
-      id="next"
       lang={lang}
-      title="NEXT.JS"
+      adapter={{ ...variant, id: "next", title: "NEXT.JS" }}
     >
       <NativeSelect
         size="sm"
@@ -157,7 +157,7 @@ export const Adapters = ({ lang, translation }: AdaptersProps) => {
           {translation.home.adaptersTitle}
         </h2>
       </div>
-      <div className="relative font-mono text-xs/6 text-muted-foreground after:absolute after:bottom-0 after:h-px after:w-full after:bg-border">
+      <div className="relative font-mono text-xs/6 text-muted-foreground after:absolute after:bottom-0 after:h-px after:w-full md:after:bg-border">
         <p className="px-2 text-balance max-sm:px-4">
           {translation.home.adaptersDescription}
         </p>
@@ -165,10 +165,10 @@ export const Adapters = ({ lang, translation }: AdaptersProps) => {
 
       <div className="relative after:absolute after:bottom-0 after:h-px after:w-full after:bg-border">
         <div className="grid grid-cols-1 md:grid-cols-4 md:[&>*:not(:nth-child(4n))]:border-r md:[&>*:nth-child(n+5)]:border-t *:border-border max-md:*:border-t">
-          <BaseAdapterCard {...adapterCards[0]} lang={lang} />
+          <BaseAdapterCard lang={lang} adapter={adapterCards[0]} />
           <NextAdapterCard lang={lang} translation={translation} />
-          <BaseAdapterCard {...adapterCards[1]} lang={lang} />
-          <BaseAdapterCard {...adapterCards[2]} lang={lang} />
+          <BaseAdapterCard lang={lang} adapter={adapterCards[1]} />
+          <BaseAdapterCard lang={lang} adapter={adapterCards[2]} />
         </div>
       </div>
     </section>
