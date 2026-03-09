@@ -107,7 +107,6 @@ export const createOgHandler = (options: WorkersOgHandlerOptions) => {
     aspectRatio: _aspectRatio,
     component,
     fallbackLocales: _fallbackLocales,
-    format = "webp",
     layout: _layout,
     localeFromRequest,
     platform: _platform,
@@ -143,7 +142,6 @@ export const createOgHandler = (options: WorkersOgHandlerOptions) => {
 
       return new ImageResponse(renderComponent, {
         ...renderOptions,
-        format,
         height: resolvedRequest.height,
         renderer: resolvedRenderer,
         width: resolvedRequest.width,
