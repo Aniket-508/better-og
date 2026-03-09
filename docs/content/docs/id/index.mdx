@@ -1,0 +1,107 @@
+---
+title: Pengantar
+description: Render Open Graph yang sadar platform dengan layout adaptif dan font multibahasa.
+---
+
+## Ringkasan
+
+better-og adalah toolkit untuk membuat gambar Open Graph yang menyesuaikan ukuran dan layout secara otomatis sesuai platform yang meminta gambar.
+
+- Deteksi platform dari sinyal request nyata.
+- Rasio aspek dan safe area siap pakai.
+- Adaptor untuk Next.js, Workers, dan TanStack Start.
+
+## Instalasi
+
+Pasang hanya paket yang sesuai dengan runtime target Anda, lalu gunakan kembali komponen OG yang sama di semua lingkungan.
+
+```bash tab="Next.js (next/og)"
+pnpm add @better-og/core next react
+```
+
+```bash tab="Next.js + Takumi"
+pnpm add @better-og/core @takumi-rs/image-response next react
+```
+
+```bash tab="Edge / Workers"
+pnpm add @better-og/core @takumi-rs/image-response @takumi-rs/wasm next react
+```
+
+```bash tab="TanStack Start"
+pnpm add @better-og/core @takumi-rs/image-response react
+```
+
+## Route pertama
+
+Buat handler OG, muat font, lalu kembalikan komponen yang harus dirender sebagai gambar.
+
+```tsx title="app/og/[lang]/route.tsx"
+import { resolveFontSetup } from "@better-og/core";
+import {
+  createOgRouteHandler,
+  loadGoogleFontForImageResponse,
+} from "@better-og/next";
+
+export const runtime = "nodejs";
+export const revalidate = false;
+
+const fontSetup = await resolveFontSetup({
+  baseFonts: await loadGoogleFontForImageResponse({
+    family: "Geist",
+    weights: [400, 700],
+  }),
+  fallbackLocales: ["ja"],
+});
+
+export const GET = createOgRouteHandler({
+  component: (ogContext) => (
+    <div
+      style={{
+        display: "flex",
+        width: "100%",
+        height: "100%",
+        alignItems: "center",
+        justifyContent: "center",
+        fontFamily: fontSetup.families.base,
+        paddingBottom: 32 + ogContext.safeArea.bottom,
+        background: "linear-gradient(135deg, #0d192c, #174a70, #4993d6)",
+        color: "white",
+      }}
+    >
+      <div style={{ fontSize: 64, fontWeight: 700 }}>Hello from better-og</div>
+    </div>
+  ),
+  baseFonts: fontSetup.fonts,
+});
+```
+
+## Tambahkan proxy
+
+Tambahkan `withOgRewrite` agar `platform`, `layout`, dan `aspect_ratio` terisi otomatis.
+
+```ts title="proxy.ts"
+import { withOgRewrite } from "@better-og/next";
+import type { NextRequest } from "next/server";
+
+export async function proxy(request: NextRequest) {
+  return await withOgRewrite(request);
+}
+
+export const config = {
+  matcher: ["/og/:path*"],
+};
+```
+
+## Konfigurasi Next.js
+
+Jika memakai Takumi di Node, pertahankan paketnya sebagai external di Next.js.
+
+```ts title="next.config.ts"
+import type { NextConfig } from "next";
+
+const nextConfig: NextConfig = {
+  serverExternalPackages: ["@takumi-rs/image-response"],
+};
+
+export default nextConfig;
+```

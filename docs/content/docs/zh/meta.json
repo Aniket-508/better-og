@@ -1,0 +1,16 @@
+{
+  "title": "better-og",
+  "pages": [
+    "---快速开始---",
+    "index",
+    "core-concepts",
+    "fonts",
+    "---适配器---",
+    "next",
+    "edge",
+    "workers",
+    "tanstack-start",
+    "---参考---",
+    "api-reference"
+  ]
+}

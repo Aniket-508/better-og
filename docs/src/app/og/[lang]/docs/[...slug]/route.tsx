@@ -12,11 +12,11 @@ export const revalidate = false;
 const fallbackLocales = ["ja", "ar"];
 const getFontSetup = createCachedModuleLoader(async () =>
   resolveFontSetup({
-    fallbackLocales,
     baseFonts: await loadGoogleFontForImageResponse({
       family: "Geist",
       weights: [400, 700],
     }),
+    fallbackLocales,
   })
 );
 
@@ -47,6 +47,7 @@ export const GET = async (
   }
 
   const handler = createOgRouteHandler({
+    baseFonts: fontSetup.fonts,
     component: (ogContext) => (
       <div
         style={{
@@ -107,7 +108,6 @@ export const GET = async (
         ) : null}
       </div>
     ),
-    baseFonts: fontSetup.fonts,
     renderer: "takumi",
   });
 

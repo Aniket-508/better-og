@@ -2,7 +2,7 @@ import { RootProvider } from "fumadocs-ui/provider/next";
 import type { Metadata } from "next";
 import { Inter, Geist_Mono } from "next/font/google";
 
-import { i18n, provider } from "@/lib/i18n";
+import { provider } from "@/lib/i18n";
 import { baseMetadata } from "@/seo/metadata";
 
 import "@/app/global.css";

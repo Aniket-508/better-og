@@ -1,0 +1,35 @@
+---
+title: API 参考
+description: better-og 主要导出的快速参考。
+---
+
+## 概览
+
+本页汇总了构建 platform-aware OG 路由时最常用的 presets、functions 和 types。
+
+## Core (`@better-og/core`)
+
+```ts
+const STANDARD: AspectRatioPreset;
+const SQUARE: AspectRatioPreset;
+const PORTRAIT: AspectRatioPreset;
+const INSTAGRAM: AspectRatioPreset;
+
+declare function detectPlatform(request: Request): Promise<DetectedPlatform>;
+declare function resolveOgRequest(request: Request): Promise<ResolvedOgRequest>;
+declare function resolveFontSetup(
+  options: ResolveFontSetupOptions
+): Promise<ResolvedFontSetup>;
+```
+
+## Runtime packages
+
+- `@better-og/next`
+- `@better-og/next/edge`
+- `@better-og/workers`
+- `@better-og/edge`
+- `@better-og/tanstack-start`
+
+## 说明
+
+- 先理解 `@better-og/core`，再选择对应运行时的包。

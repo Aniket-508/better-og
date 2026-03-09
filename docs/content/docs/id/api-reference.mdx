@@ -1,0 +1,35 @@
+---
+title: Referensi API
+description: Referensi singkat untuk export utama better-og.
+---
+
+## Ringkasan
+
+Halaman ini merangkum preset, fungsi, dan tipe yang paling sering dipakai untuk route OG yang sadar platform.
+
+## Core (`@better-og/core`)
+
+```ts
+const STANDARD: AspectRatioPreset;
+const SQUARE: AspectRatioPreset;
+const PORTRAIT: AspectRatioPreset;
+const INSTAGRAM: AspectRatioPreset;
+
+declare function detectPlatform(request: Request): Promise<DetectedPlatform>;
+declare function resolveOgRequest(request: Request): Promise<ResolvedOgRequest>;
+declare function resolveFontSetup(
+  options: ResolveFontSetupOptions
+): Promise<ResolvedFontSetup>;
+```
+
+## Runtime packages
+
+- `@better-og/next`
+- `@better-og/next/edge`
+- `@better-og/workers`
+- `@better-og/edge`
+- `@better-og/tanstack-start`
+
+## Catatan
+
+- Mulai dari `@better-og/core`, lalu tambahkan paket runtime yang sesuai.

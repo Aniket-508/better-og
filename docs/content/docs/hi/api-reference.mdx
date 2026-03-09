@@ -1,0 +1,35 @@
+---
+title: API संदर्भ
+description: better-og के मुख्य exports का तेज़ संदर्भ।
+---
+
+## ओवरव्यू
+
+यह पेज platform-aware OG routes बनाने के लिए सबसे ज़्यादा इस्तेमाल होने वाले presets, functions और types को संक्षेप में दिखाता है।
+
+## Core (`@better-og/core`)
+
+```ts
+const STANDARD: AspectRatioPreset;
+const SQUARE: AspectRatioPreset;
+const PORTRAIT: AspectRatioPreset;
+const INSTAGRAM: AspectRatioPreset;
+
+declare function detectPlatform(request: Request): Promise<DetectedPlatform>;
+declare function resolveOgRequest(request: Request): Promise<ResolvedOgRequest>;
+declare function resolveFontSetup(
+  options: ResolveFontSetupOptions
+): Promise<ResolvedFontSetup>;
+```
+
+## Runtime packages
+
+- `@better-og/next`
+- `@better-og/next/edge`
+- `@better-og/workers`
+- `@better-og/edge`
+- `@better-og/tanstack-start`
+
+## नोट्स
+
+- पहले `@better-og/core` देखें, फिर अपने runtime के अनुसार पैकेज चुनें।

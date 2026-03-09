@@ -1,0 +1,35 @@
+---
+title: API-reference
+description: Hurtig reference til de vigtigste better-og exports.
+---
+
+## Overblik
+
+Denne side samler de vigtigste presets, funktioner og typer til platform-bevidste OG-ruter.
+
+## Core (`@better-og/core`)
+
+```ts
+const STANDARD: AspectRatioPreset;
+const SQUARE: AspectRatioPreset;
+const PORTRAIT: AspectRatioPreset;
+const INSTAGRAM: AspectRatioPreset;
+
+declare function detectPlatform(request: Request): Promise<DetectedPlatform>;
+declare function resolveOgRequest(request: Request): Promise<ResolvedOgRequest>;
+declare function resolveFontSetup(
+  options: ResolveFontSetupOptions
+): Promise<ResolvedFontSetup>;
+```
+
+## Runtime packages
+
+- `@better-og/next`
+- `@better-og/next/edge`
+- `@better-og/workers`
+- `@better-og/edge`
+- `@better-og/tanstack-start`
+
+## Noter
+
+- Start med `@better-og/core`, og vaelg derefter den runtime-pakke du har brug for.

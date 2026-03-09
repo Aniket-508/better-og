@@ -1,0 +1,49 @@
+---
+title: TanStack Start
+description: Gunakan better-og dengan TanStack Start.
+---
+
+## Ringkasan
+
+TanStack Start dapat memakai hampir konfigurasi komponen OG dan font yang sama seperti proyek Next.js.
+
+## Contoh
+
+```tsx title="app/og/[lang]/route.tsx"
+import { resolveFontSetup } from "@better-og/core";
+import {
+  createOgRouteHandler,
+  loadGoogleFontForImageResponse,
+} from "@better-og/tanstack-start";
+
+export const runtime = "nodejs";
+
+const fontSetup = await resolveFontSetup({
+  baseFonts: await loadGoogleFontForImageResponse({
+    family: "Geist",
+    weights: [400, 700],
+  }),
+});
+
+export const GET = createOgRouteHandler({
+  component: (
+    <div
+      style={{
+        width: "100%",
+        height: "100%",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        fontFamily: fontSetup.families.base,
+      }}
+    >
+      Platform-aware OG
+    </div>
+  ),
+  baseFonts: fontSetup.fonts,
+});
+```
+
+## Catatan
+
+- Adaptor ini mendukung params dan `localeFromRequest` dengan Takumi di Node.

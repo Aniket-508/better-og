@@ -1,0 +1,11 @@
+---
+title: フォントと i18n
+description: スクリプトを意識したフォント読み込みと自動フォールバックです。
+---
+
+## 概要
+
+better-og は、複数の文字体系が混ざる画像でも崩れにくいタイポグラフィを保てるように設計されています。
+
+- `resolveFontSetup` はベースフォントと適切な Noto フォールバックをまとめて解決できます。
+- locale は params または request callback から解決できます。

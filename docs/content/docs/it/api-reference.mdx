@@ -1,0 +1,35 @@
+---
+title: Riferimento API
+description: Riferimento rapido per gli export principali di better-og.
+---
+
+## Panoramica
+
+Questa pagina raccoglie preset, funzioni e tipi piu utili per costruire route OG consapevoli della piattaforma.
+
+## Core (`@better-og/core`)
+
+```ts
+const STANDARD: AspectRatioPreset;
+const SQUARE: AspectRatioPreset;
+const PORTRAIT: AspectRatioPreset;
+const INSTAGRAM: AspectRatioPreset;
+
+declare function detectPlatform(request: Request): Promise<DetectedPlatform>;
+declare function resolveOgRequest(request: Request): Promise<ResolvedOgRequest>;
+declare function resolveFontSetup(
+  options: ResolveFontSetupOptions
+): Promise<ResolvedFontSetup>;
+```
+
+## Runtime packages
+
+- `@better-og/next`
+- `@better-og/next/edge`
+- `@better-og/workers`
+- `@better-og/edge`
+- `@better-og/tanstack-start`
+
+## Note
+
+- Parti da `@better-og/core`, poi aggiungi il pacchetto runtime adatto.

@@ -1,0 +1,50 @@
+---
+title: Next.js (Node)
+description: 在 Node 运行时的 Next.js 中使用 better-og。
+---
+
+## 概览
+
+`@better-og/next` 把字体、proxy 和 presets 组合在一起，方便你直接在 Next.js 中构建 platform-aware OG 路由。
+
+## 示例
+
+```tsx title="app/og/[lang]/route.tsx"
+import { resolveFontSetup } from "@better-og/core";
+import {
+  createOgRouteHandler,
+  loadGoogleFontForImageResponse,
+} from "@better-og/next";
+
+export const runtime = "nodejs";
+
+const fontSetup = await resolveFontSetup({
+  baseFonts: await loadGoogleFontForImageResponse({
+    family: "Geist",
+    weights: [400, 700],
+  }),
+});
+
+export const GET = createOgRouteHandler({
+  component: (
+    <div
+      style={{
+        width: "100%",
+        height: "100%",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        fontFamily: fontSetup.families.base,
+      }}
+    >
+      Platform-aware OG
+    </div>
+  ),
+  baseFonts: fontSetup.fonts,
+});
+```
+
+## 说明
+
+- 默认渲染器是 `next/og`。
+- 需要时可以切换到 `renderer: "takumi"`。

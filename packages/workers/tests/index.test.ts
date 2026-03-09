@@ -1,5 +1,4 @@
 /* oxlint-disable typescript/consistent-type-imports */
-
 const mocks = vi.hoisted(() => {
   const capturedOptions: unknown[] = [];
   const imageResponseCalls: { element: unknown; options: unknown }[] = [];
@@ -33,7 +32,7 @@ const mocks = vi.hoisted(() => {
 const mockWorkersImageResponse = function MockWorkersImageResponse(
   this: unknown,
   element: unknown,
-  options: unknown
+  options: unknown,
 ) {
   mocks.imageResponseCalls.push({ element, options });
 
@@ -48,7 +47,7 @@ vi.mock<typeof import("@takumi-rs/image-response/wasm")>(
   import("@takumi-rs/image-response/wasm"),
   () => ({
     ImageResponse: mockWorkersImageResponse as never,
-  })
+  }),
 );
 
 vi.mock<typeof import("@takumi-rs/wasm/no-bundler")>(
@@ -56,7 +55,7 @@ vi.mock<typeof import("@takumi-rs/wasm/no-bundler")>(
   () => ({
     Renderer: mocks.Renderer as never,
     initSync: mocks.initSync as never,
-  })
+  }),
 );
 
 vi.mock<typeof import("@takumi-rs/wasm/takumi_wasm_bg.wasm")>(
@@ -64,7 +63,7 @@ vi.mock<typeof import("@takumi-rs/wasm/takumi_wasm_bg.wasm")>(
   () =>
     ({
       default: { kind: "workers-wasm" },
-    }) as never
+    }) as never,
 );
 
 const resolvedRequest = {
@@ -157,6 +156,7 @@ describe("createOgHandler (workers)", () => {
       resolvedRequest,
     });
 
+    // oxlint-disable-next-line vitest/prefer-to-have-been-called-times
     expect(mocks.initSync).toHaveBeenCalledOnce();
     expect(mocks.rendererInstances).toHaveLength(2);
     expect(mocks.rendererInstances[0]?.options).toMatchObject({
@@ -213,6 +213,7 @@ describe("createOgHandler (workers)", () => {
     });
 
     expect(mocks.initSync).not.toHaveBeenCalled();
+    // oxlint-disable-next-line vitest/prefer-to-have-been-called-times
     expect(renderer.loadFont).toHaveBeenCalledOnce();
     expect(mocks.imageResponseCalls[0]?.options).toMatchObject({
       renderer,

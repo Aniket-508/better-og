@@ -1,0 +1,35 @@
+---
+title: مرجع API
+description: مرجع سريع للصادرات الأساسية في better-og.
+---
+
+## نظرة عامة
+
+تجمع هذه الصفحة الدوال والثوابت والأنواع الأكثر استخدامًا عند بناء مسارات OG واعية بالمنصة.
+
+## Core (`@better-og/core`)
+
+```ts
+const STANDARD: AspectRatioPreset;
+const SQUARE: AspectRatioPreset;
+const PORTRAIT: AspectRatioPreset;
+const INSTAGRAM: AspectRatioPreset;
+
+declare function detectPlatform(request: Request): Promise<DetectedPlatform>;
+declare function resolveOgRequest(request: Request): Promise<ResolvedOgRequest>;
+declare function resolveFontSetup(
+  options: ResolveFontSetupOptions
+): Promise<ResolvedFontSetup>;
+```
+
+## Runtime packages
+
+- `@better-og/next`
+- `@better-og/next/edge`
+- `@better-og/workers`
+- `@better-og/edge`
+- `@better-og/tanstack-start`
+
+## ملاحظات
+
+- راجع `@better-og/core` أولاً، ثم اختر حزمة البيئة المناسبة.

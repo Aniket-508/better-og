@@ -1,6 +1,6 @@
-import type { Translation } from "./index";
+import type { Translation } from ".";
 
-export const ja: Translation = {
+const ja: Translation = {
   footer: {
     builtBy: "開発者",
     hostedOn: "ホスティング",
@@ -10,7 +10,7 @@ export const ja: Translation = {
   },
   home: {
     adaptersDescription:
-      "実行環境に合わせたアダプターを選びつつ、同じ考え方でOG画像を構築できます。",
+      "実行環境に合ったアダプターを選びつつ、どこでも同じ考え方で運用できます。",
     adaptersTitle: "あらゆるスタック向けアダプター",
     ctaDocs: "使い方を見る",
     ctaGitHub: "GitHub",
@@ -25,4 +25,55 @@ export const ja: Translation = {
       "1つのエンドポイントで、配信先に応じたカードサイズへ切り替えられます。",
     platformsTitle: "1つのルートで、あらゆるプラットフォームへ",
   },
+  landing: {
+    adapters: {
+      nextEdge: "Edge",
+      nextNode: "Node",
+      node: "Node.js",
+      tanstack: "TanStack Start",
+      workers: "Workers",
+    },
+    nextRuntimeAriaLabel: "Next.js ランタイム",
+    now: "今",
+    platforms: {
+      imessage: {
+        appLabel: "iMessage",
+        codeSnippet: [
+          "縦長キャンバス",
+          "長めのコピー向けレイアウト",
+          "ロケール対応フォント",
+        ],
+        previewLabel: "メッセージでプレビュー",
+        title: "iMessage",
+      },
+      instagram: {
+        appLabel: "Instagram",
+        codeSnippet: [
+          "縦長のソーシャル裁ち落とし",
+          "フィード向け比率",
+          "単一コンポーネント",
+        ],
+        previewLabel: "ソーシャルフィードに共有",
+        title: "Instagram",
+      },
+      square: {
+        appLabel: "Telegram / Slack",
+        codeSnippet: ["正方形プレビュー", "フィード安全裁ち落とし", "単一路線"],
+        previewLabel: "チームチャットに共有",
+        title: "Telegram / Slack",
+      },
+      x: {
+        appLabel: "X",
+        codeSnippet: [
+          "summary_large_image",
+          "タイトル + 説明",
+          "セーフエリア: 44px",
+        ],
+        previewLabel: "better-og から投稿",
+        title: "X（旧 Twitter）",
+      },
+    },
+  },
 };
+
+export default ja;

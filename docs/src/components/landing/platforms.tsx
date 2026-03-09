@@ -140,7 +140,9 @@ export const Platforms = ({
                         {activeCard.appLabel}
                       </span>
                     </div>
-                    <span className="text-xs opacity-80">now</span>
+                    <span className="text-xs opacity-80">
+                      {translation.landing.now}
+                    </span>
                   </div>
 
                   <div

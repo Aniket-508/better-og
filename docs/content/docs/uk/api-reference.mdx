@@ -1,0 +1,35 @@
+---
+title: Довідник API
+description: Швидкий довідник за основними export better-og.
+---
+
+## Огляд
+
+На цій сторінці зібрано presets, functions і types, які найчастіше потрібні для platform-aware OG routes.
+
+## Core (`@better-og/core`)
+
+```ts
+const STANDARD: AspectRatioPreset;
+const SQUARE: AspectRatioPreset;
+const PORTRAIT: AspectRatioPreset;
+const INSTAGRAM: AspectRatioPreset;
+
+declare function detectPlatform(request: Request): Promise<DetectedPlatform>;
+declare function resolveOgRequest(request: Request): Promise<ResolvedOgRequest>;
+declare function resolveFontSetup(
+  options: ResolveFontSetupOptions
+): Promise<ResolvedFontSetup>;
+```
+
+## Runtime packages
+
+- `@better-og/next`
+- `@better-og/next/edge`
+- `@better-og/workers`
+- `@better-og/edge`
+- `@better-og/tanstack-start`
+
+## Нотатки
+
+- Спочатку ознайомтеся з `@better-og/core`, а потім додайте пакет під ваш runtime.

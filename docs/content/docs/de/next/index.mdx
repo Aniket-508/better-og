@@ -1,0 +1,50 @@
+---
+title: Next.js (Node)
+description: better-og mit Next.js auf dem Node-Runtime verwenden.
+---
+
+## Uberblick
+
+`@better-og/next` bundelt Fonts, Proxy und Presets fur plattformbewusste OG-Routen direkt in Next.js.
+
+## Beispiel
+
+```tsx title="app/og/[lang]/route.tsx"
+import { resolveFontSetup } from "@better-og/core";
+import {
+  createOgRouteHandler,
+  loadGoogleFontForImageResponse,
+} from "@better-og/next";
+
+export const runtime = "nodejs";
+
+const fontSetup = await resolveFontSetup({
+  baseFonts: await loadGoogleFontForImageResponse({
+    family: "Geist",
+    weights: [400, 700],
+  }),
+});
+
+export const GET = createOgRouteHandler({
+  component: (
+    <div
+      style={{
+        width: "100%",
+        height: "100%",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        fontFamily: fontSetup.families.base,
+      }}
+    >
+      Platform-aware OG
+    </div>
+  ),
+  baseFonts: fontSetup.fonts,
+});
+```
+
+## Hinweise
+
+- Standardmassig wird `next/og` verwendet.
+- Bei Bedarf kannst du auf `renderer: "takumi"` umschalten.

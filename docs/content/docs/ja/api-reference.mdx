@@ -1,0 +1,35 @@
+---
+title: API リファレンス
+description: better-og の主要なエクスポートを確認するための簡易リファレンスです。
+---
+
+## 概要
+
+このページでは、プラットフォーム対応の OG ルートを構築する際によく使う Preset、関数、型をまとめています。
+
+## Core (`@better-og/core`)
+
+```ts
+const STANDARD: AspectRatioPreset;
+const SQUARE: AspectRatioPreset;
+const PORTRAIT: AspectRatioPreset;
+const INSTAGRAM: AspectRatioPreset;
+
+declare function detectPlatform(request: Request): Promise<DetectedPlatform>;
+declare function resolveOgRequest(request: Request): Promise<ResolvedOgRequest>;
+declare function resolveFontSetup(
+  options: ResolveFontSetupOptions
+): Promise<ResolvedFontSetup>;
+```
+
+## Runtime packages
+
+- `@better-og/next`
+- `@better-og/next/edge`
+- `@better-og/workers`
+- `@better-og/edge`
+- `@better-og/tanstack-start`
+
+## 補足
+
+- まず `@better-og/core` を理解し、その後に実行環境向けのパッケージを選んでください。

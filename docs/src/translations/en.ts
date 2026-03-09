@@ -1,6 +1,6 @@
-import type { Translation } from "./index";
+import type { Translation } from ".";
 
-export const en: Translation = {
+const en: Translation = {
   footer: {
     builtBy: "Built by",
     hostedOn: "Hosted on",
@@ -25,4 +25,55 @@ export const en: Translation = {
       "One endpoint can adapt the final card size for the target social surface.",
     platformsTitle: "Every platform, one route",
   },
+  landing: {
+    adapters: {
+      nextEdge: "Edge",
+      nextNode: "Node",
+      node: "Node.js",
+      tanstack: "TanStack Start",
+      workers: "Workers",
+    },
+    nextRuntimeAriaLabel: "Next.js runtime",
+    now: "now",
+    platforms: {
+      imessage: {
+        appLabel: "iMessage",
+        codeSnippet: [
+          "portrait canvas",
+          "taller copy layout",
+          "locale-aware fonts",
+        ],
+        previewLabel: "Preview in Messages",
+        title: "iMessage",
+      },
+      instagram: {
+        appLabel: "Instagram",
+        codeSnippet: [
+          "taller social crop",
+          "feed-ready ratio",
+          "one component",
+        ],
+        previewLabel: "Shared to social feed",
+        title: "Instagram",
+      },
+      square: {
+        appLabel: "Telegram / Slack",
+        codeSnippet: ["square preview", "feed-safe crop", "single route"],
+        previewLabel: "Shared in team chat",
+        title: "Telegram / Slack",
+      },
+      x: {
+        appLabel: "X",
+        codeSnippet: [
+          "summary_large_image",
+          "title + description",
+          "safe area: 44px",
+        ],
+        previewLabel: "Posted from better-og",
+        title: "X (formerly Twitter)",
+      },
+    },
+  },
 };
+
+export default en;

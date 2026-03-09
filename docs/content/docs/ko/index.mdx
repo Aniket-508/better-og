@@ -1,0 +1,107 @@
+---
+title: 소개
+description: 적응형 레이아웃과 다국어 폰트를 갖춘 platform-aware Open Graph rendering.
+---
+
+## 개요
+
+better-og는 이미지를 요청한 플랫폼에 맞춰 OG 이미지의 크기와 레이아웃을 자동으로 조정하는 툴킷입니다.
+
+- 실제 request 신호 기반 플랫폼 감지.
+- 바로 사용할 수 있는 종횡비와 safe area.
+- Next.js, Workers, TanStack Start용 어댑터.
+
+## 설치
+
+대상 runtime에 필요한 패키지만 설치하고 같은 OG component를 여러 환경에서 재사용하세요.
+
+```bash tab="Next.js (next/og)"
+pnpm add @better-og/core next react
+```
+
+```bash tab="Next.js + Takumi"
+pnpm add @better-og/core @takumi-rs/image-response next react
+```
+
+```bash tab="Edge / Workers"
+pnpm add @better-og/core @takumi-rs/image-response @takumi-rs/wasm next react
+```
+
+```bash tab="TanStack Start"
+pnpm add @better-og/core @takumi-rs/image-response react
+```
+
+## 첫 번째 route
+
+OG handler를 만들고 font를 로드한 뒤 최종 이미지로 렌더링할 component를 반환하세요.
+
+```tsx title="app/og/[lang]/route.tsx"
+import { resolveFontSetup } from "@better-og/core";
+import {
+  createOgRouteHandler,
+  loadGoogleFontForImageResponse,
+} from "@better-og/next";
+
+export const runtime = "nodejs";
+export const revalidate = false;
+
+const fontSetup = await resolveFontSetup({
+  baseFonts: await loadGoogleFontForImageResponse({
+    family: "Geist",
+    weights: [400, 700],
+  }),
+  fallbackLocales: ["ja"],
+});
+
+export const GET = createOgRouteHandler({
+  component: (ogContext) => (
+    <div
+      style={{
+        display: "flex",
+        width: "100%",
+        height: "100%",
+        alignItems: "center",
+        justifyContent: "center",
+        fontFamily: fontSetup.families.base,
+        paddingBottom: 32 + ogContext.safeArea.bottom,
+        background: "linear-gradient(135deg, #0d192c, #174a70, #4993d6)",
+        color: "white",
+      }}
+    >
+      <div style={{ fontSize: 64, fontWeight: 700 }}>Hello from better-og</div>
+    </div>
+  ),
+  baseFonts: fontSetup.fonts,
+});
+```
+
+## 프록시 추가
+
+`withOgRewrite`를 추가하면 `platform`, `layout`, `aspect_ratio`가 자동으로 채워집니다.
+
+```ts title="proxy.ts"
+import { withOgRewrite } from "@better-og/next";
+import type { NextRequest } from "next/server";
+
+export async function proxy(request: NextRequest) {
+  return await withOgRewrite(request);
+}
+
+export const config = {
+  matcher: ["/og/:path*"],
+};
+```
+
+## Next.js 설정
+
+Node에서 Takumi를 쓴다면 Next.js 설정에서 패키지를 external로 유지하세요.
+
+```ts title="next.config.ts"
+import type { NextConfig } from "next";
+
+const nextConfig: NextConfig = {
+  serverExternalPackages: ["@takumi-rs/image-response"],
+};
+
+export default nextConfig;
+```

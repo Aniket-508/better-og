@@ -1,0 +1,16 @@
+{
+  "title": "better-og",
+  "pages": [
+    "---시작하기---",
+    "index",
+    "core-concepts",
+    "fonts",
+    "---어댑터---",
+    "next",
+    "edge",
+    "workers",
+    "tanstack-start",
+    "---레퍼런스---",
+    "api-reference"
+  ]
+}

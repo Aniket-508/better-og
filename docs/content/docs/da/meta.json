@@ -1,0 +1,16 @@
+{
+  "title": "better-og",
+  "pages": [
+    "---Kom godt i gang---",
+    "index",
+    "core-concepts",
+    "fonts",
+    "---Adaptere---",
+    "next",
+    "edge",
+    "workers",
+    "tanstack-start",
+    "---Reference---",
+    "api-reference"
+  ]
+}

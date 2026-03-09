@@ -3,6 +3,7 @@ import { defineI18nUI } from "fumadocs-ui/i18n";
 
 export const i18n = defineI18n({
   defaultLanguage: "en",
+  hideLocale: "default-locale",
   languages: [
     "en",
     "es",
@@ -22,6 +23,7 @@ export const i18n = defineI18n({
     "da",
     "uk",
   ],
+  parser: "dir",
 });
 
 export const { provider } = defineI18nUI(i18n, {

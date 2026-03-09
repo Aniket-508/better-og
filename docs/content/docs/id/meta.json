@@ -1,0 +1,16 @@
+{
+  "title": "better-og",
+  "pages": [
+    "---Mulai---",
+    "index",
+    "core-concepts",
+    "fonts",
+    "---Adaptor---",
+    "next",
+    "edge",
+    "workers",
+    "tanstack-start",
+    "---Referensi---",
+    "api-reference"
+  ]
+}

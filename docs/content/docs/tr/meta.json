@@ -1,0 +1,16 @@
+{
+  "title": "better-og",
+  "pages": [
+    "---Baslangic---",
+    "index",
+    "core-concepts",
+    "fonts",
+    "---Adaptorler---",
+    "next",
+    "edge",
+    "workers",
+    "tanstack-start",
+    "---Referans---",
+    "api-reference"
+  ]
+}

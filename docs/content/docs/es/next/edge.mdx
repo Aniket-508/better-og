@@ -1,0 +1,49 @@
+---
+title: Edge Runtime
+description: Usa better-og en Next.js Edge Runtime.
+---
+
+## Resumen
+
+El adaptador Edge usa `next/og` y ofrece una ruta ligera para generar imagenes OG dentro de las limitaciones de Edge.
+
+## Ejemplo
+
+```tsx title="app/og/[lang]/route.tsx"
+import { resolveFontSetup } from "@better-og/core";
+import {
+  createOgRouteHandler,
+  loadGoogleFontForImageResponse,
+} from "@better-og/next/edge";
+
+export const runtime = "nodejs";
+
+const fontSetup = await resolveFontSetup({
+  baseFonts: await loadGoogleFontForImageResponse({
+    family: "Geist",
+    weights: [400, 700],
+  }),
+});
+
+export const GET = createOgRouteHandler({
+  component: (
+    <div
+      style={{
+        width: "100%",
+        height: "100%",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        fontFamily: fontSetup.families.base,
+      }}
+    >
+      Platform-aware OG
+    </div>
+  ),
+  baseFonts: fontSetup.fonts,
+});
+```
+
+## Notas
+
+- Si necesitas Takumi directamente en Edge, pasa a `@better-og/edge`.

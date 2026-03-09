@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
 import { Adapters } from "@/components/landing/adapters";
-import { getPlatformCards, getLocaleCards } from "@/components/landing/data";
+import { getLocaleCards, getPlatformCards } from "@/components/landing/data";
 import { VerticalSeparator } from "@/components/landing/grid-separators";
 import { Hero } from "@/components/landing/hero";
 import { LocalePreview } from "@/components/landing/locale-preview";
@@ -38,7 +38,7 @@ export default async function HomePage({
   const { lang } = await params;
   const translation = getTranslation(lang);
   const localeCards = getLocaleCards(lang);
-  const platformCards = getPlatformCards();
+  const platformCards = getPlatformCards(translation);
 
   return (
     <div className="grid min-h-dvh grid-cols-1 grid-rows-[1fr_1px_auto_1px_auto] justify-center [--gutter-width:2.5rem] md:-mx-4 md:grid-cols-[var(--gutter-width)_minmax(0,var(--breakpoint-xl))_var(--gutter-width)] lg:mx-0">

@@ -1,0 +1,11 @@
+---
+title: 核心概念
+description: 关于平台检测、宽高比和安全区域的核心概念。
+---
+
+## 概览
+
+better-og 会读取请求信号来判断抓取图片的平台，并为后续渲染生成一致的计划。
+
+- 归一化后的 OG request 会包含平台、尺寸、safe area 和 layout 计划。
+- 如有需要，可以用 `?aspect_ratio=` 手动覆盖 preset。

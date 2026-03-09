@@ -1,0 +1,49 @@
+---
+title: Edge Runtime
+description: 在 Next.js Edge Runtime 中使用 better-og。
+---
+
+## 概览
+
+Edge 适配器建立在 `next/og` 之上，在 Edge 约束内提供了一条轻量的 OG 图片路径。
+
+## 示例
+
+```tsx title="app/og/[lang]/route.tsx"
+import { resolveFontSetup } from "@better-og/core";
+import {
+  createOgRouteHandler,
+  loadGoogleFontForImageResponse,
+} from "@better-og/next/edge";
+
+export const runtime = "nodejs";
+
+const fontSetup = await resolveFontSetup({
+  baseFonts: await loadGoogleFontForImageResponse({
+    family: "Geist",
+    weights: [400, 700],
+  }),
+});
+
+export const GET = createOgRouteHandler({
+  component: (
+    <div
+      style={{
+        width: "100%",
+        height: "100%",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        fontFamily: fontSetup.families.base,
+      }}
+    >
+      Platform-aware OG
+    </div>
+  ),
+  baseFonts: fontSetup.fonts,
+});
+```
+
+## 说明
+
+- 如果你需要在 Edge 上直接使用 Takumi，请改用 `@better-og/edge`。

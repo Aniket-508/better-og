@@ -1,5 +1,4 @@
 /* oxlint-disable typescript/consistent-type-imports */
-
 import "vitest";
 
 const mocks = vi.hoisted(() => ({
@@ -35,7 +34,7 @@ vi.mock<typeof import("next/og")>(import("next/og"), () => ({
   ImageResponse: function MockNextImageResponse(
     this: unknown,
     element: unknown,
-    options: unknown
+    options: unknown,
   ) {
     mocks.nextImageResponseCalls.push({ element, options });
 
@@ -49,13 +48,13 @@ vi.mock<typeof import("@takumi-rs/image-response")>(
     ImageResponse: function MockTakumiImageResponse(
       this: unknown,
       element: unknown,
-      options: unknown
+      options: unknown,
     ) {
       mocks.takumiImageResponseCalls.push({ element, options });
 
       return new Response("takumi");
     } as never,
-  })
+  }),
 );
 
 const resolvedRequest = {
@@ -94,6 +93,7 @@ describe("createOgRouteHandler (next)", () => {
     });
 
     expect(handler).toBeTypeOf("function");
+    // oxlint-disable-next-line vitest/prefer-to-have-been-called-times
     expect(mocks.createOgRouteHandler).toHaveBeenCalledOnce();
     const options = mocks.capturedOptions[0] as {
       localeFromContext: (context: {
@@ -104,7 +104,7 @@ describe("createOgRouteHandler (next)", () => {
     await expect(
       options.localeFromContext({
         params: Promise.resolve({ lang: "ja" }),
-      })
+      }),
     ).resolves.toBe("params-locale");
     expect(mocks.resolveLocaleFromParams).toHaveBeenCalledWith({ lang: "ja" });
   });
