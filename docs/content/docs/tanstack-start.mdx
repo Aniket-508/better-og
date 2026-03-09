@@ -18,7 +18,7 @@ import { loadGoogleFonts, resolveFontSetup } from "@better-og/core";
 import { createOgRouteHandler } from "@better-og/tanstack-start";
 
 const fontSetup = await resolveFontSetup({
-  fonts: await loadGoogleFonts({
+  baseFonts: await loadGoogleFonts({
     family: "Inter",
     weights: [400, 700],
   }),
@@ -39,6 +39,6 @@ export const handler = createOgRouteHandler({
       TanStack Start OG
     </div>
   ),
-  fonts: fontSetup.fonts,
+  baseFonts: fontSetup.fonts,
 });
 ```

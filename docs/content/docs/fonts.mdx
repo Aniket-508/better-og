@@ -1,6 +1,6 @@
 ---
 title: Fonts & i18n
-description: Locale-aware font loading with automatic fallbacks for multilingual OG images.
+description: Script-aware font loading with automatic fallbacks for multilingual OG images.
 ---
 
 ## Font Loading
@@ -35,14 +35,14 @@ const fonts = await loadGoogleFonts({
 
 ## Font Setup
 
-The `resolveFontSetup` function combines your base fonts with locale-specific fallbacks and returns both the font data and resolved family names:
+The `resolveFontSetup` function combines your base fonts with script-aware fallbacks and returns both the font data and resolved family names:
 
 ```ts
 import { resolveFontSetup } from "@better-og/core";
 
 const fontSetup = await resolveFontSetup({
-  fonts: myBaseFonts,
-  fallbackFontLocales: ["ja", "ar"],
+  baseFonts: myBaseFonts,
+  fallbackLocales: ["ja", "ar"],
 });
 
 // fontSetup.families.base     → "Geist"
@@ -65,7 +65,7 @@ better-og ships with Google Fonts mappings for these locales:
 | `ar`   | Noto Sans Arabic     |
 | `hi`   | Noto Sans Devanagari |
 
-When you specify `fallbackFontLocales`, better-og automatically loads the appropriate Noto Sans variant and appends it to the font stack.
+When you specify `fallbackLocales`, better-og automatically loads the appropriate Noto Sans variant and appends it to the font stack. Mixed-script strings also trigger the corresponding fallback locales automatically.
 
 ## Using Locale Fonts in Components
 

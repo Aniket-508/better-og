@@ -16,17 +16,17 @@ const INSTAGRAM: AspectRatioPreset; // 1200x1500, 4:5
 
 ### Functions
 
-#### `getOgContext(request: Request): OgContext`
+#### `detectPlatform(request: Request, options?): Promise<DetectedPlatform>`
 
-Detects the requesting platform from the `User-Agent` header and resolves the appropriate aspect ratio, dimensions, and safe area.
+Detects the requesting platform using query overrides plus request signals such as `User-Agent` and `Referer`.
+
+#### `resolveOgRequest(request: Request, options?): Promise<ResolvedOgRequest>`
+
+Returns the normalized render plan, including platform, aspect ratio, dimensions, safe area, layout strategy, layout boxes, capabilities, and matched detection signals.
 
 #### `resolveFontSetup(options: ResolveFontSetupOptions): Promise<ResolvedFontSetup>`
 
-Resolves base fonts and locale-specific fallback fonts, returning both the font data and family name mappings.
-
-#### `getFontsForRequest(context, options): Promise<Font[]>`
-
-Resolves the complete font stack for a given request context, including base fonts and fallback fonts.
+Resolves base fonts and script-aware fallback fonts, returning both the font data and family name mappings.
 
 #### `loadGoogleFonts(options: LoadGoogleFontsOptions): Promise<Font[]>`
 
@@ -40,9 +40,13 @@ Clears the in-memory Google Fonts cache.
 
 Extracts locale from route params, checking `params.lang`, `params.locale`, then first truthy value.
 
-#### `resolveSafeAreaForPlatform(platform: string): OgSafeArea`
+#### `getSafeArea(options): OgSafeArea`
 
-Returns platform-specific safe area insets. Currently only Twitter has a non-zero bottom inset (44px).
+Returns computed platform-specific safe area insets for the resolved canvas size.
+
+#### `createLayout(options): OgLayout`
+
+Builds reusable layout boxes (`canvas`, `safe`, `content`, `center`, `bleed`) for an OG canvas.
 
 ### Types
 
@@ -60,12 +64,15 @@ interface Font {
   style?: string;
 }
 
-interface OgContext {
+interface ResolvedOgRequest {
   aspectRatio: string;
   width: number;
   height: number;
   platform: string;
   safeArea: OgSafeArea;
+  layoutStrategy: "wide" | "square" | "portrait";
+  layout: OgLayout;
+  capabilities: PlatformCapabilities;
 }
 
 interface OgSafeArea {
@@ -75,24 +82,13 @@ interface OgSafeArea {
   left: number;
 }
 
-interface OgAdapterOptions {
-  getOgContext?: (req: Request) => OgContext | Promise<OgContext>;
-  localeFromRequest?: (req: Request) => string | undefined;
-  format?: "webp" | "png";
-  loadDefaultFonts?: boolean;
-  fonts?: Font[];
-  getFontsForLocale?: GetFontsForLocale;
-  getFallbackFontsForLocale?: GetFontsForLocale;
-  fallbackFontLocales?: string[];
-}
-
 interface ResolveFontSetupOptions {
-  fonts?: Font[];
-  fallbackFontLocales?: string[];
-  getFallbackFontsForLocale?: GetFontsForLocale;
-  getFontsForLocale?: GetFontsForLocale;
+  baseFonts?: Font[];
+  fallbackLocales?: string[];
   locale?: string;
   request?: Request;
+  sources?: FontSource[];
+  text?: string;
 }
 
 interface ResolvedFontSetup {
@@ -116,10 +112,10 @@ Loads Google Fonts in a format compatible with `next/og` `ImageResponse`.
 
 ### `withOgRewrite(request, options?)`
 
-Middleware helper that detects the platform and rewrites the URL with an `aspect_ratio` query parameter.
+Middleware helper that resolves the request plan and rewrites the URL with normalized `platform`, `layout`, and `aspect_ratio` query parameters.
 
 ## Next.js Edge (`@better-og/next/edge`)
 
 ### `createOgRouteHandler(options)`
 
-Same interface as `@better-og/next` but for the Edge runtime. Only supports the `next/og` provider.
+Same interface as `@better-og/next` but for the Edge runtime. Only supports the `next` renderer.

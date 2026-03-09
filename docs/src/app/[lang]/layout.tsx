@@ -1,9 +1,8 @@
-import { defineI18nUI } from "fumadocs-ui/i18n";
 import { RootProvider } from "fumadocs-ui/provider/next";
 import type { Metadata } from "next";
 import { Inter, Geist_Mono } from "next/font/google";
 
-import { i18n } from "@/lib/i18n";
+import { i18n, provider } from "@/lib/i18n";
 import { baseMetadata } from "@/seo/metadata";
 
 import "@/app/global.css";
@@ -18,22 +17,6 @@ const inter = Inter({
 const geistMono = Geist_Mono({
   subsets: ["latin"],
   variable: "--font-geist-mono",
-});
-
-const { provider } = defineI18nUI(i18n, {
-  translations: {
-    ar: {
-      displayName: "Arabic",
-      search: "البحث في المستندات",
-    },
-    en: {
-      displayName: "English",
-    },
-    ja: {
-      displayName: "Japanese",
-      search: "ドキュメントを検索",
-    },
-  },
 });
 
 export default async function Layout({

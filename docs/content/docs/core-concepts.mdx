@@ -1,11 +1,11 @@
 ---
 title: Core Concepts
-description: Understand aspect ratios, platform detection, safe areas, and the OG context.
+description: Understand aspect ratios, platform detection, safe areas, layout, and the OG request plan.
 ---
 
 ## Platform Detection
 
-When a social platform fetches your OG image, it sends a characteristic `User-Agent` header. better-og inspects this header to determine which platform is requesting the image and selects the optimal aspect ratio preset.
+When a social platform fetches your OG image, it sends a characteristic request signature. better-og combines explicit query overrides with `User-Agent`, `Referer`, and other request hints to determine which platform is requesting the image and selects the optimal aspect ratio preset.
 
 | Platform  | User-Agent pattern | Default Preset |
 | --------- | ------------------ | -------------- |
@@ -31,17 +31,19 @@ INSTAGRAM; // { width: 1200, height: 1500, label: "4:5"    }
 
 You can also pass aspect ratio values via the `?aspect_ratio=` query parameter. Supported aliases include `standard`, `square`, `portrait`, `instagram`, and explicit dimension strings like `1200x630`.
 
-## OG Context
+## OG Request
 
-The `OgContext` object is passed to your component factory function and contains everything you need to render a platform-aware image:
+The resolved request object is passed to your component factory function and contains everything you need to render a platform-aware image:
 
 ```ts
-interface OgContext {
+interface ResolvedOgRequest {
   aspectRatio: string; // e.g. "1.91:1"
   width: number; // e.g. 1200
   height: number; // e.g. 630
   platform: string; // e.g. "twitter"
   safeArea: OgSafeArea; // platform-specific insets
+  layoutStrategy: "wide" | "square" | "portrait";
+  layout: OgLayout;
 }
 ```
 
@@ -69,7 +71,7 @@ The `withOgRewrite` middleware works as follows:
 
 1. Intercepts requests matching the OG pathname prefix (default `/og`).
 2. Skips if `aspect_ratio` is already in the query string.
-3. Calls `getOgContext(request)` to detect the platform from the `User-Agent`.
-4. Rewrites the URL with the resolved `aspect_ratio` query parameter.
+3. Calls `resolveOgRequest(request)` to detect the platform and normalize the render plan.
+4. Rewrites the URL with the resolved `platform`, `layout`, and `aspect_ratio` query parameters.
 
 This ensures OG route handlers always receive a normalized aspect ratio without exposing it in the public URL.

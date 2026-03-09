@@ -6,9 +6,9 @@ import { i18n } from "@/lib/i18n";
 
 const i18nMiddleware = createI18nMiddleware(i18n);
 
-export const proxy = (request: NextRequest, event: NextFetchEvent) => {
+export const proxy = async (request: NextRequest, event: NextFetchEvent) => {
   if (request.nextUrl.pathname.startsWith("/og")) {
-    return withOgRewrite(request);
+    return await withOgRewrite(request);
   }
 
   return i18nMiddleware(request, event);

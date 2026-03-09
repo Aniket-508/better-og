@@ -1,6 +1,6 @@
 ---
 title: Next.js (Node)
-description: Use better-og with the Next.js Node runtime, supporting both next/og and Takumi providers.
+description: Use better-og with the Next.js Node runtime, supporting both next/og and Takumi renderers.
 ---
 
 ## Import
@@ -26,7 +26,7 @@ export const runtime = "nodejs";
 export const revalidate = false;
 
 const fontSetup = await resolveFontSetup({
-  fonts: await loadGoogleFontForImageResponse({
+  baseFonts: await loadGoogleFontForImageResponse({
     family: "Geist",
     weights: [400, 700],
   }),
@@ -51,11 +51,11 @@ export const GET = createOgRouteHandler({
       My OG Image
     </div>
   ),
-  fonts: fontSetup.fonts,
+  baseFonts: fontSetup.fonts,
 });
 ```
 
-## Providers
+## Renderers
 
 By default, `@better-og/next` uses `next/og`.
 
@@ -63,9 +63,9 @@ If you need Takumi on the Node runtime:
 
 ```tsx
 export const GET = createOgRouteHandler({
-  provider: "takumi",
+  renderer: "takumi",
   component: myComponent,
-  fonts: fontSetup.fonts,
+  baseFonts: fontSetup.fonts,
 });
 ```
 
@@ -83,13 +83,13 @@ export default nextConfig;
 
 ## Proxy
 
-Use `withOgRewrite` to detect the caller platform and append the normalized `aspect_ratio` query.
+Use `withOgRewrite` to detect the caller platform and append normalized `platform`, `layout`, and `aspect_ratio` query values.
 
 ```ts title="proxy.ts"
 import { withOgRewrite } from "@better-og/next";
 import type { NextRequest } from "next/server";
 
-export function proxy(request: NextRequest) {
-  return withOgRewrite(request, { pathnamePrefix: "/og" });
+export async function proxy(request: NextRequest) {
+  return await withOgRewrite(request, { pathnamePrefix: "/og" });
 }
 ```

@@ -9,11 +9,11 @@ import { source } from "@/lib/source";
 
 export const revalidate = false;
 
-const fallbackFontLocales = ["ja", "ar"];
+const fallbackLocales = ["ja", "ar"];
 const getFontSetup = createCachedModuleLoader(async () =>
   resolveFontSetup({
-    fallbackFontLocales,
-    fonts: await loadGoogleFontForImageResponse({
+    fallbackLocales,
+    baseFonts: await loadGoogleFontForImageResponse({
       family: "Geist",
       weights: [400, 700],
     }),
@@ -107,8 +107,8 @@ export const GET = async (
         ) : null}
       </div>
     ),
-    fonts: fontSetup.fonts,
-    provider: "takumi",
+    baseFonts: fontSetup.fonts,
+    renderer: "takumi",
   });
 
   return handler(request, { params });

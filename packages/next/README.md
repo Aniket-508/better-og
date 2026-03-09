@@ -8,7 +8,7 @@ Next.js adapters for `better-og`.
 pnpm add @better-og/core @better-og/next next react
 ```
 
-If you use `provider: "takumi"` on the Node runtime adapter, also install:
+If you use `renderer: "takumi"` on the Node runtime adapter, also install:
 
 ```sh
 pnpm add @takumi-rs/image-response
@@ -29,11 +29,11 @@ import {
 } from "@better-og/next";
 
 const fontSetup = await resolveFontSetup({
-  fonts: await loadGoogleFontForImageResponse({
+  baseFonts: await loadGoogleFontForImageResponse({
     family: "Geist",
     weights: [400, 700],
   }),
-  fallbackFontLocales: ["ja"],
+  fallbackLocales: ["ja"],
 });
 
 export const GET = createOgRouteHandler({
@@ -47,9 +47,9 @@ export const GET = createOgRouteHandler({
       Hello from Next.js
     </div>
   ),
-  fonts: fontSetup.fonts,
+  baseFonts: fontSetup.fonts,
 });
 ```
 
 Use `@better-og/next/edge` for the Next.js Edge runtime. It supports the
-`next/og` provider only.
+`next` renderer only.

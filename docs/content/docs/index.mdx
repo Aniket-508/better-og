@@ -1,6 +1,6 @@
 ---
 title: Introduction
-description: Open Graph image helpers with sane aspect-ratio defaults, locale-aware font fallbacks, and multi-runtime adapters.
+description: Platform-aware Open Graph rendering with request resolution, adaptive layout, and multi-runtime adapters.
 ---
 
 ## What is better-og?
@@ -9,11 +9,11 @@ description: Open Graph image helpers with sane aspect-ratio defaults, locale-aw
 
 ### Key Features
 
-- **Automatic aspect-ratio detection** -- detects the requesting platform (Twitter, Telegram, Slack, iMessage, Instagram) and renders the appropriate dimensions.
-- **Locale-aware font fallbacks** -- built-in Google Fonts integration with automatic fallback fonts for `en`, `ja`, `ko`, `zh`, `ar`, `hi`, `ru`, and `uk`.
-- **Platform safe areas** -- provides safe-area insets (e.g. Twitter's bottom crop zone) so your content stays visible.
+- **Multi-signal platform detection** -- uses query overrides, `User-Agent`, `Referer`, and other request hints to identify the requesting platform.
+- **Adaptive layout primitives** -- exposes computed safe areas, reusable layout boxes, and platform-native layout strategies.
+- **Script-aware font resolution** -- built-in Google Fonts integration with automatic fallback fonts for `en`, `ja`, `ko`, `zh`, `ar`, `hi`, `ru`, and `uk`.
 - **Multi-runtime adapters** -- works with Next.js (Node & Edge), Cloudflare Workers, and TanStack Start.
-- **Two rendering providers** -- choose between `next/og` (Vercel's built-in Satori) or [Takumi](https://takumi.kane.tw/docs/) for WASM-based rendering.
+- **Multiple renderers** -- choose between `next/og` (Vercel's built-in Satori) or [Takumi](https://takumi.kane.tw/docs/) for WASM-based rendering.
 
 ### Aspect Ratio Presets
 
@@ -26,9 +26,9 @@ description: Open Graph image helpers with sane aspect-ratio defaults, locale-aw
 
 ### How It Works
 
-1. A middleware intercepts OG image requests and inspects the `User-Agent` header.
-2. Based on the detected platform, an `aspect_ratio` query parameter is appended via URL rewrite.
-3. The OG route handler reads the aspect ratio, resolves dimensions and safe areas, loads locale-aware fonts, and renders the component at the correct size.
+1. A middleware intercepts OG image requests and resolves the platform-aware render plan.
+2. The request plan normalizes `platform`, `aspect_ratio`, and `layout` for the downstream OG route.
+3. The OG route handler loads the required fonts, computes layout boxes, and renders with the selected runtime adapter.
 
 ## Installation
 
@@ -65,11 +65,11 @@ export const runtime = "nodejs";
 export const revalidate = false;
 
 const fontSetup = await resolveFontSetup({
-  fonts: await loadGoogleFontForImageResponse({
+  baseFonts: await loadGoogleFontForImageResponse({
     family: "Geist",
     weights: [400, 700],
   }),
-  fallbackFontLocales: ["ja"],
+  fallbackLocales: ["ja"],
 });
 
 export const GET = createOgRouteHandler({
@@ -90,7 +90,7 @@ export const GET = createOgRouteHandler({
       <div style={{ fontSize: 64, fontWeight: 700 }}>Hello from better-og</div>
     </div>
   ),
-  fonts: fontSetup.fonts,
+  baseFonts: fontSetup.fonts,
 });
 ```
 
@@ -102,8 +102,8 @@ To enable automatic aspect-ratio detection, add a proxy:
 import { withOgRewrite } from "@better-og/next";
 import type { NextRequest } from "next/server";
 
-export function proxy(request: NextRequest) {
-  return withOgRewrite(request);
+export async function proxy(request: NextRequest) {
+  return await withOgRewrite(request);
 }
 
 export const config = {
@@ -113,7 +113,7 @@ export const config = {
 
 ## Next.js Config
 
-If using the Takumi provider, keep it external:
+If using the Takumi renderer, keep it external:
 
 ```ts title="next.config.ts"
 import type { NextConfig } from "next";

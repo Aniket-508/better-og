@@ -19,7 +19,7 @@ import { createOgRouteHandler } from "@better-og/next/edge";
 export const runtime = "edge";
 
 const fontSetup = await resolveFontSetup({
-  fonts: await loadGoogleFontForImageResponse({
+  baseFonts: await loadGoogleFontForImageResponse({
     family: "Geist",
     weights: [400, 700],
   }),
@@ -43,7 +43,7 @@ export const GET = createOgRouteHandler({
       Edge OG Image
     </div>
   ),
-  fonts: fontSetup.fonts,
+  baseFonts: fontSetup.fonts,
 });
 ```
 
