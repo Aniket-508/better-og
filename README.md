@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="docs/public/og.png" alt="better-og hero" width="100%" />
+  <img src="https://yffrvzi8zwbljfuj.public.blob.vercel-storage.com/better-og/og.png" alt="better-og hero" width="100%" />
 </p>
 
 <h2 align="center">
