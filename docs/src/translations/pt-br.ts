@@ -74,6 +74,13 @@ const ptBr: Translation = {
       },
     },
   },
+  notFound: {
+    description:
+      "A página que você procura pode ter sido movida ou não existe.",
+    explore: "Explorar",
+    goHome: "Ir para o Início",
+    heading: "404",
+  },
 };
 
 export default ptBr;

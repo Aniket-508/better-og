@@ -4,7 +4,7 @@ import { SITE } from "@/constants/site";
 import { i18n } from "@/lib/i18n";
 import { source } from "@/lib/source";
 
-export default function sitemap(): MetadataRoute.Sitemap {
+const sitemap = (): MetadataRoute.Sitemap => {
   const routes: MetadataRoute.Sitemap = [];
 
   for (const lang of i18n.languages) {
@@ -32,4 +32,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
   }
 
   return routes;
-}
+};
+
+export default sitemap;

@@ -70,6 +70,13 @@ const da: Translation = {
       },
     },
   },
+  notFound: {
+    description:
+      "Siden du leder efter er muligvis blevet flyttet eller eksisterer ikke.",
+    explore: "Udforsk",
+    goHome: "Gå til forsiden",
+    heading: "404",
+  },
 };
 
 export default da;

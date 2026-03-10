@@ -59,6 +59,12 @@ const zh: Translation = {
       },
     },
   },
+  notFound: {
+    description: "你寻找的页面可能已被移动或不存在。",
+    explore: "探索",
+    goHome: "返回首页",
+    heading: "404",
+  },
 };
 
 export default zh;

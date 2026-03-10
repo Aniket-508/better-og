@@ -19,7 +19,9 @@ export const getPageImage = (
   const segments = [...page.slugs, "image.png"];
 
   return {
+    description: page.data.description,
     segments,
+    title: page.data.title,
     url: `/og/${lang}/docs/${segments.join("/")}`,
   };
 };

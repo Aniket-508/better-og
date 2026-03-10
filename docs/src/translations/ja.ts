@@ -74,6 +74,12 @@ const ja: Translation = {
       },
     },
   },
+  notFound: {
+    description: "お探しのページは移動したか、存在しない可能性があります。",
+    explore: "探索",
+    goHome: "ホームに戻る",
+    heading: "404",
+  },
 };
 
 export default ja;

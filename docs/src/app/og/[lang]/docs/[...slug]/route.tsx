@@ -5,6 +5,7 @@ import {
 } from "@better-og/next";
 import { notFound } from "next/navigation";
 
+import DocsOgImage from "@/components/og/docs-og-image";
 import { source } from "@/lib/source";
 
 export const revalidate = false;
@@ -49,64 +50,13 @@ export const GET = async (
   const handler = createOgRouteHandler({
     baseFonts: fontSetup.fonts,
     component: (ogContext) => (
-      <div
-        style={{
-          alignItems: "stretch",
-          background:
-            "linear-gradient(135deg, rgb(13, 25, 44) 0%, rgb(23, 58, 112) 52%, rgb(73, 147, 214) 100%)",
-          color: "white",
-          display: "flex",
-          flexDirection: "column",
-          fontFamily: fontSetup.families.base,
-          gap: 24,
-          height: "100%",
-          justifyContent: "space-between",
-          padding: 64,
-          paddingBottom: 64 + ogContext.safeArea.bottom,
-          width: "100%",
-        }}
-      >
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            gap: 16,
-          }}
-        >
-          <div
-            style={{
-              fontSize: 28,
-              letterSpacing: 3,
-              opacity: 0.8,
-              textTransform: "uppercase",
-            }}
-          >
-            better-og
-          </div>
-          <div
-            style={{
-              display: "flex",
-              fontSize: 64,
-              fontWeight: 700,
-              lineHeight: 1.1,
-            }}
-          >
-            {page.data.title}
-          </div>
-        </div>
-        {page.data.description ? (
-          <div
-            style={{
-              display: "flex",
-              fontFamily: getDescriptionFontFamily(fontSetup, lang),
-              fontSize: 28,
-              opacity: 0.85,
-            }}
-          >
-            {page.data.description}
-          </div>
-        ) : null}
-      </div>
+      <DocsOgImage
+        title={page.data.title}
+        description={page.data.description}
+        fontFamily={fontSetup.families.base}
+        descriptionFontFamily={getDescriptionFontFamily(fontSetup, lang)}
+        safeAreaBottom={ogContext.safeArea.bottom}
+      />
     ),
     renderer: "takumi",
   });

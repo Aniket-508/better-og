@@ -1,4 +1,5 @@
-import { XIcon, LlmsIcon } from "@/components/icons";
+import { Llms } from "@/components/ui/icon/llms";
+import { X } from "@/components/ui/icon/x";
 import { LINK } from "@/constants/links";
 import { SITE } from "@/constants/site";
 import type { Translation } from "@/translations";
@@ -49,14 +50,14 @@ export const Footer = ({ translation }: FooterProps) => (
           className="transition-colors hover:text-fd-foreground"
           aria-label={translation.footer.twitter}
         >
-          <XIcon className="size-4" />
+          <X className="size-4" />
         </a>
         <a
           href={LINK.LLMS}
           className="transition-colors hover:text-fd-foreground"
           aria-label={translation.footer.llms}
         >
-          <LlmsIcon className="size-4" />
+          <Llms className="size-4" />
         </a>
       </div>
     </div>

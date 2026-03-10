@@ -63,6 +63,12 @@ export interface Translation {
       x: PlatformTranslation;
     };
   };
+  notFound: {
+    heading: string;
+    description: string;
+    goHome: string;
+    explore: string;
+  };
 }
 
 const translations: Record<string, Translation> = {
@@ -87,3 +93,10 @@ const translations: Record<string, Translation> = {
 
 export const getTranslation = (locale: string): Translation =>
   translations[locale] ?? translations[i18n.defaultLanguage];
+
+export const getLocalizedPath = (locale: string, path: string): string => {
+  if (locale === i18n.defaultLanguage) {
+    return path;
+  }
+  return `/${locale}${path}`;
+};

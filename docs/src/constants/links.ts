@@ -1,5 +1,5 @@
 export const LINK = {
-  DOCS: "https://github.com/Aniket-508/better-og/blob/main/packages/website/content/docs",
+  DOCS: "https://github.com/Aniket-508/better-og/blob/main/docs/content/docs",
   GITHUB: "https://github.com/Aniket-508/better-og",
   LICENSE: "https://github.com/Aniket-508/better-og/blob/main/LICENSE",
   LLMS: "/llms.txt",

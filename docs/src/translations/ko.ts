@@ -65,6 +65,12 @@ const ko: Translation = {
       },
     },
   },
+  notFound: {
+    description: "찾으시는 페이지가 이동했거나 존재하지 않을 수 있습니다.",
+    explore: "둘러보기",
+    goHome: "홈으로",
+    heading: "404",
+  },
 };
 
 export default ko;

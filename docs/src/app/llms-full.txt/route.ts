@@ -1,10 +1,16 @@
+import { i18n } from "@/lib/i18n";
 import { getLLMText, source } from "@/lib/source";
 
 export const revalidate = false;
 
 export const GET = async () => {
-  const scan = source.getPages("en").map(getLLMText);
+  const scan = source
+    .getPages()
+    .filter((page) => page.locale === i18n.defaultLanguage)
+    .map(getLLMText);
   const scanned = await Promise.all(scan);
 
-  return new Response(scanned.join("\n\n"));
+  return new Response(scanned.join("\n\n"), {
+    headers: { "Content-Type": "text/markdown" },
+  });
 };

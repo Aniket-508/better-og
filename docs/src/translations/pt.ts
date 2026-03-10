@@ -74,6 +74,13 @@ const pt: Translation = {
       },
     },
   },
+  notFound: {
+    description:
+      "A página que você procura pode ter sido movida ou não existe.",
+    explore: "Explorar",
+    goHome: "Ir ao início",
+    heading: "404",
+  },
 };
 
 export default pt;

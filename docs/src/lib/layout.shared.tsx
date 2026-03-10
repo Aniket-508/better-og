@@ -1,6 +1,6 @@
 import type { BaseLayoutProps } from "fumadocs-ui/layouts/shared";
 
-import { Logo } from "@/components/logo";
+import { LogoMark } from "@/components/logo";
 import { i18n } from "@/lib/i18n";
 
 export const baseOptions: (_locale: string) => BaseLayoutProps = () => ({
@@ -9,7 +9,7 @@ export const baseOptions: (_locale: string) => BaseLayoutProps = () => ({
   nav: {
     title: (
       <>
-        <Logo className="h-6" />
+        <LogoMark className="h-6" />
         better-og
       </>
     ),

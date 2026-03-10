@@ -78,6 +78,13 @@ const uk: Translation = {
       },
     },
   },
+  notFound: {
+    description:
+      "Сторінку, яку ви шукаєте, могло бути переміщено або вона не існує.",
+    explore: "Огляд",
+    goHome: "На головну",
+    heading: "404",
+  },
 };
 
 export default uk;

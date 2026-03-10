@@ -78,6 +78,13 @@ const fr: Translation = {
       },
     },
   },
+  notFound: {
+    description:
+      "La page que vous recherchez a peut-être été déplacée ou n'existe pas.",
+    explore: "Explorer",
+    goHome: "Retour à l'accueil",
+    heading: "404",
+  },
 };
 
 export default fr;

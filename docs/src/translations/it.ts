@@ -78,6 +78,13 @@ const it: Translation = {
       },
     },
   },
+  notFound: {
+    description:
+      "La pagina che stai cercando potrebbe essere stata spostata o non esiste.",
+    explore: "Esplora",
+    goHome: "Vai alla Home",
+    heading: "404",
+  },
 };
 
 export default it;

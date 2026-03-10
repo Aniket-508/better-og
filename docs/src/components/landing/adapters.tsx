@@ -18,6 +18,7 @@ import {
   NativeSelectOption,
 } from "@/components/ui/native-select";
 import { cn } from "@/lib/utils";
+import { getLocalizedPath } from "@/translations";
 import type { Translation } from "@/translations";
 
 const PreviewFrame = ({ light, dark }: AdapterCardConfig["img"]) => (
@@ -80,7 +81,7 @@ const BaseAdapterCard = ({
         "group relative flex flex-col overflow-hidden bg-card p-3 transition-colors duration-200 ease hover:bg-muted/20 h-[250px] sm:h-[356px] items-start justify-end sm:p-6",
         className
       )}
-      href={`/${lang}${href}`}
+      href={getLocalizedPath(lang, href)}
     >
       <PreviewFrame {...img} />
 

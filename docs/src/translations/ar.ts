@@ -66,6 +66,12 @@ const ar: Translation = {
       },
     },
   },
+  notFound: {
+    description: "الصفحة التي تبحث عنها ربما نُقلت أو غير موجودة.",
+    explore: "استكشف",
+    goHome: "العودة للرئيسية",
+    heading: "404",
+  },
 };
 
 export default ar;

@@ -78,6 +78,13 @@ const ru: Translation = {
       },
     },
   },
+  notFound: {
+    description:
+      "Страница, которую вы ищете, могла быть перемещена или не существует.",
+    explore: "Обзор",
+    goHome: "На главную",
+    heading: "404",
+  },
 };
 
 export default ru;

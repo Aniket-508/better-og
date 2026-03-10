@@ -74,6 +74,13 @@ const id: Translation = {
       },
     },
   },
+  notFound: {
+    description:
+      "Halaman yang Anda cari mungkin telah dipindahkan atau tidak ada.",
+    explore: "Jelajahi",
+    goHome: "Ke Beranda",
+    heading: "404",
+  },
 };
 
 export default id;

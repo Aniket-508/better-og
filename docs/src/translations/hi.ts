@@ -70,6 +70,13 @@ const hi: Translation = {
       },
     },
   },
+  notFound: {
+    description:
+      "जो पेज आप ढूंढ रहे हैं वह स्थानांतरित हो गया हो सकता है या मौजूद नहीं है।",
+    explore: "एक्सप्लोर करें",
+    goHome: "होम पर जाएं",
+    heading: "404",
+  },
 };
 
 export default hi;

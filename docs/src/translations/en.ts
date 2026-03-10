@@ -74,6 +74,13 @@ const en: Translation = {
       },
     },
   },
+  notFound: {
+    description:
+      "The page you're looking for might have been moved or doesn't exist.",
+    explore: "Explore",
+    goHome: "Go Home",
+    heading: "404",
+  },
 };
 
 export default en;

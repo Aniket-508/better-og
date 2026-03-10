@@ -74,6 +74,12 @@ const tr: Translation = {
       },
     },
   },
+  notFound: {
+    description: "Aradığınız sayfa taşınmış veya mevcut olmayabilir.",
+    explore: "Keşfet",
+    goHome: "Ana Sayfaya Git",
+    heading: "404",
+  },
 };
 
 export default tr;
