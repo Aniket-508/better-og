@@ -1,6 +1,6 @@
 # @better-og/edge
 
-Low-level Takumi WASM adapter for `better-og`.
+Low-level Takumi WASM adapter for `Better OG`.
 
 ## Install
 

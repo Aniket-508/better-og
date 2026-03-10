@@ -25,7 +25,7 @@ export const SITE = {
     "aspect ratio",
     "i18n",
   ],
-  NAME: "better-og",
+  NAME: "Better OG",
   OG_IMAGE:
     "https://yffrvzi8zwbljfuj.public.blob.vercel-storage.com/better-og/og.png",
   URL: baseUrl,

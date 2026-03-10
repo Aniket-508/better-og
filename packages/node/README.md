@@ -1,6 +1,6 @@
 # @better-og/node
 
-Node.js adapter for `better-og`.
+Node.js adapter for `Better OG`.
 
 It uses Takumi's native Node.js runtime for rendering Open Graph images.
 

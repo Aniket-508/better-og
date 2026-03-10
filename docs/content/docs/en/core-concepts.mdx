@@ -5,7 +5,7 @@ description: Understand aspect ratios, platform detection, safe areas, layout, a
 
 ## Platform Detection
 
-When a social platform fetches your OG image, it sends a characteristic request signature. better-og combines explicit query overrides with `User-Agent`, `Referer`, and other request hints to determine which platform is requesting the image and selects the optimal aspect ratio preset.
+When a social platform fetches your OG image, it sends a characteristic request signature. Better OG combines explicit query overrides with `User-Agent`, `Referer`, and other request hints to determine which platform is requesting the image and selects the optimal aspect ratio preset.
 
 | Platform  | User-Agent pattern | Default Preset |
 | --------- | ------------------ | -------------- |
@@ -49,7 +49,7 @@ interface ResolvedOgRequest {
 
 ## Safe Areas
 
-Some platforms crop OG images. Twitter, for example, crops the bottom 44px of a standard OG image to overlay engagement buttons. better-og exposes this as `safeArea.bottom`:
+Some platforms crop OG images. Twitter, for example, crops the bottom 44px of a standard OG image to overlay engagement buttons. Better OG exposes this as `safeArea.bottom`:
 
 ```tsx
 const handler = createOgRouteHandler({

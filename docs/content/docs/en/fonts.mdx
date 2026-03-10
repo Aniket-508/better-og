@@ -5,7 +5,7 @@ description: Script-aware font loading with automatic fallbacks for multilingual
 
 ## Font Loading
 
-better-og provides two approaches to loading fonts for OG image rendering:
+Better OG provides two approaches to loading fonts for OG image rendering:
 
 ### Google Fonts (for next/og)
 
@@ -52,7 +52,7 @@ const fontSetup = await resolveFontSetup({
 
 ## Built-in Locale Fallbacks
 
-better-og ships with Google Fonts mappings for these locales:
+Better OG ships with Google Fonts mappings for these locales:
 
 | Locale | Font Family          |
 | ------ | -------------------- |
@@ -65,7 +65,7 @@ better-og ships with Google Fonts mappings for these locales:
 | `ar`   | Noto Sans Arabic     |
 | `hi`   | Noto Sans Devanagari |
 
-When you specify `fallbackLocales`, better-og automatically loads the appropriate Noto Sans variant and appends it to the font stack. Mixed-script strings also trigger the corresponding fallback locales automatically.
+When you specify `fallbackLocales`, Better OG automatically loads the appropriate Noto Sans variant and appends it to the font stack. Mixed-script strings also trigger the corresponding fallback locales automatically.
 
 ## Using Locale Fonts in Components
 
@@ -84,7 +84,7 @@ Use the resolved family names from `fontSetup.families.locales` to apply the cor
 
 ## Locale Resolution
 
-In route handlers, better-og resolves the locale from:
+In route handlers, Better OG resolves the locale from:
 
 1. `localeFromRequest` callback (custom per-request locale detection)
 2. Route params (`params.lang` or `params.locale`)

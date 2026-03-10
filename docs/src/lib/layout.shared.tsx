@@ -1,6 +1,7 @@
 import type { BaseLayoutProps } from "fumadocs-ui/layouts/shared";
 
 import { LogoMark } from "@/components/logo";
+import { SITE } from "@/constants/site";
 import { i18n } from "@/lib/i18n";
 
 export const baseOptions: (_locale: string) => BaseLayoutProps = () => ({
@@ -10,7 +11,7 @@ export const baseOptions: (_locale: string) => BaseLayoutProps = () => ({
     title: (
       <>
         <LogoMark className="h-6" />
-        better-og
+        {SITE.NAME}
       </>
     ),
   },

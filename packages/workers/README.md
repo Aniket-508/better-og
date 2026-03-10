@@ -1,6 +1,6 @@
 # @better-og/workers
 
-Workers adapter for `better-og`.
+Workers adapter for `Better OG`.
 
 It initializes Takumi's bundled Workers WASM runtime and renders through a
 `Renderer`, which matches the Cloudflare Workers setup used in Takumi's own
