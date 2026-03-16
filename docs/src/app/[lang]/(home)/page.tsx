@@ -25,7 +25,7 @@ export const generateMetadata = async ({
     canonical: `/${lang}`,
     description: translation.home.heroSubtitle,
     ogDescription: translation.home.heroSubtitle,
-    ogImage: `/og/${lang}/docs/image.png`,
+    ogImage: `/og/${lang}/home`,
     title: translation.home.heroTitle,
   });
 };

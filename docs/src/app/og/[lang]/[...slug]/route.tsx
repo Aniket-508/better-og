@@ -5,8 +5,9 @@ import {
 } from "@better-og/next";
 import { notFound } from "next/navigation";
 
-import DocsOgImage from "@/components/og/docs-og-image";
+import OgImage from "@/components/og/og-image";
 import { source } from "@/lib/source";
+import { getTranslation } from "@/translations";
 
 export const revalidate = false;
 
@@ -34,28 +35,49 @@ const getDescriptionFontFamily = (
   return fontSetup.families.base;
 };
 
+const resolvePageData = (
+  slug: string[],
+  lang: string
+): { category?: string; description?: string; title: string } => {
+  if (slug[0] === "home") {
+    const translation = getTranslation(lang);
+    return {
+      description: translation.home.heroSubtitle,
+      title: translation.home.heroTitle,
+    };
+  }
+
+  if (slug[0] === "docs") {
+    const pageSlug = slug.slice(1, -1);
+    const page = source.getPage(pageSlug, lang);
+    if (!page) {
+      notFound();
+    }
+    const { description, title } = page.data;
+    return { category: "Documentation", description, title };
+  }
+
+  notFound();
+};
+
 export const GET = async (
   request: Request,
   { params }: { params: Promise<{ lang: string; slug: string[] }> }
 ) => {
   const { lang, slug } = await params;
-  const pageSlug = slug.slice(0, -1);
-  const page = source.getPage(pageSlug, lang);
   const fontSetup = await getFontSetup();
-
-  if (!page) {
-    notFound();
-  }
+  const { category, description, title } = resolvePageData(slug, lang);
 
   const handler = createOgRouteHandler({
     baseFonts: fontSetup.fonts,
     component: (ogContext) => (
-      <DocsOgImage
-        title={page.data.title}
-        description={page.data.description}
-        fontFamily={fontSetup.families.base}
+      <OgImage
+        category={category}
+        description={description}
         descriptionFontFamily={getDescriptionFontFamily(fontSetup, lang)}
+        fontFamily={fontSetup.families.base}
         safeAreaBottom={ogContext.safeArea.bottom}
+        title={title}
       />
     ),
     renderer: "takumi",
