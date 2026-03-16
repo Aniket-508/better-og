@@ -70,7 +70,7 @@ const OrganizationJsonLd = () => {
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "Organization",
-    logo: `${SITE.URL}${SITE.OG_IMAGE}`,
+    logo: SITE.OG_IMAGE,
     name: SITE.NAME,
     sameAs: [LINK.GITHUB, LINK.TWITTER],
     url: SITE.URL,

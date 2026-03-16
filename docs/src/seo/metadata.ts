@@ -2,60 +2,98 @@ import type { Metadata } from "next";
 
 import { LINK } from "@/constants/links";
 import { SITE } from "@/constants/site";
+import { i18n } from "@/lib/i18n";
+import { getLocalizedPath } from "@/translations";
+
+const ogLocaleMap: Record<string, string> = {
+  ar: "ar_AR",
+  da: "da_DK",
+  de: "de_DE",
+  en: "en_US",
+  es: "es_ES",
+  fr: "fr_FR",
+  hi: "hi_IN",
+  id: "id_ID",
+  it: "it_IT",
+  ja: "ja_JP",
+  ko: "ko_KR",
+  pt: "pt_PT",
+  "pt-br": "pt_BR",
+  ru: "ru_RU",
+  tr: "tr_TR",
+  uk: "uk_UA",
+  zh: "zh_CN",
+};
+
+const toOgLocale = (lang: string): string => ogLocaleMap[lang] ?? "en_US";
+
+const buildAlternates = (lang: string, path: `/${string}`) => {
+  const canonical = getLocalizedPath(lang, path);
+  const languages: Record<string, string> = Object.fromEntries(
+    i18n.languages.map((locale) => [locale, getLocalizedPath(locale, path)])
+  );
+  languages["x-default"] = getLocalizedPath(i18n.defaultLanguage, path);
+  return { canonical, languages };
+};
 
 interface CreateMetadataOptions {
-  canonical?: string;
-  description?: string;
+  description: string;
+  lang: string;
   noIndex?: boolean;
   ogDescription?: string;
   ogImage?: string;
+  ogImageAlt?: string;
   ogTitle?: string;
-  title?: string;
+  ogType?: "article" | "website";
+  path: `/${string}`;
+  title: string;
 }
 
-export const createMetadata = (
-  options: CreateMetadataOptions = {}
-): Metadata => {
+export const createMetadata = (options: CreateMetadataOptions): Metadata => {
   const {
-    canonical,
-    description = SITE.DESCRIPTION.SHORT,
+    description,
+    lang,
     noIndex = false,
     ogDescription,
-    ogImage = SITE.OG_IMAGE,
+    ogImage,
+    ogImageAlt,
     ogTitle,
+    ogType = "website",
+    path,
     title,
   } = options;
 
+  const alternates = buildAlternates(lang, path);
+  const resolvedOgImage = ogImage ?? `/og/${lang}${path === "/" ? "" : path}`;
+  const resolvedTitle = ogTitle ?? title;
+
   return {
-    ...(title && { title }),
+    alternates,
     description,
-    ...(canonical && {
-      alternates: {
-        canonical,
-      },
-    }),
     openGraph: {
       description: ogDescription ?? description,
       images: [
         {
-          alt: `${SITE.NAME} - platform-aware OG images`,
+          alt: ogImageAlt ?? resolvedTitle,
           height: 630,
-          url: ogImage,
+          url: resolvedOgImage,
           width: 1200,
         },
       ],
+      locale: toOgLocale(lang),
       siteName: SITE.NAME,
-      title: ogTitle ?? title ?? SITE.NAME,
-      type: "website",
-      url: canonical ? `${SITE.URL}${canonical}` : SITE.URL,
+      title: resolvedTitle,
+      type: ogType,
+      url: `${SITE.URL}${alternates.canonical}`,
     },
+    title,
     twitter: {
       card: "summary_large_image",
       creator: SITE.AUTHOR.TWITTER,
       description: ogDescription ?? description,
-      images: [ogImage],
+      images: [resolvedOgImage],
       site: SITE.AUTHOR.TWITTER,
-      title: ogTitle ?? title ?? SITE.NAME,
+      title: resolvedTitle,
     },
     ...(noIndex && {
       robots: {

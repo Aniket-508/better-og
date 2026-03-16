@@ -22,10 +22,10 @@ export const generateMetadata = async ({
   const translation = getTranslation(lang);
 
   return createMetadata({
-    canonical: `/${lang}`,
     description: translation.home.heroSubtitle,
-    ogDescription: translation.home.heroSubtitle,
+    lang,
     ogImage: `/og/${lang}/home`,
+    path: "/",
     title: translation.home.heroTitle,
   });
 };

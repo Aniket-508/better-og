@@ -3,6 +3,7 @@ import type { MetadataRoute } from "next";
 import { SITE } from "@/constants/site";
 import { i18n } from "@/lib/i18n";
 import { source } from "@/lib/source";
+import { getLocalizedPath } from "@/translations";
 
 const sitemap = (): MetadataRoute.Sitemap => {
   const routes: MetadataRoute.Sitemap = [];
@@ -12,13 +13,13 @@ const sitemap = (): MetadataRoute.Sitemap => {
       changeFrequency: "weekly",
       lastModified: new Date(),
       priority: 1,
-      url: `${SITE.URL}/${lang}`,
+      url: `${SITE.URL}${getLocalizedPath(lang, "/")}`,
     });
     routes.push({
       changeFrequency: "weekly",
       lastModified: new Date(),
       priority: 0.9,
-      url: `${SITE.URL}/${lang}/docs`,
+      url: `${SITE.URL}${getLocalizedPath(lang, "/docs")}`,
     });
 
     for (const page of source.getPages(lang)) {
@@ -26,7 +27,7 @@ const sitemap = (): MetadataRoute.Sitemap => {
         changeFrequency: "weekly",
         lastModified: new Date(),
         priority: 0.8,
-        url: `${SITE.URL}/${page.url}`,
+        url: `${SITE.URL}${page.url}`,
       });
     }
   }

@@ -12,10 +12,9 @@ import { notFound } from "next/navigation";
 
 import { LLMCopyButton, ViewOptions } from "@/components/ai/page-actions";
 import { LINK } from "@/constants/links";
-import { i18n } from "@/lib/i18n";
 import { getPageImage, source } from "@/lib/source";
 import { getMDXComponents } from "@/mdx-components";
-import { getLocalizedPath } from "@/translations";
+import { createMetadata } from "@/seo/metadata";
 
 interface DocsPageProps {
   params: Promise<{ lang: string; slug?: string[] }>;
@@ -80,41 +79,12 @@ export const generateMetadata = async ({
     notFound();
   }
 
-  const docPath = `/docs/${page.slugs.join("/")}`;
-  const canonical = getLocalizedPath(lang, docPath);
-  const languages: Record<string, string> = Object.fromEntries(
-    i18n.languages.map((locale) => [locale, getLocalizedPath(locale, docPath)])
-  );
-  languages["x-default"] = getLocalizedPath(i18n.defaultLanguage, docPath);
-
-  const ogLocale = lang.replace("-", "_");
-
-  return {
-    alternates: {
-      canonical,
-      languages,
-    },
-    description: page.data.description,
-    openGraph: {
-      description: page.data.description,
-      images: [
-        {
-          alt: page.data.title,
-          height: 630,
-          url: getPageImage(page).url,
-          width: 1200,
-        },
-      ],
-      locale: ogLocale,
-      title: page.data.title,
-      type: "article",
-    },
+  return createMetadata({
+    description: page.data.description ?? "",
+    lang,
+    ogImage: getPageImage(page, lang).url,
+    ogType: "article",
+    path: `/docs/${page.slugs.join("/")}` as `/${string}`,
     title: page.data.title,
-    twitter: {
-      card: "summary_large_image",
-      description: page.data.description,
-      images: [getPageImage(page).url],
-      title: page.data.title,
-    },
-  };
+  });
 };
