@@ -1,6 +1,6 @@
 {
   "name": "@better-og/workers",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "Workers adapter for better-og using Takumi's WASM runtime.",
   "keywords": [
     "cloudflare",
