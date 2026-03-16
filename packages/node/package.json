@@ -1,6 +1,6 @@
 {
   "name": "@better-og/node",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Node.js adapter for better-og using Takumi's native runtime.",
   "keywords": [
     "node",
