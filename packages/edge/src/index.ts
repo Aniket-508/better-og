@@ -62,6 +62,7 @@ export const createOgHandler = (options: EdgeOgHandlerOptions) => {
     aspectRatio: _aspectRatio,
     component,
     fallbackLocales: _fallbackLocales,
+    format,
     layout: _layout,
     localeFromRequest,
     module,
@@ -100,6 +101,7 @@ export const createOgHandler = (options: EdgeOgHandlerOptions) => {
       return new ImageResponse(renderComponent, {
         ...renderOptions,
         fonts: fonts as EdgeWasmImageResponseOptions["fonts"],
+        format: format ?? resolvedRequest.capabilities.preferredFormat,
         height: resolvedRequest.height,
         module,
         width: resolvedRequest.width,

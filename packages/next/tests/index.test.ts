@@ -93,8 +93,8 @@ describe("createOgRouteHandler (next)", () => {
     });
 
     expect(handler).toBeTypeOf("function");
-    // oxlint-disable-next-line vitest/prefer-to-have-been-called-times
-    expect(mocks.createOgRouteHandler).toHaveBeenCalledTimes(1);
+    // oxlint-disable-next-line vitest/prefer-called-times
+    expect(mocks.createOgRouteHandler).toHaveBeenCalledOnce();
     const options = mocks.capturedOptions[0] as {
       localeFromContext: (context: {
         params: Promise<{ lang: string }>;

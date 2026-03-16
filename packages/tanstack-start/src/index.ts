@@ -65,6 +65,7 @@ export const createOgRouteHandler = (
     aspectRatio: _aspectRatio,
     component,
     fallbackLocales: _fallbackLocales,
+    format,
     layout: _layout,
     loadDefaultFonts,
     localeFromRequest,
@@ -101,6 +102,7 @@ export const createOgRouteHandler = (
       return new ImageResponse(renderComponent, {
         ...renderOptions,
         fonts,
+        format: format ?? resolvedRequest.capabilities.preferredFormat,
         height: resolvedRequest.height,
         loadDefaultFonts: loadDefaultFonts ?? true,
         width: resolvedRequest.width,

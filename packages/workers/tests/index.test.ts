@@ -156,8 +156,8 @@ describe("createOgHandler (workers)", () => {
       resolvedRequest,
     });
 
-    // oxlint-disable-next-line vitest/prefer-to-have-been-called-times
-    expect(mocks.initSync).toHaveBeenCalledTimes(1);
+    // oxlint-disable-next-line vitest/prefer-called-times
+    expect(mocks.initSync).toHaveBeenCalledOnce();
     expect(mocks.rendererInstances).toHaveLength(2);
     expect(mocks.rendererInstances[0]?.options).toMatchObject({
       fonts: [
@@ -168,6 +168,9 @@ describe("createOgHandler (workers)", () => {
           weight: 400,
         },
       ],
+    });
+    expect(mocks.imageResponseCalls[0]?.options).toMatchObject({
+      format: "webp",
     });
   });
 
@@ -213,9 +216,10 @@ describe("createOgHandler (workers)", () => {
     });
 
     expect(mocks.initSync).not.toHaveBeenCalled();
-    // oxlint-disable-next-line vitest/prefer-to-have-been-called-times
+    // oxlint-disable-next-line vitest/prefer-called-times
     expect(renderer.loadFont).toHaveBeenCalledOnce();
     expect(mocks.imageResponseCalls[0]?.options).toMatchObject({
+      format: "webp",
       renderer,
       width: 1200,
     });

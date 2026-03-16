@@ -13,7 +13,7 @@ import type { ReactNode } from "react";
 
 type NodeImageResponseOptions = Omit<
   ImageResponseOptions,
-  "fonts" | "format" | "height" | "module" | "renderer" | "width"
+  "fonts" | "height" | "module" | "renderer" | "width"
 >;
 
 type SharedTextResolver = CreateOgRouteHandlerOptions<
@@ -42,6 +42,7 @@ export const createOgHandler = (options: NodeOgHandlerOptions) => {
     aspectRatio: _aspectRatio,
     component,
     fallbackLocales: _fallbackLocales,
+    format,
     layout: _layout,
     localeFromRequest,
     platform: _platform,
@@ -69,8 +70,9 @@ export const createOgHandler = (options: NodeOgHandlerOptions) => {
       resolvedRequest,
     }) =>
       new ImageResponse(renderComponent, {
-        ...renderOptions,
+        ...(renderOptions as ImageResponseOptions),
         fonts,
+        format: format ?? resolvedRequest.capabilities.preferredFormat,
         height: resolvedRequest.height,
         width: resolvedRequest.width,
       }),

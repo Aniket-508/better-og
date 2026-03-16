@@ -418,7 +418,7 @@ const DEFAULT_PLATFORM_PROFILES: PlatformProfile[] = [
     capabilities: {
       emoji: true,
       maxResponseBytes: 8_000_000,
-      preferredFormat: "png",
+      preferredFormat: "webp",
       svg: true,
       webp: true,
     },
@@ -918,21 +918,23 @@ const dedupeFonts = (fonts: Font[]): Font[] => {
   return resolvedFonts;
 };
 
+// oxlint-disable unicorn/number-literal-case
 const SCRIPT_LOCALE_RANGES: {
   end: number;
   locale: "ar" | "cyrillic" | "hi" | "ja" | "ko";
   start: number;
 }[] = [
-  { end: 0x06_FF, locale: "ar", start: 0x06_00 },
-  { end: 0x09_7F, locale: "hi", start: 0x09_00 },
-  { end: 0x04_FF, locale: "cyrillic", start: 0x04_00 },
-  { end: 0x30_FF, locale: "ja", start: 0x30_40 },
-  { end: 0xD7_AF, locale: "ko", start: 0xAC_00 },
+  { end: 0x06_ff, locale: "ar", start: 0x06_00 },
+  { end: 0x09_7f, locale: "hi", start: 0x09_00 },
+  { end: 0x04_ff, locale: "cyrillic", start: 0x04_00 },
+  { end: 0x30_ff, locale: "ja", start: 0x30_40 },
+  { end: 0xd7_af, locale: "ko", start: 0xac_00 },
 ];
 const HAN_SCRIPT_RANGE = {
-  end: 0x9F_FF,
-  start: 0x4E_00,
+  end: 0x9f_ff,
+  start: 0x4e_00,
 };
+// oxlint-enable unicorn/number-literal-case
 
 const resolveRangeLocale = (
   locale: (typeof SCRIPT_LOCALE_RANGES)[number]["locale"],
@@ -1532,10 +1534,7 @@ export const resolveFontSetup = async ({
   sources,
   text,
 }: ResolveFontSetupOptions): Promise<ResolvedFontSetup> => {
-  const resolvedSources = [
-    ...resolveFontSources(sources),
-    builtInGoogleFontSource,
-  ];
+  const resolvedSources = resolveFontSources(sources);
   const resolvedFonts = await resolveFonts({
     baseFonts,
     fallbackLocales,

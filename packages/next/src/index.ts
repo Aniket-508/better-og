@@ -132,7 +132,7 @@ const renderWithTakumi = async ({
   return new ImageResponse(component, {
     ...options,
     fonts,
-    format: options?.format ?? "webp",
+    format: options?.format ?? resolvedRequest.capabilities.preferredFormat,
     height: resolvedRequest.height,
     loadDefaultFonts: options?.loadDefaultFonts ?? true,
     width: resolvedRequest.width,
