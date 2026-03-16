@@ -114,7 +114,7 @@ const NextAdapterCard = ({
         event.target.value as (typeof nextAdapterVariants)[number]["id"]
       );
     },
-    [nextAdapterVariants]
+    []
   );
   const handleSelectClick = useCallback((e: React.MouseEvent) => {
     e.preventDefault();

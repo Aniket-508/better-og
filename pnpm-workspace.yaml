@@ -1,3 +1,16 @@
 packages:
   - "packages/*"
   - "docs"
+
+catalog:
+  "@takumi-rs/image-response": ^0.73.1
+  "@takumi-rs/wasm": ^0.73.1
+  "@types/node": ^25.5.0
+  "@types/react": ^19.2.14
+  "@types/react-dom": ^19.2.3
+  next: ^16.1.6
+  react: ^19.2.4
+  react-dom: ^19.2.4
+  tsdown: ^0.21.3
+  typescript: ^5.9.3
+  vitest: ^4.1.0
